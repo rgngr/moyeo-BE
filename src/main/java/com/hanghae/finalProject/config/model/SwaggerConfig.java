@@ -34,11 +34,11 @@ public class SwaggerConfig {
      }
      private ApiInfo apiInfo() {
           return new ApiInfoBuilder()
-               .title("인스타그램 클론코딩 REST API")
-               .description("항해 인스타그램 프로젝트 swagger")
+               .title("항해 파이널 프로젝트 REST API")
+               .description("항해 프로젝트 swagger")
                .version("1.0.0")
                .termsOfServiceUrl("")
-               .contact(new Contact("gamemini", "https://github.com/clone-instagram/clone-instagram-BE", "joj1043@kakao.com"))
+               .contact(new Contact("방만츄", "https://github.com/clone-instagram/clone-instagram-BE", "joj1043@kakao.com"))
                .license("")
                .licenseUrl("")
                .build()
