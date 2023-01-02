@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.hanghae.finalProject.config.errorcode.CommonStatusCode;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class S3Uploader {
           // MultipartFile을 File객체로 변환
           // 이미지형식이 아닐경우
           if (!(multipartFile.getContentType().equals("image/png") || multipartFile.getContentType().equals("image/jpeg")))
-               throw new RestApiException(CommonStatusCode.WRONG_IMAGE_FORMAT);
+               throw new RestApiException(Code.WRONG_IMAGE_FORMAT);
           
           File uploadFile = null;
           try {
