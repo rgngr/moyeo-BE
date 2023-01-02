@@ -1,9 +1,7 @@
 package com.hanghae.finalProject.config.handler;
 
 import com.hanghae.finalProject.config.dto.ErrorResponseDto;
-import com.hanghae.finalProject.config.errorcode.CommonStatusCode;
-import com.hanghae.finalProject.config.errorcode.StatusCode;
-import com.hanghae.finalProject.config.errorcode.UserStatusCode;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +23,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      // RestApiException 에러 핸들링
      @ExceptionHandler (RestApiException.class)
      public ResponseEntity<Object> handleCustomException(RestApiException e) {
-          StatusCode statusCode = e.getStatusCode();
+          Code statusCode = e.getErrorCode();
           return handleExceptionInternal(statusCode);
      }
      
@@ -53,7 +51,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      @ExceptionHandler(IllegalArgumentException.class)
      public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e) {
           log.warn("handleIllegalArgument", e);
-          StatusCode statusCode = CommonStatusCode.INVALID_PARAMETER;
+          Code statusCode = Code.INVALID_PARAMETER;
           return handleExceptionInternal(statusCode, e.getMessage());
      }
      
@@ -66,23 +64,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     WebRequest request) {
           log.warn("handleMethodArgumentNotValid", e);
           String errorFieldName = e.getBindingResult().getFieldError().getField();
-          StatusCode statusCode = CommonStatusCode.INVALID_PARAMETER;
+          Code statusCode = Code.INVALID_PARAMETER;
           if(errorFieldName.equals("username")){
-               statusCode = UserStatusCode.WRONG_USERNAME_PATTERN;
+               statusCode = Code.WRONG_USERNAME_PATTERN;
           }else if(errorFieldName.equals("password")){
-               statusCode = UserStatusCode.WRONG_PASSWORD_PATTERN;
+               statusCode = Code.WRONG_PASSWORD_PATTERN;
           }
           return handleExceptionInternal(statusCode);
      }
      
      // ConstraintViolationException 에러 핸들링
      @ExceptionHandler(ConstraintViolationException.class)
-     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e) {
-          log.warn("handleConstraintViolation", e);
-          StatusCode statusCode = CommonStatusCode.INVALID_PARAMETER;
-          String interpolatedMessage = e.getMessage().split("interpolatedMessage=\'")[1].split("\', propertyPath")[0];
-          System.out.println(e.getMessage());
-          return handleExceptionInternal(statusCode, interpolatedMessage);
+     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {
+          return handleExceptionInternal(e, Code.INVALID_PARAMETER, request);
      }
      
      
@@ -92,18 +86,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      public ResponseEntity<Object> handleAllException(Exception ex) {
           log.warn(">>>>>>>>>handleAllException", ex);
           ex.printStackTrace();
-          StatusCode statusCode = CommonStatusCode.INTERNAL_SERVER_ERROR;
+          Code statusCode = Code.INTERNAL_SERVER_ERROR;
           return handleExceptionInternal(statusCode);
      }
      
      // ErrorCode 만 있는 에러 ResponseEntity 생성
-     private ResponseEntity<Object> handleExceptionInternal(StatusCode statusCode) {
+     private ResponseEntity<Object> handleExceptionInternal(Code statusCode) {
           return ResponseEntity.status(statusCode.getStatusCode())
                // ErrorCode 만 있는 에러 responseEntity body만들기
                .body(makeErrorResponse(statusCode));
      }
      
-     private ErrorResponseDto makeErrorResponse(StatusCode statusCode) {
+     private ErrorResponseDto makeErrorResponse(Code statusCode) {
           return ErrorResponseDto.builder()
                .statusCode(statusCode.getStatusCode())
                .statusMsg(statusCode.getStatusMsg())
@@ -111,15 +105,39 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      }
      
      // ErrorCode + message따로 있는 에러 ResponseEntity 생성
-     private ResponseEntity<Object> handleExceptionInternal(StatusCode statusCode, String message) {
+     private ResponseEntity<Object> handleExceptionInternal(Code statusCode, String message) {
           return ResponseEntity.status(statusCode.getStatusCode())
                .body(makeErrorResponse(statusCode, message));
      }
      
-     private ErrorResponseDto makeErrorResponse(StatusCode statusCode, String message) {
+     private ErrorResponseDto makeErrorResponse(Code statusCode, String message) {
           return ErrorResponseDto.builder()
                .statusCode(statusCode.getStatusCode())
                .statusMsg(message)
                .build();
+     }
+     @Override
+     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
+                                                              HttpHeaders headers, HttpStatus status, WebRequest request) {
+          return handleExceptionInternal(ex, Code.valueOf(status), headers, status, request);
+     }
+     
+     // no header, no status
+     private ResponseEntity<Object> handleExceptionInternal(Exception e, Code errorCode,
+                                                            WebRequest request) {
+          return handleExceptionInternal(e, errorCode, HttpHeaders.EMPTY, errorCode.getStatusCode(),
+               request);
+     }
+     
+     // Allargs Constructor
+     private ResponseEntity<Object> handleExceptionInternal(Exception e, Code errorCode,
+                                                            HttpHeaders headers, HttpStatus status, WebRequest request) {
+          return super.handleExceptionInternal(
+               e,
+               ErrorResponseDto.of(errorCode, errorCode.getStatusMsg(e)),
+               headers,
+               status,
+               request
+          );
      }
 }

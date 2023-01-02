@@ -1,7 +1,6 @@
 package com.hanghae.finalProject.rest.user.controller;
 
 import com.hanghae.finalProject.config.dto.PrivateResponseBody;
-import com.hanghae.finalProject.config.errorcode.UserStatusCode;
 import com.hanghae.finalProject.rest.user.dto.SignupRequestDto;
 import com.hanghae.finalProject.rest.user.repository.UserRepository;
 import com.hanghae.finalProject.rest.user.service.UserService;

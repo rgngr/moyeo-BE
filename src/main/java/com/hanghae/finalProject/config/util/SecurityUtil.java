@@ -1,6 +1,5 @@
 package com.hanghae.finalProject.config.util;
 
-import com.hanghae.finalProject.config.errorcode.UserStatusCode;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.security.UserDetailsImpl;
 import com.hanghae.finalProject.rest.user.model.User;
