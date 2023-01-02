@@ -19,9 +19,9 @@ public class SignupRequestDto {
     @Size(min = 8, max = 15)
     @Pattern (regexp="^.(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$")
     private String password;
+
     @NotBlank
-    private String passwordCheck;
-    @NotBlank
-    private String nickname;
+    private String email;
+
 
 }
