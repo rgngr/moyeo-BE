@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 
 @Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
 public enum Code {
      // 정리필요
      OK("정상", HttpStatus.OK),
@@ -46,9 +45,10 @@ public enum Code {
      WRONG_ADMIN_TOKEN("관리자 암호가 틀려 등록이 불가능합니다.", HttpStatus.BAD_REQUEST),
      OVERLAPPED_USERNAME("중복된 username 입니다.", HttpStatus.BAD_REQUEST),
      OVERLAPPED_NICKNAME("중복된 닉네임 입니다.", HttpStatus.BAD_REQUEST),
+     OVERLAPPED_EMAIL("중복된 email 입니다",HttpStatus.BAD_REQUEST),
      PASSWORD_CHECK("입력된 비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST),
      임시이넘객체("임시객체입니다", HttpStatus.BAD_REQUEST),
-     INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
+     INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
      
      private final String StatusMsg;
      private final HttpStatus statusCode;

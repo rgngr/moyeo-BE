@@ -15,13 +15,11 @@ public class SignupRequestDto {
     @Pattern (regexp="^(?=.*?[0-9])(?=.*?[a-z]).{5,10}$")
     private String username;
 
-
     @Size(min = 8, max = 15)
     @Pattern (regexp="^.(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$")
     private String password;
+    
     @NotBlank
-    private String passwordCheck;
-    @NotBlank
-    private String nickname;
+    private String email;
 
 }

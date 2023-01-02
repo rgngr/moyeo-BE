@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class ErrorResponseDto extends ResponseDto  {
      
      private ErrorResponseDto(Code errorCode) {
