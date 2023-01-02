@@ -1,6 +1,5 @@
-package com.hanghae.finalProject.rest.comment.model;
+package com.hanghae.finalProject.rest.review.model;
 
-import com.hanghae.finalProject.config.model.Timestamped;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Comment extends Timestamped {
+public class Review {
      @Id
      @GeneratedValue (strategy = GenerationType.IDENTITY)
      private Long id;

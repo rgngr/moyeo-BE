@@ -34,5 +34,4 @@ public class User {
      @Column(nullable = true, unique = true)
      private String kakaoId;
      
-     
 }

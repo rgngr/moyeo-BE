@@ -21,21 +21,21 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class UserController {
      
-     private final PasswordEncoder passwordEncoder;
+//     private final PasswordEncoder passwordEncoder;
      private final UserRepository userRepository;
      private final UserService userService;
      
-     @PostMapping ("/signup")
-     public ResponseEntity<PrivateResponseBody> signup(@RequestBody @Valid SignupRequestDto requestDto) {
-          userService.signUp(requestDto);
-//          return ResponseEntity.ok(new PrivateResponseBody(UserStatusCode.USER_SIGNUP_SUCCESS));
-          return new ResponseEntity<>(new PrivateResponseBody(UserStatusCode.USER_SIGNUP_SUCCESS), HttpStatus.OK);
-     }
      
-//     @PostMapping ("/login")
-//     public ResponseEntity<PrivateResponseBody> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-//          return new ResponseEntity<>(new PrivateResponseBody(UserStatusCode.USER_LOGIN_SUCCESS, userService.login(loginRequestDto, response)), HttpStatus.OK);
+//     @PostMapping ("/signup")
+//     public PrivateResponseBody signup(@RequestBody @Valid SignupRequestDto requestDto) {
+//          userService.signUp(requestDto);
+////          return ResponseEntity.ok(new PrivateResponseBody(UserStatusCode.USER_SIGNUP_SUCCESS));
+//          return new PrivateResponseBody(UserStatusCode.USER_SIGNUP_SUCCESS);
 //     }
-     
+//
+//     @PostMapping ("/login")
+//     public PrivateResponseBody login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+//          return new PrivateResponseBody(UserStatusCode.USER_LOGIN_SUCCESS, userService.login(loginRequestDto, response));
+//     }
      
 }
