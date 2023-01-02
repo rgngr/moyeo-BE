@@ -5,12 +5,14 @@ import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@SQLDelete(sql = "UPDATE comment SET deleted = true WHERE id = ?")
 public class Comment extends Timestamped {
      @Id
      @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -23,4 +25,10 @@ public class Comment extends Timestamped {
      @ManyToOne (fetch = FetchType.LAZY)
      @JoinColumn(name ="user_id")
      private User user; // 모임생성자
+
+     @Column
+     private String comment;
+
+     @Column
+     private boolean deleted = Boolean.FALSE;
 }
