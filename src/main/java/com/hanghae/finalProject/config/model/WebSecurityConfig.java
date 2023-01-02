@@ -41,9 +41,15 @@ public class WebSecurityConfig {
           http.authorizeRequests()
                // 토큰검증 필요없는 페이지 설정
                .antMatchers(HttpMethod.POST, "/api/user/**").permitAll()
+<<<<<<< HEAD
                .antMatchers(HttpMethod.GET, "/api/posts/{\\d+}").permitAll()
                .antMatchers(HttpMethod.GET, "/api/posts").permitAll()
                .antMatchers( "/api/**").permitAll() // TODO : 임시
+=======
+//               .antMatchers(HttpMethod.GET, "/api/posts/{\\d+}").permitAll()
+//               .antMatchers(HttpMethod.GET, "/api/posts").permitAll()
+//               .antMatchers( "/api/user/**").permitAll() // TODO : 임시
+>>>>>>> ea603ac0c55e6b8e0a8aad565eeea482cc1ba8c3
                .antMatchers("/api/doc").permitAll()
                .antMatchers("/swagger-ui/**").permitAll() //스웨거 권한설정 X
                .antMatchers("/swagger-resources/**").permitAll() //스웨거 권한설정 X

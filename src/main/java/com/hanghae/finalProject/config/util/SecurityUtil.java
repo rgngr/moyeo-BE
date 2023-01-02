@@ -1,6 +1,6 @@
 package com.hanghae.finalProject.config.util;
 
-import com.hanghae.finalProject.config.errorcode.UserStatusCode;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.security.UserDetailsImpl;
 import com.hanghae.finalProject.rest.user.model.User;
@@ -30,13 +30,14 @@ public class SecurityUtil {
           }
           final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
           if (authentication == null) {
-               throw new RestApiException(UserStatusCode.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+               throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           }
           
           if (authentication.getPrincipal() instanceof UserDetails) {
                UserDetailsImpl springSecurityUser = (UserDetailsImpl) authentication.getPrincipal();
                return springSecurityUser.getUser();
           }else {
+//               throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
                return null;
           }
      }

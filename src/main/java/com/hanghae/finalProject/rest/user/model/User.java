@@ -16,7 +16,7 @@ public class User {
      @GeneratedValue (strategy = GenerationType.IDENTITY)
      private Long id;
      
-     @Column (nullable = false, unique = true)
+     @Column (nullable = false, unique = true,columnDefinition = "VARCHAR(10)")
      private String username;
      
      @Column(nullable = false)
@@ -33,7 +33,14 @@ public class User {
      
      @Column(nullable = true, unique = true)
      private String kakaoId;
-     
+
+     public User(String username, String password, String email) {
+          this.username = username;
+          this.password = password;
+          this.email = email;
+     }
+
+
      // 추가 필요
      
 }
