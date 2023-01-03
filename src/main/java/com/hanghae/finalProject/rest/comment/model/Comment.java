@@ -1,6 +1,7 @@
 package com.hanghae.finalProject.rest.comment.model;
 
 import com.hanghae.finalProject.config.model.Timestamped;
+import com.hanghae.finalProject.rest.comment.dto.CommentRequestDto;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.Getter;
@@ -31,4 +32,10 @@ public class Comment extends Timestamped {
 
      @Column
      private boolean deleted = Boolean.FALSE;
+
+     public Comment(CommentRequestDto commentRequestDto,Meeting meeting, User user) {
+          this.comment = commentRequestDto.getComment();
+          this.meeting = meeting;
+          this.user = user;
+     }
 }
