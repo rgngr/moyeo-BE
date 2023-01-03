@@ -31,7 +31,7 @@ public class Comment extends Timestamped {
      private String comment;
 
      @Column
-     private boolean deleted = Boolean.FALSE;
+     private boolean deleted;
 
      public Comment(CommentRequestDto commentRequestDto,Meeting meeting, User user) {
           this.comment = commentRequestDto.getComment();

@@ -7,37 +7,42 @@ import com.hanghae.finalProject.rest.comment.dto.CommentResponseDto;
 import com.hanghae.finalProject.rest.comment.model.Comment;
 import com.hanghae.finalProject.rest.comment.repository.CommentRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
+import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
-
-    // 포스트 레포지토리 추가 필요
+    private final MeetingRepository meetingRepository;
 
     // 댓글 조회
-    @Transactional
-    public List<Comment> getCommentList(Long postId) {
-        List<Comment> commentList = commentRepository.findByMeetingIdOrderByCreatedAtDesc(postId);
+    @Transactional(readOnly = true)
+    public List<CommentResponseDto> getCommentList(Long meetingId) {
+        List<CommentResponseDto> commentList = new ArrayList<>();
+        List<Comment> comments = commentRepository.findByMeetingIdOrderByCreatedAtDesc(meetingId);
+        for (Comment comment : comments) {
+            commentList.add(new CommentResponseDto(comment));
+        }
         return commentList;
     }
 
     // 댓글 작성
     @Transactional
-    public CommentResponseDto createComment(Long postId, CommentRequestDto commentRequestDto) {
+    public CommentResponseDto createComment(Long meetingId, CommentRequestDto commentRequestDto) {
 
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
-        Meeting meeting = postRepository.findByIdAndDeletedIsFalse(postId).orElseThrow(
-                () -> new RestApiException(Code.NO_ARTICLE)
+        Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
+                () -> new RestApiException(Code.NO_MEETING)
         );
+
         Comment comment = commentRepository.save(new Comment(commentRequestDto, meeting, user));
 
         return new CommentResponseDto(comment);

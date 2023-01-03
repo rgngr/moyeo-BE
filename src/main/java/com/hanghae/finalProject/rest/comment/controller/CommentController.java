@@ -19,15 +19,15 @@ public class CommentController {
 
     @Operation(summary = "댓글 조회")
     @GetMapping("/comments")
-    public ResponseDto getCommentList(@PathVariable Long postId) {
-        return DataResponseDto.of(commentService.getCommentList(postId));
+    public ResponseDto getCommentList(@PathVariable Long meetingId) {
+        return DataResponseDto.of(commentService.getCommentList(meetingId));
     }
 
     @Operation(summary = "댓글 작성")
     @PostMapping("/comments")
-    public ResponseDto createComment(@PathVariable Long postId,
+    public ResponseDto createComment(@PathVariable Long meetingId,
                                      @RequestBody CommentRequestDto commentRequestDto) {
-        return DataResponseDto.of(commentService.createComment(postId, commentRequestDto), Code.CREATE_COMMENT.getStatusMsg());
+        return DataResponseDto.of(commentService.createComment(meetingId, commentRequestDto), Code.CREATE_COMMENT.getStatusMsg());
     }
 
     @Operation(summary = "댓글 삭제")
