@@ -39,6 +39,10 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '11'
+        
+    # Error Gradle Script ‘/Home/Runner/Work/*/Gradlew’ Is Not Executable 에러 해결가능?
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
 
     # (3) Gradle build (Test 제외)
     # GRADLE사용, 
