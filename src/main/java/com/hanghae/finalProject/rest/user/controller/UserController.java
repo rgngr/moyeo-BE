@@ -1,19 +1,18 @@
 package com.hanghae.finalProject.rest.user.controller;
 
+
+import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
-import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.rest.user.dto.LoginRequestDto;
 import com.hanghae.finalProject.rest.user.dto.SignupRequestDto;
 import com.hanghae.finalProject.rest.user.repository.UserRepository;
+import com.hanghae.finalProject.rest.user.service.KakaoService;
 import com.hanghae.finalProject.rest.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -23,11 +22,12 @@ import javax.validation.Valid;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
-
+    
     private final UserRepository userRepository;
     private final UserService userService;
-
-    @Operation(summary = "회원가입", description = "email, username, password 로 회원가입 ")
+    private final KakaoService kakaoService;
+    
+    @Operation (summary = "회원가입", description = "email, username, password 로 회원가입 ")
     @PostMapping("/signup")
     public ResponseDto signup(@RequestBody @Valid SignupRequestDto requestDto) {
         userService.signUp(requestDto);
@@ -56,6 +56,14 @@ public class UserController {
 //          // 3. DATA X, MSG 따로
 //          return ResponseDto.of(true, Code.USER_SIGNUP_SUCCESS);
 //     }
+    
+    //https://kauth.kakao.com/oauth/authorize?client_id=ced49bfdb65f5f152e2e43f12e88bd86&redirect_uri=https://sparta-hippo.shop/api/user/kakao/callback&response_type=code
+    //https://kauth.kakao.com/oauth/authorize?client_id=ced49bfdb65f5f152e2e43f12e88bd86&redirect_uri=http://localhost:8080/api/user/kakao/callback&response_type=code
+    @Operation(summary = "카카오 로그인 콜백", description = "email, password 로 로그인")
+    @GetMapping ("/kakao/callback")
+    public ResponseDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        return DataResponseDto.of(kakaoService.kakaoLogin(code, response), Code.USER_LOGIN_SUCCESS.getStatusMsg());
+    }
 
 
 }
