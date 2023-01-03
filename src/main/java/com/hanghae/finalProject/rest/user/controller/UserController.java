@@ -43,10 +43,6 @@ public class UserController {
 
         return DataResponseDto.of( userService.login(RequestDto, response), Code.USER_LOGIN_SUCCESS.getStatusMsg());
     }
-//     @PostMapping ("/login")
-//     public ResponseEntity<PrivateResponseBody> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-//          return new ResponseEntity<>(new PrivateResponseBody(UserStatusCode.USER_LOGIN_SUCCESS, userService.login(loginRequestDto, response)), HttpStatus.OK);
-//     }
 
 //     public ResponseDto signup(@RequestBody @Valid SignupRequestDto requestDto) {
 //          userService.signUp(requestDto);
