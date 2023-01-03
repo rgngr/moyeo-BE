@@ -44,8 +44,6 @@ public class UserController {
         return DataResponseDto.of( userService.login(RequestDto, response), Code.USER_LOGIN_SUCCESS.getStatusMsg());
     }
 
-//     public ResponseDto signup(@RequestBody @Valid SignupRequestDto requestDto) {
-//          userService.signUp(requestDto);
 //          // 1. data o , msg o
 ////          return DataResponseDto.of("data test", "test 성공"); //data있고 별도 msg보낼 경우
 //          // 2. data o msg 정상
