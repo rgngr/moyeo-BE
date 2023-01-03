@@ -1,20 +1,18 @@
 package com.hanghae.finalProject.rest.user.controller;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
-import com.hanghae.finalProject.config.errorcode.Code;
-import com.hanghae.finalProject.rest.user.dto.KakaoLoginResponseDto;
+import com.hanghae.finalProject.rest.user.dto.LoginRequestDto;
 import com.hanghae.finalProject.rest.user.dto.SignupRequestDto;
 import com.hanghae.finalProject.rest.user.repository.UserRepository;
 import com.hanghae.finalProject.rest.user.service.KakaoService;
 import com.hanghae.finalProject.rest.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +37,12 @@ public class UserController {
         return ResponseDto.of(true, Code.USER_SIGNUP_SUCCESS);
     }
 
+    @Operation(summary = "로그인", description = "email, password 로 로그인 ")
+    @PostMapping("/login")
+    public ResponseDto login(@RequestBody @Valid LoginRequestDto RequestDto, HttpServletResponse response) {
+
+        return DataResponseDto.of( userService.login(RequestDto, response), Code.USER_LOGIN_SUCCESS.getStatusMsg());
+    }
 //     @PostMapping ("/login")
 //     public ResponseEntity<PrivateResponseBody> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
 //          return new ResponseEntity<>(new PrivateResponseBody(UserStatusCode.USER_LOGIN_SUCCESS, userService.login(loginRequestDto, response)), HttpStatus.OK);
