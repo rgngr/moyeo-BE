@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 public class Attendant {
+
      @Id
      @GeneratedValue (strategy = GenerationType.IDENTITY)
      private Long id;
@@ -22,5 +23,12 @@ public class Attendant {
      @ManyToOne (fetch = FetchType.LAZY)
      @JoinColumn(name ="user_id")
      private User user; // 모임생성자
+
+     @Column
+     private boolean attend;
+
+     @Column
+     private boolean opinion;
+
      
 }
