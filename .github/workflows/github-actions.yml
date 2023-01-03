@@ -1,0 +1,36 @@
+# 수정중..
+# github repository Actions 페이지에 나타낼 이름
+name: Java CI with Gradle
+# event trigger
+on:
+  push:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    ## jdk setting
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'  # https://github.com/actions/setup-java
+         
+    ## gradle caching
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: build
+    #1
+    # application.properties는 외부에 노출되면 안되므로 Actions가 빌드될때마다 해당 Repository의 Secret 설정을
+    # 이용하여서 설정 파일을 생성해줌 (github에 commit 되는게 아님!)
+    - run : touch ./src/main/resources/application.properties
+    - run : echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+    - run : cat ./src/main/resources/application.properties
