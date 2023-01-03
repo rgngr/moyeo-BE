@@ -1,5 +1,5 @@
 package com.hanghae.finalProject.rest.comment.service;
-import com.hanghae.finalProject.config.errorcode.Code;
+import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.comment.dto.CommentRequestDto;
