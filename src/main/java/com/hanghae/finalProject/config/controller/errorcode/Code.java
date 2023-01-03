@@ -1,7 +1,6 @@
-package com.hanghae.finalProject.config.errorcode;
+package com.hanghae.finalProject.config.controller.errorcode;
 
 import com.hanghae.finalProject.config.exception.RestApiException;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
