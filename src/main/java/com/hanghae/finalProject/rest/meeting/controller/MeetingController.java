@@ -1,8 +1,8 @@
 package com.hanghae.finalProject.rest.meeting.controller;
 
+import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
-import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingLinkRequestDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingRequestDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingUpdateRequestDto;
@@ -30,16 +30,19 @@ public class MeetingController {
 
     @PatchMapping("/meetings/{id}")
     public ResponseDto updateAllMeeting(@PathVariable Long id, @RequestBody @Valid MeetingUpdateRequestDto requestDto) {
+        meetingService.updateAllMeeting(id,requestDto);
         return ResponseDto.of(true, Code.UPDATE_MEETING);
     }
 
     @PatchMapping("/meetings/{id}/link")
     public ResponseDto updateLink(@PathVariable Long id, @RequestBody @Valid MeetingLinkRequestDto requestDto) {
+        meetingService.updateLink(id, requestDto);
         return ResponseDto.of(true, Code.UPDATE_LINK);
     }
 
     @DeleteMapping("/meetings/{id}")
     public ResponseDto deleteMeeting(@PathVariable Long id) {
+        meetingService.deleteMeeting(id);
         return ResponseDto.of(true, Code.DELETE_MEETING);
     }
 

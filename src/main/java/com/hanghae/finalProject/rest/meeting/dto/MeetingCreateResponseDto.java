@@ -23,10 +23,10 @@ public class MeetingCreateResponseDto {
     private String link;
     private boolean secret;
     private String password;
-    private Long likeNum;
-    private Long hateNum;
+    private int likeNum;
+    private int hateNum;
 
-    public MeetingCreateResponseDto(Meeting meeting, boolean isMaster, Long likeNum, Long hateNum) {
+    public MeetingCreateResponseDto(Meeting meeting, boolean isMaster, int likeNum, int hateNum) {
         this.id = meeting.getId();
         this.masterId = meeting.getUser().getId();
         this.isMaster = isMaster;

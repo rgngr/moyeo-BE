@@ -1,6 +1,6 @@
 package com.hanghae.finalProject.rest.meeting.service;
 
-import com.hanghae.finalProject.config.errorcode.Code;
+import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
@@ -40,13 +40,16 @@ public class MeetingService {
             isMaster = true;
         }
 
-        Calendar calendar = calendarRepository.findByMeetingIdAndUser(id, user).orElse(null);
-        boolean isAttend = calendar.isAttend();
+//        Calendar calendar = calendarRepository.findByMeetingIdAndUser(id, user).orElse(null);
+        boolean isAttend = false;
+//                calendar.isAttend();
 
         boolean isAlarm = alarmRepository.existsByMeetingIdAndUser(id, user);
 
-        Long likeNum = reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
-        Long hateNum = reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
+        int likeNum = 0;
+//                reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
+        int hateNum = 0;
+//                reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
 
         return new MeetingDetailResponseDto(meeting, isMaster, isAttend, isAlarm, likeNum, hateNum);
 
@@ -63,8 +66,10 @@ public class MeetingService {
             isMaster = true;
         }
 
-        Long likeNum = reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
-        Long hateNum = reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
+        int likeNum = 0;
+//                reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
+        int hateNum = 0;
+//                reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
 
         return new MeetingCreateResponseDto(meeting, isMaster, likeNum, hateNum);
     }

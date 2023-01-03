@@ -23,11 +23,11 @@ public class MeetingDetailResponseDto {
     private String password;
     private boolean attend;
     private boolean alarm;
-    private Long likeNum;
-    private Long hateNum;
+    private int likeNum;
+    private int hateNum;
 
     public MeetingDetailResponseDto(Meeting meeting, boolean isMaster,
-        boolean isAttend, boolean isAlarm, Long likeNum, Long hateNum) {
+        boolean isAttend, boolean isAlarm, int likeNum, int hateNum) {
             this.id = meeting.getId();
             this.masterId = meeting.getUser().getId();
             this.isMaster = isMaster;
