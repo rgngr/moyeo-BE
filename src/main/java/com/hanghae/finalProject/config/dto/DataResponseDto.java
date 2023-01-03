@@ -22,6 +22,11 @@ public class DataResponseDto<T> extends ResponseDto {
           this.data = data;
      }
      
+     private DataResponseDto(T data, Code code) {
+          super(true, code.getStatusCode().value(), code.getStatusMsg());
+          this.data = data;
+     }
+     
      public static <T> DataResponseDto<T> of(T data) {
           return new DataResponseDto<>(data);
      }
