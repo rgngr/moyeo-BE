@@ -1,10 +1,11 @@
 package com.hanghae.finalProject.rest.user.service;
 
 
-import com.hanghae.finalProject.config.errorcode.Code;
+import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.jwt.JwtUtil;
 import com.hanghae.finalProject.rest.user.dto.LoginRequestDto;
+import com.hanghae.finalProject.rest.user.dto.LoginResponseDto;
 import com.hanghae.finalProject.rest.user.dto.SignupRequestDto;
 import com.hanghae.finalProject.rest.user.model.User;
 import com.hanghae.finalProject.rest.user.repository.UserRepository;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,6 @@ public class UserService {
 
      @Transactional
      public void signUp(SignupRequestDto requestDto) {
-
           String username = requestDto.getUsername();
           String email = requestDto.getEmail();
           String password = passwordEncoder.encode(requestDto.getPassword());
@@ -41,6 +40,24 @@ public class UserService {
 
           userRepository.save(new User(username, password, email));
 
+     }
+
+     @Transactional(readOnly = true)
+     public LoginResponseDto login(LoginRequestDto RequestDto, HttpServletResponse response){
+          String email = RequestDto.getEmail();
+          String password = RequestDto.getPassword();
+
+          User user = userRepository.findByKakaoIdIsNullAndEmail(email).orElseThrow(
+                  () -> new RestApiException(Code.NO_USER)
+          );
+
+          if (!passwordEncoder.matches(password,user.getPassword())){
+               throw new RestApiException(Code.WRONG_PASSWORD);
+          }
+
+          response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
+
+          return new LoginResponseDto(user);
      }
 }
      
