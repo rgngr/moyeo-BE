@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.config.controller.errorcode;
+package com.hanghae.finalProject.config.errorcode;
 
 import com.hanghae.finalProject.config.exception.RestApiException;
 import lombok.Getter;
@@ -20,6 +20,7 @@ public enum Code {
      POST_LIKE( "좋아요", HttpStatus.OK),
      POST_LIKE_CANCEL( "좋아요취소", HttpStatus.OK),
      DELETE_COMMENT( "댓글 삭제 성공", HttpStatus.OK),
+     DELETED_COMMENT( "삭제된 댓글입니다.", HttpStatus.OK),
      CREATE_COMMENT( "댓글 작성 성공", HttpStatus.OK),
      UPDATE_COMMENT( "댓글 수정 성공", HttpStatus.OK),
      CREATE_MEETING( "모임 글 작성 성공", HttpStatus.OK),
@@ -33,6 +34,7 @@ public enum Code {
      NO_MEETING("모임 글이 존재하지 않습니다", HttpStatus.NOT_FOUND),
      NO_COMMENT("댓글이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
      INVALID_USER("작성자만 삭제/수정할 수 있습니다.", HttpStatus.BAD_REQUEST),
+     INVALID_USER_DELETE("작성자만 삭제할 수 있습니다.", HttpStatus.BAD_REQUEST),
      DELETE_USER( "회원 탈퇴 성공", HttpStatus.OK),
      NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT("Security Context에 인증 정보가 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
      USER_SIGNUP_SUCCESS("회원가입 성공", HttpStatus.OK),
@@ -49,7 +51,7 @@ public enum Code {
      OVERLAPPED_NICKNAME("중복된 닉네임 입니다.", HttpStatus.BAD_REQUEST),
      OVERLAPPED_EMAIL("중복된 email 입니다",HttpStatus.BAD_REQUEST),
      PASSWORD_CHECK("입력된 비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST),
-     임시이넘객체("임시객체입니다", HttpStatus.BAD_REQUEST),
+     NO_SUCH_CATEGORY("존재하지 않는 카테고리입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
      
      private final String StatusMsg;

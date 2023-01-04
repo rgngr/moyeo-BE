@@ -1,7 +1,7 @@
 package com.hanghae.finalProject.config.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
@@ -19,6 +19,11 @@ public class DataResponseDto<T> extends ResponseDto {
      
      private DataResponseDto(T data, String message) {
           super(true, Code.OK.getStatusCode().value(), message);
+          this.data = data;
+     }
+     
+     private DataResponseDto(T data, Code code) {
+          super(true, code.getStatusCode().value(), code.getStatusMsg());
           this.data = data;
      }
      
