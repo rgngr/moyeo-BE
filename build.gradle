@@ -51,12 +51,19 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 
+
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
 
 
 
 	//implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+
+}
+//빌드 시 plain jar 파일은 만들어지지 않도록
+jar {
+	enabled = false
 
 }
 

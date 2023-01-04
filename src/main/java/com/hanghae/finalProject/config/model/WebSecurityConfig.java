@@ -44,6 +44,10 @@ public class WebSecurityConfig {
                .antMatchers(HttpMethod.POST, "/api/login/mailConfirm/**").permitAll()
 //               .antMatchers(HttpMethod.GET, "/api/posts/{\\d+}").permitAll()
 //               .antMatchers(HttpMethod.GET, "/api/posts").permitAll()
+
+               .antMatchers(HttpMethod.GET, "/api/posts/{\\d+}").permitAll()
+               .antMatchers(HttpMethod.GET, "/api/posts").permitAll()
+
                .antMatchers( "/api/**").permitAll() // TODO : 임시
                .antMatchers("/api/doc").permitAll()
                .antMatchers("/swagger-ui/**").permitAll() //스웨거 권한설정 X
