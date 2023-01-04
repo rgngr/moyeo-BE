@@ -1,7 +1,7 @@
 package com.hanghae.finalProject.config.handler;
 
 import com.hanghae.finalProject.config.dto.ErrorResponseDto;
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
