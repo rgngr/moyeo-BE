@@ -142,9 +142,8 @@ public class MeetingService {
           // + 카테고리 적용버전
           // 무한스크롤 적용
           // 참석 기능 구현 후 참석여부 추가필요
-          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAll()
+          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllByOrderByIdDesc()
                .stream()
-               .filter(Objects::nonNull)
                .map(m -> {
                     MeetingListResponseDto.ResponseDto responseDto = new MeetingListResponseDto.ResponseDto(m);
                     responseDto.setIsMaster((user.getId() == m.getUser().getId())? true : false);
