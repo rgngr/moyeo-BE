@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.config;
+package com.hanghae.finalProject.config.model;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;
