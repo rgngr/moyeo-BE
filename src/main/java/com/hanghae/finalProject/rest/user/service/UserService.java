@@ -1,20 +1,22 @@
 package com.hanghae.finalProject.rest.user.service;
 
 
+import com.hanghae.finalProject.config.S3.S3Uploader;
 import com.hanghae.finalProject.config.controller.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.jwt.JwtUtil;
-import com.hanghae.finalProject.rest.user.dto.LoginRequestDto;
-import com.hanghae.finalProject.rest.user.dto.LoginResponseDto;
-import com.hanghae.finalProject.rest.user.dto.SignupRequestDto;
+import com.hanghae.finalProject.config.util.SecurityUtil;
+import com.hanghae.finalProject.rest.user.dto.*;
 import com.hanghae.finalProject.rest.user.model.User;
 import com.hanghae.finalProject.rest.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,8 @@ public class UserService {
      private final JwtUtil jwtUtil;
 
      private final PasswordEncoder passwordEncoder;
+
+     private final S3Uploader s3Uploader;
 
      @Transactional
      public void signUp(SignupRequestDto requestDto) {
@@ -59,6 +63,23 @@ public class UserService {
 
           return new LoginResponseDto(user);
      }
+
+     @Transactional
+     public ProfileResponseDto updateProfile(MultipartFile file) throws IOException {
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          if(!file.isEmpty()) {
+               String profileUrl = s3Uploader.upload(file,"file");
+               user.updateProfile(profileUrl);
+          } else {
+               throw new RestApiException(Code.NO_IMAGE);
+          }
+
+          return new ProfileResponseDto(user);
+
+     }
+
 }
      
      // jwt token 에서 user정보뽑기 set

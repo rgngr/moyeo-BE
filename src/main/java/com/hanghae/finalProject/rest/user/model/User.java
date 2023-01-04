@@ -61,4 +61,8 @@ public class User implements Supplier<User> {
      public User get() {
           return null;
      }
+
+     public void updateProfile(String profileUrl) {
+          this.profileUrl = profileUrl;
+     }
 }

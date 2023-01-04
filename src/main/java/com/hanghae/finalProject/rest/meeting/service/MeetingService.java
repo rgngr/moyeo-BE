@@ -26,6 +26,7 @@ public class MeetingService {
     @Transactional
     public MeetingDetailResponseDto getMeeting(Long id) {
         User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         Meeting meeting = meetingRepository.findById(id).orElseThrow(
                 () -> new RestApiException(Code.NO_MEETING)
@@ -58,6 +59,7 @@ public class MeetingService {
     @Transactional
     public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
         User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user));
 
@@ -77,6 +79,7 @@ public class MeetingService {
     @Transactional
     public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) {
         User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         Meeting meeting = meetingRepository.findById(id).orElseThrow(
                 () -> new RestApiException(Code.NO_MEETING)
@@ -96,6 +99,7 @@ public class MeetingService {
     @Transactional
     public void updateLink(Long id, MeetingLinkRequestDto requestDto) {
         User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         Meeting meeting = meetingRepository.findById(id).orElseThrow(
                 () -> new RestApiException(Code.NO_MEETING)
@@ -115,6 +119,7 @@ public class MeetingService {
     @Transactional
     public void deleteMeeting(Long id) {
         User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         Meeting meeting = meetingRepository.findById(id).orElseThrow(
                 () -> new RestApiException(Code.NO_MEETING)
