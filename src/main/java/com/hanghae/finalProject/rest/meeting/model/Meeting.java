@@ -28,7 +28,7 @@ public class Meeting extends Timestamped {
      private String title;
 
      @Column(nullable = false)
-     private String category;
+     private CategoryCode category;
 
      @Column(nullable = false)
      private LocalDateTime startDate;

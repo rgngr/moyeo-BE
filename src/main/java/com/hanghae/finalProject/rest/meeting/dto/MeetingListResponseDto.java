@@ -1,6 +1,7 @@
 package com.hanghae.finalProject.rest.meeting.dto;
 
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
+import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class MeetingListResponseDto {
          private Long masterId;
          private boolean isMaster;
          private String title;
-         private String category;
+         private CategoryCode category;
          private LocalDateTime startDate;
          private LocalDateTime startTime;
          private int duration;
