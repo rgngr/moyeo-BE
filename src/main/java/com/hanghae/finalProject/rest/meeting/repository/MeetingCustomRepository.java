@@ -8,5 +8,5 @@ public interface MeetingCustomRepository {
      
      // http://jojoldu.tistory.com/528 무한스크롤
      
-     List<Meeting> findAllByOrderByIdDesc();
+     List<Meeting> findAllByOrderByIdDesc(Long meetingIdx);
 }

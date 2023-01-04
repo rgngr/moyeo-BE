@@ -19,7 +19,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository{
      }
      
      @Override
-     public List<Meeting> findAllByOrderByIdDesc() {
+     public List<Meeting> findAllByOrderByIdDesc(Long meetingIdx) {
           return jpaQueryFactory
                .selectFrom(meeting)
                .orderBy(meeting.id.desc())
