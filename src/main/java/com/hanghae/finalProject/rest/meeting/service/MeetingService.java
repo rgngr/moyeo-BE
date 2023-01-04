@@ -132,6 +132,15 @@ public class MeetingService {
         }
 
     }
+    
+    @Transactional(readOnly = true)
+    public MeetingListResponseDto getMeetings(int sortBy, String category) {
+        User user = SecurityUtil.getCurrentUser(); // 비회원일경우(토큰못받았을경우) null
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+        
+        
+        return null;
+    }
 
 //     @Transactional
 //     public PostResponseDto.createResponse createPost(PostRequestDto postRequestDto) {
