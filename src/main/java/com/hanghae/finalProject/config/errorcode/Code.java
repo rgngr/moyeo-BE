@@ -19,6 +19,7 @@ public enum Code {
      POST_LIKE( "좋아요", HttpStatus.OK),
      POST_LIKE_CANCEL( "좋아요취소", HttpStatus.OK),
      DELETE_COMMENT( "댓글 삭제 성공", HttpStatus.OK),
+     DELETED_COMMENT( "삭제된 댓글입니다.", HttpStatus.OK),
      CREATE_COMMENT( "댓글 작성 성공", HttpStatus.OK),
      UPDATE_COMMENT( "댓글 수정 성공", HttpStatus.OK),
      CREATE_MEETING( "모임 글 작성 성공", HttpStatus.OK),
