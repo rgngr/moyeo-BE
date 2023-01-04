@@ -63,6 +63,6 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
-        return Code.DELETE_COMMENT;
+        return Code.DELETED_COMMENT;
     }
 }
