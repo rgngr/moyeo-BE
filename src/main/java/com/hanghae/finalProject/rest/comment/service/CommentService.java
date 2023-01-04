@@ -25,7 +25,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getCommentList(Long meetingId) {
         List<CommentResponseDto> commentList = new ArrayList<>();
-        List<Comment> comments = commentRepository.findByMeetingIdOrderByCreatedAtDesc(meetingId);
+        List<Comment> comments = commentRepository.findByMeetingIdOrderByCreatedAtAsc(meetingId);
         for (Comment comment : comments) {
             commentList.add(new CommentResponseDto(comment));
         }
