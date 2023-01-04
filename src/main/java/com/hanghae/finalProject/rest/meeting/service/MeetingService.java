@@ -58,7 +58,8 @@ public class MeetingService {
     @Transactional
     public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
         User user = SecurityUtil.getCurrentUser();
-
+        // user null일 경우 에러처리 추가 필요
+        
         Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user));
 
         boolean isMaster = false;
