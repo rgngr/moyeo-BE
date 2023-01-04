@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.config.controller.errorcode;
+package com.hanghae.finalProject.config.errorcode;
 
 import com.hanghae.finalProject.config.exception.RestApiException;
 import lombok.Getter;
@@ -48,7 +48,7 @@ public enum Code {
      OVERLAPPED_NICKNAME("중복된 닉네임 입니다.", HttpStatus.BAD_REQUEST),
      OVERLAPPED_EMAIL("중복된 email 입니다",HttpStatus.BAD_REQUEST),
      PASSWORD_CHECK("입력된 비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST),
-     임시이넘객체("임시객체입니다", HttpStatus.BAD_REQUEST),
+     NO_SUCH_CATEGORY("존재하지 않는 카테고리입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
      
      private final String StatusMsg;
