@@ -2,8 +2,10 @@ package com.hanghae.finalProject.rest.meeting.model;
 
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum CategoryCode {
      술먹자("술먹자"),
