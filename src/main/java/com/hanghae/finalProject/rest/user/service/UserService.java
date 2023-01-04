@@ -69,14 +69,26 @@ public class UserService {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
+          String currentProfileUrl = user.getProfileUrl();
+
           if(!file.isEmpty()) {
                String profileUrl = s3Uploader.upload(file,"file");
                user.updateProfile(profileUrl);
-          } else {
-               throw new RestApiException(Code.NO_IMAGE);
-          }
+               userRepository.saveAndFlush(user);
 
-          return new ProfileResponseDto(user);
+               return new ProfileResponseDto(user);
+
+          } else {
+               if(currentProfileUrl != null) {
+                    s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
+
+                    user.deleteProfileUrl();
+                    return new ProfileResponseDto(user);
+               } else {
+                    throw new RestApiException(Code.NO_IMAGE);
+               }
+
+          }
 
      }
 

@@ -2,6 +2,7 @@ package com.hanghae.finalProject.config.S3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,10 @@ public class S3Uploader {
                           .withCannedAcl(CannedAccessControlList.PublicRead)	// PublicRead 권한으로 업로드 됨
           );
           return amazonS3Client.getUrl(bucket, fileName).toString();
+     }
+
+     public void deleteFile(String fileName) {
+          amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
      }
 
      private void removeNewFile(File targetFile) {
