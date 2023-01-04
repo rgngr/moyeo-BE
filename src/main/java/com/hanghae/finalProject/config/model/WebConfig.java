@@ -1,7 +1,7 @@
 package com.hanghae.finalProject.config.model;
 
 import com.hanghae.finalProject.config.jwt.JwtUtil;
-import com.hanghae.finalProject.converter.CategoryCodeRequestConverter;
+import com.hanghae.finalProject.config.converter.CategoryCodeRequestConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

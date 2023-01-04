@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.converter;
+package com.hanghae.finalProject.config.converter;
 
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;

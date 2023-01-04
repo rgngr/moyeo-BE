@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.converter;
+package com.hanghae.finalProject.config.converter;
 
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import org.springframework.core.convert.converter.Converter;
