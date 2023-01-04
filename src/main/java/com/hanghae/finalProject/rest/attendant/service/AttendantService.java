@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AttendantService {
@@ -20,6 +22,7 @@ public class AttendantService {
     private final AttendantRepository attendantRepository;
     private final MeetingRepository meetingRepository;
 
+    // 모임 참석/취소
     @Transactional
     public AttendantResponseDto addAttendant(Long meetingId){
         User user = SecurityUtil.getCurrentUser();
@@ -30,9 +33,6 @@ public class AttendantService {
         );
 
         if (attendantRepository.findByMeetingIdAndUser(meetingId, user) == null) {
-//            Attendant attendant = new Attendant(meeting, user);
-//            attendantRepository.save(attendant);
-//            return new AttendantResponseDto();
             Attendant attendant = attendantRepository.save(new Attendant(meeting, user));
             return new AttendantResponseDto(attendant);
         } else {
@@ -42,4 +42,7 @@ public class AttendantService {
             return new AttendantResponseDto(attendant);
         }
     }
+
+    // 모임 참석자 리스트 조회
+
 }

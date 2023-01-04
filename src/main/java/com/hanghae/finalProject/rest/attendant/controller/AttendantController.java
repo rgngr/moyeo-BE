@@ -22,4 +22,10 @@ public class AttendantController {
     public ResponseDto addAttendant(@PathVariable Long meetingId) {
         return DataResponseDto.of(attendantService.addAttendant(meetingId));
     }
+
+//    @Operation(summary = "모임 참석자 리스트")
+//    @PostMapping("/attendants")
+//    public ResponseDto (@PathVariable Long meetingId) {
+//        return DataResponseDto.of(attendantService);
+//    }
 }

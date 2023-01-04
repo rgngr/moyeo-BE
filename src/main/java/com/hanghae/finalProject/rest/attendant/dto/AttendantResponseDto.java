@@ -1,7 +1,6 @@
 package com.hanghae.finalProject.rest.attendant.dto;
 
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
-import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
