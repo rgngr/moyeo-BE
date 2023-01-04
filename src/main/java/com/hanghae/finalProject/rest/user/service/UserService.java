@@ -2,7 +2,7 @@ package com.hanghae.finalProject.rest.user.service;
 
 
 import com.hanghae.finalProject.config.S3.S3Uploader;
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.jwt.JwtUtil;
 import com.hanghae.finalProject.config.util.SecurityUtil;
