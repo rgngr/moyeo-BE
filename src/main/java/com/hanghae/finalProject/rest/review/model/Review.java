@@ -23,5 +23,6 @@ public class Review {
      @JoinColumn(name ="user_id")
      private User user; // 모임생성자
 
-     private boolean like;
+     @Column(nullable = false)
+     private boolean review;
 }
