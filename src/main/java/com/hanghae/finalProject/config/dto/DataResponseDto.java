@@ -1,7 +1,7 @@
 package com.hanghae.finalProject.config.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 

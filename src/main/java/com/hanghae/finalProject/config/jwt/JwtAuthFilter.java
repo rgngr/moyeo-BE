@@ -2,7 +2,7 @@ package com.hanghae.finalProject.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.finalProject.config.dto.ErrorResponseDto;
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
