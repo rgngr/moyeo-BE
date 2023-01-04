@@ -1,12 +1,12 @@
 package com.hanghae.finalProject.rest.meeting.service;
 
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
-import com.hanghae.finalProject.rest.calendar.model.Calendar;
 import com.hanghae.finalProject.rest.calendar.repository.CalendarRepository;
 import com.hanghae.finalProject.rest.meeting.dto.*;
+import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
@@ -133,10 +133,12 @@ public class MeetingService {
 
     }
     
+    // 모임 전체리스트 불러오기
     @Transactional(readOnly = true)
-    public MeetingListResponseDto getMeetings(int sortBy, String category) {
+    public MeetingListResponseDto getMeetings(int sortBy, CategoryCode category, int meetingIdx) {
         User user = SecurityUtil.getCurrentUser(); // 비회원일경우(토큰못받았을경우) null
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+        // category enum으로 받아지는가 확인필요
         
         
         return null;

@@ -2,7 +2,7 @@ package com.hanghae.finalProject.rest.user.controller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
 import com.hanghae.finalProject.rest.user.dto.LoginRequestDto;

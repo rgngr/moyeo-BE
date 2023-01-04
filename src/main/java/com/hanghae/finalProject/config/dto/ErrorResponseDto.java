@@ -1,6 +1,6 @@
 package com.hanghae.finalProject.config.dto;
 
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import lombok.Getter;
 
 @Getter
