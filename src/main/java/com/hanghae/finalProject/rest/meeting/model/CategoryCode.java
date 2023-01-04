@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CategoryCode {
+     공부하자("공부하자"),
+     수다떨자("수다떨자"),
+     게임하자("게임하자"),
      술먹자("술먹자"),
      밥먹자("밥먹자");
      
