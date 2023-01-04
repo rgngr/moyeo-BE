@@ -26,6 +26,8 @@ public enum Code {
      UPDATE_MEETING( "모임 글 수정 성공", HttpStatus.OK),
      UPDATE_LINK( "모임 링크 추가 성공", HttpStatus.OK),
      DELETE_MEETING( "모임 글 삭제 성공", HttpStatus.OK),
+     CREATE_ATTENDANT("모임 참석 성공", HttpStatus.OK),
+     DELETE_ATTENDANT("모임 참석 취소", HttpStatus.OK),
      INVALID_PARAMETER("Invalid parameter included",HttpStatus.BAD_REQUEST),
      INTERNAL_SERVER_ERROR("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
      BAD_REQUEST("Bad request",HttpStatus.BAD_REQUEST),
