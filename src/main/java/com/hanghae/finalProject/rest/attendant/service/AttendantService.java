@@ -4,6 +4,7 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
+import com.hanghae.finalProject.rest.attendant.dto.AttendantListResponseDto;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,5 +46,13 @@ public class AttendantService {
     }
 
     // 모임 참석자 리스트 조회
-
+    @Transactional(readOnly = true)
+    public List<AttendantListResponseDto> getAttendantList(Long meetingId) {
+        List<AttendantListResponseDto> attendantList = new ArrayList<>();
+        List<Attendant> attendants = attendantRepository.findByMeetingId(meetingId);
+        for (Attendant attendant : attendants) {
+            attendantList.add(new AttendantListResponseDto(attendant));
+        }
+        return attendantList;
+    }
 }

@@ -23,9 +23,9 @@ public class AttendantController {
         return DataResponseDto.of(attendantService.addAttendant(meetingId));
     }
 
-//    @Operation(summary = "모임 참석자 리스트")
-//    @PostMapping("/attendants")
-//    public ResponseDto (@PathVariable Long meetingId) {
-//        return DataResponseDto.of(attendantService);
-//    }
+    @Operation(summary = "모임 참석자 리스트")
+    @GetMapping("/attendants")
+    public ResponseDto getAttendantList (@PathVariable Long meetingId) {
+        return DataResponseDto.of(attendantService.getAttendantList(meetingId));
+    }
 }
