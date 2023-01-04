@@ -48,7 +48,7 @@ jobs:
     # GRADLE사용, 
     # GRADLE CLEAN BUILD를 수행함. -x test : test디렉터리를 제외한다는 것
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@v3
+      uses: gradle/gradle-build-action@v3   # 여기 @뒤에가 다른건가
       with:
         arguments: clean build -x test
         build-root-directory: finalProject_BE/
