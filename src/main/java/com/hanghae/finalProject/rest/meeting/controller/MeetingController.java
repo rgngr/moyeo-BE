@@ -1,17 +1,23 @@
 package com.hanghae.finalProject.rest.meeting.controller;
 
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingLinkRequestDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingRequestDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingUpdateRequestDto;
+import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.service.MeetingService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -28,16 +34,18 @@ public class MeetingController {
     @ApiOperation (value = "모임 전체 조회")
     @GetMapping("/meetings")
     public ResponseDto getMeetings(
-         @RequestParam(value="sortby", defaultValue = "popular") int sortBy,
-         @RequestParam(value="category", required = false) String category,
-         @RequestParam(value="meetingId", required = false, defaultValue = "5") int mee
-    ) {
+         @RequestParam(value="sortby", defaultValue = "popular", required = false) String sortBy,
+         @RequestParam(value="category", required = false) CategoryCode category,
+         @RequestParam(value="meetingId", required = false) Integer meetingId
+    ){
         // 1. 인기순, 카테고리 없는버전 - 우선이거 (+ 무한스크롤)
             // 1.1 카테고리 있는버전
         // 2. 신규순, 카테고리 없는버전
             // 2.1 카테고리 있는버전
         // 무한스크롤 적용필요
-        return DataResponseDto.of(meetingService.getMeetings(sortBy, category));
+        log.info("category : {}", category);
+//        return DataResponseDto.of(meetingService.getMeetings(sortBy, CategoryCode.of(category), meetingId));
+        return null;
     }
     
     @ApiOperation (value = "모임 생성")
