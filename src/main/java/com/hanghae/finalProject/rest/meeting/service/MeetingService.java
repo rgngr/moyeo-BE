@@ -144,7 +144,13 @@ public class MeetingService {
                .peek(m -> {
                          // master 처리 ,attendantsNum 처리,
                          m.setMaster(m.getMasterId().equals(user.getId()));
-                         m.setAttendantsNum(m.getAttendantsList().size());
+                         if (m.getAttendantsList().size() == 1 && m.getAttendantsList().get(0).getUserId() == null) {
+                              // getAttendantsList 안에 null인 경우도 넘어와서 객체 생겨버림
+                              m.setAttendantsList(null);
+                              m.setAttendantsNum(0);
+                         } else {
+                              m.setAttendantsNum(m.getAttendantsList().size());
+                         }
                     }
                )
                .collect(Collectors.toList()));
@@ -158,11 +164,15 @@ public class MeetingService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           
           MeetingListResponseDto response = new MeetingListResponseDto();
-          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllBySearchAndCategory3(search, category, meetingId).stream()
+          response.addMeetingList(meetingRepository.findAllBySearchAndCategory(search, category, meetingId)
+               .stream()
                // meeting 작성자의 id와 로그인 유저의 아이디 비교
-               .map(m -> new MeetingListResponseDto.ResponseDto(m, user.getId()))
-               .collect(Collectors.toList());
-          response.addMeetingList(responseDtoList);
+               .peek(m -> {
+                    // master 처리 ,attendantsNum 처리,
+                    m.setMaster(m.getMasterId().equals(user.getId()));
+                    m.setAttendantsNum(m.getAttendantsList().size());
+               })
+               .collect(Collectors.toList()));
           return response;
           
      }

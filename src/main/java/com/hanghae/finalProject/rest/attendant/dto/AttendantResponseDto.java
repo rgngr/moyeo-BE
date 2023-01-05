@@ -1,5 +1,6 @@
 package com.hanghae.finalProject.rest.attendant.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,16 +18,15 @@ public class AttendantResponseDto {
 
      private Long userId;
 
-     private boolean attend; // entrance 로 수정필요
+     private boolean entrance;
 
      private boolean review;
-     private String userProfileImg; // 지우기
 
      public AttendantResponseDto(Attendant attendant) {
          this.attendantId = attendant.getId();
          this.meetingId = attendant.getMeeting().getId();
          this.userId = attendant.getUser().getId();
-         this.attend = attendant.isAttend();
+         this.entrance = attendant.isAttend();
      }
      
      @Getter
@@ -35,11 +35,7 @@ public class AttendantResponseDto {
      @NoArgsConstructor
      // 메인리스트의 attendantsList 용
      public static class simpleResponseDto{
-//          private Long attendantId;
-//          private Long meetingId;
           private Long userId;
-//          private boolean entrance; // entrance 로 수정필요
-//          private boolean review;
           private String userProfileImg;
      }
 }

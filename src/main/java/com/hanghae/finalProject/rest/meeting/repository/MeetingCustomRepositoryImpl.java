@@ -5,9 +5,11 @@ import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
+import com.querydsl.core.ResultTransformer;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -37,7 +39,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      
      // 검색리스트
      @Override
-     public List<Meeting> findAllBySearchAndCategory3(String search, CategoryCode category, Long meetingIdx) {
+     public List<MeetingListResponseDto.ResponseDto> findAllBySearchAndCategory(String search, CategoryCode category, Long meetingIdx) {
           // 1) 커버링 인덱스로 대상 조회
           List<Long> ids = jpaQueryFactory
                .select(meeting.id)
@@ -55,38 +57,10 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           }
           // 2) 해당 id를 가진 meeting 리스트
           return jpaQueryFactory
-               .selectFrom(meeting)
+               .from(meeting)
                .where(meeting.id.in(ids))
                .orderBy(meeting.id.desc())
-               .fetch();
-     }
-     
-     // 인기순 정렬용
-     @Override
-     public List<Meeting> findAllSortByPopularAndCategory3(CategoryCode category, Long pageNum) {
-          // 1) 커버링 인덱스로 대상 조회
-          List<Long> ids = jpaQueryFactory
-               .select(attendant.meeting.id)
-               .from(attendant)
-               .join(meeting)
-               .on(attendant.id.eq(meeting.id))
-               .groupBy(attendant.meeting.id)
-               .where(eqCategory(category),
-                    meeting.deleted.eq(false)
-               )
-               .offset((pageNum == null) ? 0 : pageNum * 5)
-               .limit(5)
-               .fetch();
-          
-          // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
-          if (CollectionUtils.isEmpty(ids)) {
-               return new ArrayList<>();
-          }
-          // 2) 해당 id를 가진 meeting 리스트
-          return jpaQueryFactory
-               .selectFrom(meeting)
-               .where(meeting.id.in(ids))
-               .fetch();
+               .transform(getList());
      }
      
      @Override
@@ -109,45 +83,17 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           if (CollectionUtils.isEmpty(ids)) {
                return new ArrayList<>();
           }
-//          return jpaQueryFactory
-//               .selectFrom(meeting)
-//               .where(meeting.id.in(ids))
-//               .fetch();
-          // 2) 해당 id를 가진 meeting 리스트
+          // 2) 해당 id를 가진 meeting 리스트 + 유저정보 +
           return jpaQueryFactory
                .from(meeting)
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
-               .transform(
-                    groupBy(meeting.id).list(
-                         Projections.fields(
-                              MeetingListResponseDto.ResponseDto.class,
-                              meeting.id.as("id"),
-                              meeting.user.id.as("masterId"),
-                              meeting.title,
-                              meeting.category,
-                              meeting.startDate,
-                              meeting.startTime,
-                              meeting.duration,
-                              meeting.platform,
-                              meeting.content,
-                              meeting.maxNum,
-                              meeting.secret,
-                              meeting.password,
-                              list(
-                                   Projections.fields(
-                                        AttendantResponseDto.simpleResponseDto.class,
-                                        attendant.user.id.as("userId"),
-                                        user.profileUrl.as("userProfileImg")
-                                   )
-                              ).as("attendantsList")
-                         )));
+               .transform(getList());
      }
      
      @Override
      public List<MeetingListResponseDto.ResponseDto> findAllSortByNewAndCategory(CategoryCode category, Long meetingIdx) {
-          
           return jpaQueryFactory
                .from(meeting)
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
@@ -159,46 +105,33 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                )
                .orderBy(meeting.id.desc())
                .limit(5)
-//               .fetch()
-               .transform(
-                    groupBy(meeting.id).list(
-                         Projections.fields(
-                              MeetingListResponseDto.ResponseDto.class,
-                              meeting.id.as("id"),
-                              meeting.user.id.as("masterId"),
-                              meeting.title,
-                              meeting.category,
-                              meeting.startDate,
-                              meeting.startTime,
-                              meeting.duration,
-                              meeting.platform,
-                              meeting.content,
-                              meeting.maxNum,
-                              meeting.secret,
-                              meeting.password,
-                              list(
-                                   Projections.fields(
-                                        AttendantResponseDto.simpleResponseDto.class,
-                                        attendant.user.id.as("userId"),
-                                        user.profileUrl.as("userProfileImg")
-                                   )
-                              ).as("attendantsList")
-                         )));
+               .transform(getList());
      }
      
-     // 신규순 정렬용 (no offset)
-     @Override
-     public List<Meeting> findAllSortByNewAndCategory3(CategoryCode category, Long meetingIdx) {
-          return jpaQueryFactory
-               .selectFrom(meeting)
-               .where(
-                    ltBookId(meetingIdx),
-                    eqCategory(category),
-                    meeting.deleted.eq(false)
-               )
-               .orderBy(meeting.id.desc())
-               .limit(5)
-               .fetch();
+     private static ResultTransformer<List<MeetingListResponseDto.ResponseDto>> getList() {
+          return groupBy(meeting.id).list(
+               Projections.fields(
+                    MeetingListResponseDto.ResponseDto.class,
+                    meeting.id.as("id"),
+                    meeting.user.id.as("masterId"),
+                    meeting.title,
+                    meeting.category,
+                    meeting.startDate,
+                    meeting.startTime,
+                    meeting.duration,
+                    meeting.platform,
+                    meeting.content,
+                    meeting.maxNum,
+                    meeting.secret,
+                    meeting.password,
+                    list(
+                         Projections.fields(
+                              AttendantResponseDto.simpleResponseDto.class,
+                              attendant.user.id.as("userId"),
+                              user.profileUrl.as("userProfileImg")
+                         )
+                    ).as("attendantsList")
+               ));
      }
      
      // 무한스크롤용. 해당 idx 보다 작은것들 불러오기 (sortBy new 일때만 이거)
