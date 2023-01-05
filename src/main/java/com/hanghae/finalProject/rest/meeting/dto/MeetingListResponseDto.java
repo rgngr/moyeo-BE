@@ -41,7 +41,8 @@ public class MeetingListResponseDto {
 //         private int hateNum;
      
           private int attendantsNum;
-          private List<AttendantResponseDto.forMeetings> attendantsList;
+
+          //private List<AttendantResponseDto.forMeetings> attendantsList;
           public void setIsMaster(Boolean isMaster){
                this.isMaster = isMaster;
           }
