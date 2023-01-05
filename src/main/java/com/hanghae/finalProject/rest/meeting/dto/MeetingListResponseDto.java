@@ -41,7 +41,7 @@ public class MeetingListResponseDto {
 //         private int hateNum;
      
           private int attendantsNum;
-          private List<AttendantResponseDto.forMeetings> attendantsList;
+          private List<AttendantResponseDto> attendantsList;
      
           public ResponseDto(Meeting meeting, Long userId){
                this.id = meeting.getId();

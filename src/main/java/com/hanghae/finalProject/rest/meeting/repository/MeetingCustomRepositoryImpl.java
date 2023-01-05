@@ -36,7 +36,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository{
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
                     meeting.title.contains(search), // 검색어 필터링
-                    ltBookId(meetingIdx)) // 무한스크롤용
+                    ltBookId(meetingIdx),// 무한스크롤용
+                    meeting.deleted.eq(false))
                .orderBy(meeting.id.desc())
                .limit(5)
                .fetch();
@@ -59,8 +60,12 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository{
           List<Long> ids = jpaQueryFactory
                .select(attendant.meeting.id)
                .from(attendant)
+               .join(meeting)
+               .on(attendant.id.eq(meeting.id))
                .groupBy(attendant.meeting.id)
-               .where(eqCategory(category))
+               .where(eqCategory(category),
+                    meeting.deleted.eq(false)
+               )
                .offset((pageNum == null)? 0: pageNum * 5)
                .limit(5)
                .fetch();
@@ -83,7 +88,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository{
                .selectFrom(meeting)
                .where(
                     ltBookId(meetingIdx),
-                    eqCategory(category)
+                    eqCategory(category),
+                    meeting.deleted.eq(false)
                )
                .orderBy(meeting.id.desc())
                .limit(5)
