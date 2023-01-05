@@ -23,7 +23,7 @@ public class MeetingListResponseDto {
      public static class ResponseDto {
          private Long id;
          private Long masterId;
-         private boolean isMaster;
+         private boolean master;
          private String title;
          private CategoryCode category;
          private LocalDateTime startDate;
@@ -42,13 +42,11 @@ public class MeetingListResponseDto {
      
           private int attendantsNum;
           private List<AttendantResponseDto.forMeetings> attendantsList;
-          public void setIsMaster(Boolean isMaster){
-               this.isMaster = isMaster;
-          }
-          public ResponseDto(Meeting meeting){
+     
+          public ResponseDto(Meeting meeting, Long userId){
                this.id = meeting.getId();
                this.masterId = meeting.getUser().getId();
-//               this.isMaster = isMaster; // 밖에서 처리
+               this.master = (meeting.getUser().getId().equals(userId));
                this.title = meeting.getTitle();
                this.category = meeting.getCategory(); // category model type enum으로 변경하기
                this.startDate = meeting.getStartDate();

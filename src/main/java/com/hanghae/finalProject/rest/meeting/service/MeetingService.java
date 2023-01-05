@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,30 +137,15 @@ public class MeetingService {
           MeetingListResponseDto response = new MeetingListResponseDto();
           // 참석 기능 구현 후 참석여부 추가필요
           List<Meeting> meetingList = (sortBy.equals("new")) ?
-               meetingRepository.findAllSortByNewOrderByIdDesc(category, meetingIdx) // 신규순
-               : meetingRepository.findAllSortByPopularOrderByIdDesc(category, meetingIdx); // 인기순
+               meetingRepository.findAllSortByNewAndCategory(category, meetingIdx) // 신규순
+               : meetingRepository.findAllSortByPopularAndCategory(category, meetingIdx); // 인기순
           
           List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingList.stream()
-               .map(m -> {
-                    MeetingListResponseDto.ResponseDto responseDto = new MeetingListResponseDto.ResponseDto(m);
-                    // meeting 작성자의 id와 로그인 유저의 아이디 비교
-                    responseDto.setIsMaster(Objects.equals(user.getId(), m.getUser().getId()));
-                    return responseDto;
-               })
+               // meeting 작성자의 id와 로그인 유저의 아이디 비교
+               .map(m -> new MeetingListResponseDto.ResponseDto(m, user.getId()))
                .collect(Collectors.toList());
           response.addMeetingList(responseDtoList);
           return response;
      }
-
-//     @Transactional
-//     public PostResponseDto.createResponse createPost(PostRequestDto postRequestDto) {
-//          User user = SecurityUtil.getCurrentUser();
-//          MultipartFile file = postRequestDto.getFile();
-//          String imgUrl = null;
-//          if(file != null && file.getContentType() != null) {
-//               imgUrl = s3Uploader.upload(file, "postImage");
-//          }
-//          Post post = postRepository.saveAndFlush(new Post(postRequestDto, user.getUsername(), imgUrl));
-//          return new PostResponseDto.createResponse(post, user.getNickname());
-//     }
+     
 }

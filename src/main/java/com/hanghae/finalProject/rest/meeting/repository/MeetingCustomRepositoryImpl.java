@@ -29,7 +29,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository{
      
      // 인기순 정렬용
      @Override
-     public List<Meeting> findAllSortByPopularOrderByIdDesc(CategoryCode category, Long pageNo) {
+     public List<Meeting> findAllSortByPopularAndCategory(CategoryCode category, Long pageNo) {
           // 1) 커버링 인덱스로 대상 조회
           List<Long> ids = jpaQueryFactory
                .select(attendant.meeting.id)
@@ -53,7 +53,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository{
      
      // 신규순 정렬용 (no offset)
      @Override
-     public List<Meeting> findAllSortByNewOrderByIdDesc(CategoryCode category, Long meetingIdx) {
+     public List<Meeting> findAllSortByNewAndCategory(CategoryCode category, Long meetingIdx) {
           return jpaQueryFactory
                .selectFrom(meeting)
                .where(
