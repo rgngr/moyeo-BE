@@ -33,17 +33,22 @@ public class MeetingController {
     
     @ApiOperation (value = "모임 전체 조회")
     @GetMapping("/meetings")
-    public DataResponseDto getMeetings(
+    public ResponseDto getMeetings(
          @RequestParam(value="sortby", defaultValue = "popular", required = false) String sortBy,
          @RequestParam(value="category", required = false) CategoryCode category,
          @RequestParam(value="meetingId", required = false) Long meetingId
     ){
-        // 1. 신규순, 카테고리 없는버전 - 우선이거 (+ 무한스크롤)
-            // 1.1 카테고리 있는버전
-        // 2. 인기순, 카테고리 없는버전
-            // 2.1 카테고리 있는버전
-        log.info("sortBy : {}, category : {}, meetingId : {} ", sortBy, category, meetingId);
         return DataResponseDto.of(meetingService.getMeetings(sortBy, category, meetingId));
+    }
+    
+    @ApiOperation (value = "모임명 검색")
+    @GetMapping("/meetings/search")
+    public ResponseDto getMeetingsBySearch(
+         @RequestParam(value="searchBy", required = false) String search,
+         @RequestParam(value="category", required = false) CategoryCode category,
+         @RequestParam(value="meetingId", required = false) Long meetingId
+    ){
+        return DataResponseDto.of(meetingService.getMeetingsBySearch(search, category, meetingId));
     }
     
     @ApiOperation (value = "모임 생성")

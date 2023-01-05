@@ -148,4 +148,19 @@ public class MeetingService {
           return response;
      }
      
+     // 제목 검색 모임리스트 불러오기
+     @Transactional (readOnly = true)
+     public MeetingListResponseDto getMeetingsBySearch(String search, CategoryCode category, Long meetingId) {
+          User user = SecurityUtil.getCurrentUser(); // 비회원일경우(토큰못받았을경우) null
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+     
+          MeetingListResponseDto response = new MeetingListResponseDto();
+          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllBySearchAndCategory(search, category, meetingId).stream()
+               // meeting 작성자의 id와 로그인 유저의 아이디 비교
+               .map(m -> new MeetingListResponseDto.ResponseDto(m, user.getId()))
+               .collect(Collectors.toList());
+          response.addMeetingList(responseDtoList);
+          return response;
+          
+     }
 }

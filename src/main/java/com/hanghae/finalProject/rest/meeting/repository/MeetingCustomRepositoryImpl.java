@@ -27,16 +27,41 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository{
           this.attendantRepository = attendantRepository;
      }
      
+     // 검색리스트
+     @Override
+     public List<Meeting> findAllBySearchAndCategory(String search, CategoryCode category, Long meetingIdx) {
+          // 1) 커버링 인덱스로 대상 조회
+          List<Long> ids = jpaQueryFactory
+               .select(meeting.id)
+               .from(meeting)
+               .where(eqCategory(category), // 카테고리 필터링
+                    meeting.title.contains(search), // 검색어 필터링
+                    ltBookId(meetingIdx)) // 무한스크롤용
+               .orderBy(meeting.id.desc())
+               .limit(5)
+               .fetch();
+          // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
+          if (CollectionUtils.isEmpty(ids)) {
+               return new ArrayList<>();
+          }
+          // 2) 해당 id를 가진 meeting 리스트
+          return jpaQueryFactory
+               .selectFrom(meeting)
+               .where(meeting.id.in(ids))
+               .orderBy(meeting.id.desc())
+               .fetch();
+     }
+     
      // 인기순 정렬용
      @Override
-     public List<Meeting> findAllSortByPopularAndCategory(CategoryCode category, Long pageNo) {
+     public List<Meeting> findAllSortByPopularAndCategory(CategoryCode category, Long pageNum) {
           // 1) 커버링 인덱스로 대상 조회
           List<Long> ids = jpaQueryFactory
                .select(attendant.meeting.id)
                .from(attendant)
                .groupBy(attendant.meeting.id)
                .where(eqCategory(category))
-               .offset((pageNo == null)? 0: pageNo * 5)
+               .offset((pageNum == null)? 0: pageNum * 5)
                .limit(5)
                .fetch();
      

@@ -7,11 +7,13 @@ import java.util.List;
 
 public interface MeetingCustomRepository {
      
-     // http://jojoldu.tistory.com/528 무한스크롤
-     
-     // 무한스크롤 o, 카테고리 o , sortby x,
+     // 신규순 + 카테고리
      List<Meeting> findAllSortByNewAndCategory(CategoryCode category, Long meetingIdx);
      
+     // 인기순 + 카테고리
      List<Meeting> findAllSortByPopularAndCategory(CategoryCode category, Long meetingIdx);
+     
+     // 검색 리스트 + 카테고리
+     List<Meeting> findAllBySearchAndCategory(String search, CategoryCode category, Long meetingId);
      
 }
