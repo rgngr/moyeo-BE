@@ -41,7 +41,7 @@ public class AttendantService {
             Attendant attendant = attendantRepository.findAttendantByMeetingId(meetingId);
             attendant.cancelAttendant(meeting);
             attendantRepository.delete(attendant);
-            return new AttendantResponseDto(attendant);
+            return new AttendantResponseDto(attendant); // return null 하면 되지않을까
         }
     }
 

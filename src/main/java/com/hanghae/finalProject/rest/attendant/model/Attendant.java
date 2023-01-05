@@ -34,7 +34,7 @@ public class Attendant {
      public Attendant(Meeting meeting, User user) {
           this.meeting = meeting;
           this.user = user;
-          this.attend = true;
+          this.attend = true; // false로 수정필요
      }
 
      public void cancelAttendant(Meeting meeting) {
