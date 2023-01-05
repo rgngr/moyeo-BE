@@ -1,10 +1,10 @@
 package com.hanghae.finalProject.rest.meeting.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,8 +18,10 @@ public class MeetingListResponseDto {
           this.meetingList = meetingList;
      }
      
+     @Setter
      @Getter
      @RequiredArgsConstructor
+     @AllArgsConstructor
      public static class ResponseDto {
          private Long id;
          private Long masterId;
@@ -39,9 +41,8 @@ public class MeetingListResponseDto {
 //         private boolean alarm;
 //         private int likeNum;
 //         private int hateNum;
-     
           private int attendantsNum;
-          private List<AttendantResponseDto.forMeetings> attendantsList;
+          private List<AttendantResponseDto.simpleResponseDto> attendantsList;
      
           public ResponseDto(Meeting meeting, Long userId){
                this.id = meeting.getId();

@@ -16,7 +16,7 @@ public class AttendantController {
     private final AttendantService attendantService;
 
     @Operation(summary = "모임 참석/취소")
-    @PostMapping("/attendance")
+    @PatchMapping("/attendance")
     public ResponseDto addAttendant(@PathVariable Long meetingId) {
         return DataResponseDto.of(attendantService.addAttendant(meetingId));
     }
