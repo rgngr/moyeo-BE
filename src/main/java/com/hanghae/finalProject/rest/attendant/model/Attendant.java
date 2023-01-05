@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(indexes = @Index(name = "idx__meetingId", columnList = "meeting_id"))
 public class Attendant {
 
      @Id
@@ -28,7 +29,7 @@ public class Attendant {
      private boolean attend;
 
      @Column
-     private boolean opinion;
+     private boolean review;
 
      
 }
