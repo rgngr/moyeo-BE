@@ -31,7 +31,7 @@ public class MeetingListResponseDto {
          private int duration;
          private String platform;
 //         private String link;
-//         private String content;
+         private String content;
          private int maxNum;
          private boolean secret;
          private String password;
@@ -48,10 +48,11 @@ public class MeetingListResponseDto {
                this.masterId = meeting.getUser().getId();
                this.master = (meeting.getUser().getId().equals(userId));
                this.title = meeting.getTitle();
-               this.category = meeting.getCategory(); // category model type enum으로 변경하기
+               this.category = meeting.getCategory();
                this.startDate = meeting.getStartDate();
                this.startTime = meeting.getStartTime();
                this.duration = meeting.getDuration();
+               this.content = meeting.getContent();
                this.maxNum = meeting.getMaxNum();
                this.platform = meeting.getPlatform();
                this.secret = meeting.isSecret();

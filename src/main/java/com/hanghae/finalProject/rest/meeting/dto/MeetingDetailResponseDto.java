@@ -10,7 +10,7 @@ public class MeetingDetailResponseDto {
 
     private Long id;
     private Long masterId;
-    private boolean isMaster;
+    private boolean master;
     private String title;
     private CategoryCode category;
     private LocalDateTime startDate;
@@ -27,11 +27,11 @@ public class MeetingDetailResponseDto {
     private int likeNum;
     private int hateNum;
 
-    public MeetingDetailResponseDto(Meeting meeting, boolean isMaster,
+    public MeetingDetailResponseDto(Meeting meeting, boolean master,
         boolean isAttend, boolean isAlarm, int likeNum, int hateNum) {
             this.id = meeting.getId();
             this.masterId = meeting.getUser().getId();
-            this.isMaster = isMaster;
+            this.master = master;
             this.title = meeting.getTitle();
             this.category = meeting.getCategory();
             this.startDate = meeting.getStartDate();
