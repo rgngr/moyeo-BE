@@ -135,16 +135,19 @@ public class MeetingService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           
           MeetingListResponseDto response = new MeetingListResponseDto();
-          // 참석 기능 구현 후 참석여부 추가필요
-          List<Meeting> meetingList = (sortBy.equals("new")) ?
+          List<MeetingListResponseDto.ResponseDto> responseDtoList = (sortBy.equals("new")) ?
                meetingRepository.findAllSortByNewAndCategory(category, meetingIdx) // 신규순
                : meetingRepository.findAllSortByPopularAndCategory(category, meetingIdx); // 인기순
           
-          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingList.stream()
+          response.addMeetingList(responseDtoList.stream()
                // meeting 작성자의 id와 로그인 유저의 아이디 비교
-               .map(m -> new MeetingListResponseDto.ResponseDto(m, user.getId()))
-               .collect(Collectors.toList());
-          response.addMeetingList(responseDtoList);
+               .peek(m -> {
+                         // master 처리 ,attendantsNum 처리,
+                         m.setMaster(m.getMasterId().equals(user.getId()));
+                         m.setAttendantsNum(m.getAttendantsList().size());
+                    }
+               )
+               .collect(Collectors.toList()));
           return response;
      }
      
@@ -153,9 +156,9 @@ public class MeetingService {
      public MeetingListResponseDto getMeetingsBySearch(String search, CategoryCode category, Long meetingId) {
           User user = SecurityUtil.getCurrentUser(); // 비회원일경우(토큰못받았을경우) null
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-     
+          
           MeetingListResponseDto response = new MeetingListResponseDto();
-          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllBySearchAndCategory(search, category, meetingId).stream()
+          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllBySearchAndCategory3(search, category, meetingId).stream()
                // meeting 작성자의 id와 로그인 유저의 아이디 비교
                .map(m -> new MeetingListResponseDto.ResponseDto(m, user.getId()))
                .collect(Collectors.toList());
