@@ -136,18 +136,18 @@ public class MeetingService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           
           MeetingListResponseDto response = new MeetingListResponseDto();
-          // category enum으로 받아지는가 확인필요
-          // 우선 전체불러오기
-          // 이후 인기순 적용
-          // + 카테고리 적용버전
-          // 무한스크롤 적용
           // 참석 기능 구현 후 참석여부 추가필요
-          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllByOrderByIdDesc(meetingIdx)
-               .stream()
+          List<Meeting> meetingList = (sortBy.equals("new")) ?
+               meetingRepository.findAllSortByNewOrderByIdDesc(category, meetingIdx) // 신규순
+               : meetingRepository.findAllSortByPopularOrderByIdDesc(category, meetingIdx); // 인기순
+          
+          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingList.stream()
                .map(m -> {
                     MeetingListResponseDto.ResponseDto responseDto = new MeetingListResponseDto.ResponseDto(m);
-                    responseDto.setIsMaster((user.getId() == m.getUser().getId())? true : false);
-                    return responseDto;})
+                    // meeting 작성자의 id와 로그인 유저의 아이디 비교
+                    responseDto.setIsMaster(Objects.equals(user.getId(), m.getUser().getId()));
+                    return responseDto;
+               })
                .collect(Collectors.toList());
           response.addMeetingList(responseDtoList);
           return response;

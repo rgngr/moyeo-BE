@@ -38,11 +38,10 @@ public class MeetingController {
          @RequestParam(value="category", required = false) CategoryCode category,
          @RequestParam(value="meetingId", required = false) Long meetingId
     ){
-        // 1. 인기순, 카테고리 없는버전 - 우선이거 (+ 무한스크롤)
+        // 1. 신규순, 카테고리 없는버전 - 우선이거 (+ 무한스크롤)
             // 1.1 카테고리 있는버전
-        // 2. 신규순, 카테고리 없는버전
+        // 2. 인기순, 카테고리 없는버전
             // 2.1 카테고리 있는버전
-        // 무한스크롤 적용필요
         log.info("sortBy : {}, category : {}, meetingId : {} ", sortBy, category, meetingId);
         return DataResponseDto.of(meetingService.getMeetings(sortBy, category, meetingId));
     }
