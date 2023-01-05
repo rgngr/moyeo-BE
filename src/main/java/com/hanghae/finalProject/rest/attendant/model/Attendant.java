@@ -19,11 +19,11 @@ public class Attendant {
      
      @ManyToOne (fetch = FetchType.LAZY)
      @JoinColumn(name ="meeting_id")
-     private Meeting meeting; // 모임아이디
+     private Meeting meeting;
      
      @ManyToOne (fetch = FetchType.LAZY)
      @JoinColumn(name ="user_id")
-     private User user; // 모임생성자
+     private User user;
 
      @Column
      private boolean attend;
@@ -31,5 +31,14 @@ public class Attendant {
      @Column
      private boolean review;
 
-     
+     public Attendant(Meeting meeting, User user) {
+          this.meeting = meeting;
+          this.user = user;
+          this.attend = true;
+     }
+
+     public void cancelAttendant(Meeting meeting) {
+          this.meeting = meeting;
+          this.attend = false;
+     }
 }
