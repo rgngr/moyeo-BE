@@ -1,6 +1,5 @@
 package com.hanghae.finalProject.rest.attendant.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class AttendantResponseDto {
          this.attendantId = attendant.getId();
          this.meetingId = attendant.getMeeting().getId();
          this.userId = attendant.getUser().getId();
-         this.entrance = attendant.isAttend();
+         this.entrance = attendant.isEntrance();
      }
      
      @Getter

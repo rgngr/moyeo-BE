@@ -2,7 +2,6 @@ package com.hanghae.finalProject.rest.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.MailException;
@@ -23,13 +22,19 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
 
-    //인증번호 생성
-    private final String ePw = createKey();
-
     @Value("${spring.mail.username}")
     private String id;
 
-    public MimeMessage createMessage(String to)throws MessagingException, UnsupportedEncodingException {
+    public String sendSimpleMessage(String to)throws MessagingException, UnsupportedEncodingException {
+        //인증번호 생성
+        StringBuffer key = new StringBuffer();
+        Random rnd = new Random();
+
+        for (int i = 0; i < 6; i++) { // 인증코드 6자리
+            key.append((rnd.nextInt(10)));
+        }
+        String ePw = key.toString();
+        ///////////////////////////
         log.info("보내는 대상 : "+ to);
         log.info("인증 번호 : " + ePw);
         MimeMessage  message = javaMailSender.createMimeMessage();
@@ -48,19 +53,32 @@ public class EmailService {
         message.setText(msg, "utf-8", "html"); //내용, charset타입, subtype
         message.setFrom(new InternetAddress(id,"prac_Admin")); //보내는 사람의 메일 주소, 보내는 사람 이름
 
-        return message;
+        try{
+            javaMailSender.send(message); // 메일 발송
+        }catch(MailException es){
+            es.printStackTrace();
+            throw new IllegalArgumentException();
+        }
+
+        return ePw;
     }
 
     // 인증코드 만들기
-    public static String createKey() {
-        StringBuffer key = new StringBuffer();
-        Random rnd = new Random();
-
-        for (int i = 0; i < 6; i++) { // 인증코드 6자리
-            key.append((rnd.nextInt(10)));
-        }
-        return key.toString();
-    }
+//    public int createKey() {
+//        java.util.Random generator = new java.util.Random();
+//        generator.setSeed(System.currentTimeMillis());
+//        return generator.nextInt(1000000) % 1000000;
+//    }
+//    public  String createKey() {
+//        StringBuffer key = new StringBuffer();
+//        Random rnd = new Random();
+//
+//        for (int i = 0; i < 6; i++) { // 인증코드 6자리
+//            key.append((rnd.nextInt(10)));
+//        }
+//        String ePw = key.toString();
+//        return ePw;
+//    }
 
     /*
         메일 발송
@@ -68,14 +86,15 @@ public class EmailService {
         MimeMessage 객체 안에 내가 전송할 메일의 내용을 담아준다.
         bean으로 등록해둔 javaMailSender 객체를 사용하여 이메일 send
      */
-    public String sendSimpleMessage(String to)throws Exception {
-        MimeMessage message = createMessage(to);
-        try{
-            javaMailSender.send(message); // 메일 발송
-        }catch(MailException es){
-            es.printStackTrace();
-            throw new IllegalArgumentException();
-        }
-        return ePw; // 메일로 보냈던 인증 코드를 서버로 리턴
-    }
+//    public String sendSimpleMessage(String email)throws Exception {
+//        MimeMessage message = createMessage(email);
+//
+//        try{
+//            javaMailSender.send(message); // 메일 발송
+//        }catch(MailException es){
+//            es.printStackTrace();
+//            throw new IllegalArgumentException();
+//        }
+//        return ePw; // 메일로 보냈던 인증 코드를 서버로 리턴
+//    }
 }
