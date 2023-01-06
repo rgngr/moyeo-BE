@@ -44,46 +44,24 @@ public class MeetingListResponseDto {
           private int attendantsNum;
           private List<AttendantResponseDto.simpleResponseDto> attendantsList;
      
-          public ResponseDto(Meeting meeting, Long userId){
-               this.id = meeting.getId();
-               this.masterId = meeting.getUser().getId();
-               this.master = (meeting.getUser().getId().equals(userId));
-               this.title = meeting.getTitle();
-               this.category = meeting.getCategory();
-               this.startDate = meeting.getStartDate();
-               this.startTime = meeting.getStartTime();
-               this.duration = meeting.getDuration();
-               this.content = meeting.getContent();
-               this.maxNum = meeting.getMaxNum();
-               this.platform = meeting.getPlatform();
-               this.secret = meeting.isSecret();
-               this.password = meeting.getPassword();
-               this.attend = false; // TODO 참석구현 후 수정필요
-          }
+//          public ResponseDto(Meeting meeting, Long userId){
+//               this.id = meeting.getId();
+//               this.masterId = meeting.getUser().getId();
+//               this.master = (meeting.getUser().getId().equals(userId));
+//               this.title = meeting.getTitle();
+//               this.category = meeting.getCategory();
+//               this.startDate = meeting.getStartDate();
+//               this.startTime = meeting.getStartTime();
+//               this.duration = meeting.getDuration();
+//               this.content = meeting.getContent();
+//               this.maxNum = meeting.getMaxNum();
+//               this.platform = meeting.getPlatform();
+//               this.secret = meeting.isSecret();
+//               this.password = meeting.getPassword();
+//               this.attend = false; // TODO 참석구현 후 수정필요
+//          }
      
      }
-
-//
-//    public MeetingListResponseDto(Meeting meeting, boolean isMaster,
-//                                  boolean isAttend, boolean isAlarm, int likeNum, int hateNum) {
-//            this.id = meeting.getId();
-//            this.masterId = meeting.getUser().getId();
-//            this.isMaster = isMaster;
-//            this.title = meeting.getTitle();
-//            this.category = meeting.getCategory();
-//            this.startDate = meeting.getStartDate();
-//            this.startTime = meeting.getStartTime();
-//            this.duration = meeting.getDuration();
-//            this.content = meeting.getContent();
-//            this.maxNum = meeting.getMaxNum();
-//            this.platform = meeting.getPlatform();
-//            this.link = meeting.getLink();
-//            this.secret = meeting.isSecret();
-//            this.password = meeting.getPassword();
-//            this.attend =isAttend;
-//            this.alarm = isAlarm;
-//            this.likeNum = likeNum;
-//            this.hateNum =hateNum;
-//    }
+     
 
 }
