@@ -34,6 +34,23 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
         
+    - name: make application.properties
+      run: |
+        echo ">> mkdir & touch"
+        mkdir -p ./src/main/resources
+        cd ./src/main/resources
+        touch ./application.properties
+        touch ./application-aws.properties
+        echo ">> copy application.properties"
+        echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.properties
+        echo "server.port=8080" >> ./application.properties
+
+        echo ">> copy application-aws.properties"
+        echo "${{ secrets.APPLICATION_AWS_PROPERTIES }}" >> ./application-aws.properties
+        echo "server.port=8080" >> ./application-aws.properties
+        
+      shell: bash
+        
     # Error Gradle Script ‘/Home/Runner/Work/*/Gradlew’ Is Not Executable 에러 해결가능?
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
@@ -42,10 +59,16 @@ jobs:
     # GRADLE사용, 
     # GRADLE CLEAN BUILD를 수행함. -x test : test디렉터리를 제외한다는 것
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@v2   # 여기 @뒤에가 다른건가
-      with:
-        arguments: clean build -x test
-        build-root-directory: finalProject_BE/
+      run: ./gradlew clean build
+#       uses: gradle/gradle-build-action@v2   # 여기 @뒤에가 다른건가
+#       with:
+#         arguments: clean build -x test
+#         build-root-directory: finalProject_BE/
+
+    - name: Make zip file
+      run: zip -r ./$GITHUB_SHA.zip .
+      shell: bash
+
     # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -55,13 +78,15 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
     # (5) 빌드 결과물을 S3 버킷에 업로드
     - name: Upload to AWS S3
-      run: |
-        aws deploy push \
-          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-          --ignore-hidden-files \
-          --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
-          --source .
-      working-directory: finalProject_BE/
+      run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
+#       run: |
+#         aws deploy push \
+#           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+#           --ignore-hidden-files \
+#           --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+#           --source .
+#       working-directory: finalProject_BE/
+
     # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
     - name: Deploy to AWS EC2 from S3
       run: |
@@ -79,8 +104,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: Grant execute permission for gradlew
+      run : chmod +x gradlew
     - name: Build with Gradle
-      #uses: gradle/gradle-build-action@v2
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: build
+      run: ./gradlew build
