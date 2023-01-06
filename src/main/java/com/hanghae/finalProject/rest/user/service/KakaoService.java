@@ -71,8 +71,8 @@ public class KakaoService {
           body.add("grant_type", "authorization_code");
           body.add("client_id", KAKAO_REST_API_KEY);
 //          body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
-          body.add("redirect_uri", "https://sparta-hippo.shop/api/user/kakao/callback");
-//          body.add("redirect_uri", "http://localhost:3000/api/user/kakao/callback");
+//          body.add("redirect_uri", "https://sparta-hippo.shop/api/user/kakao/callback");
+          body.add("redirect_uri", "http://localhost:3000/api/user/kakao/callback");
           body.add("code", code);
           
           // HTTP 요청 보내기
