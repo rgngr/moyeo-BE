@@ -1,6 +1,6 @@
 package com.hanghae.finalProject.rest.comment.controller;
 
-import com.hanghae.finalProject.config.controller.errorcode.Code;
+import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
 import com.hanghae.finalProject.rest.comment.dto.CommentRequestDto;
@@ -34,6 +34,6 @@ public class CommentController {
     @DeleteMapping("/comments/{commentId}")
     public ResponseDto deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
-        return ResponseDto.of(true, Code.DELETE_COMMENT);
+        return ResponseDto.of(true, Code.DELETED_COMMENT);
     }
 }

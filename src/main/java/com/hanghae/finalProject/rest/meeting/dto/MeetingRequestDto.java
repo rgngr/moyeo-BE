@@ -1,5 +1,6 @@
 package com.hanghae.finalProject.rest.meeting.dto;
 
+import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import lombok.Getter;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ public class MeetingRequestDto {
     private String title;
 
     @NotNull(message = "카테고리를 선택해주세요.")
-    private String category;
+    private CategoryCode category;
 
     @NotNull(message = "시작 날짜를 선택해주세요.")
     private LocalDateTime startDate;

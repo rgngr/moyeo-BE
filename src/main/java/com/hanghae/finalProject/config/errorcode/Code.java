@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.config.controller.errorcode;
+package com.hanghae.finalProject.config.errorcode;
 
 import com.hanghae.finalProject.config.exception.RestApiException;
 import lombok.Getter;
@@ -16,15 +16,19 @@ public enum Code {
      OK("정상", HttpStatus.OK),
      FILE_SAVE_FAIL("파일 저장에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
      WRONG_IMAGE_FORMAT("지원하지 않는 파일 형식입니다.", HttpStatus.BAD_REQUEST),
+     NO_IMAGE("이미지 파일을 선택해주세요.", HttpStatus.BAD_REQUEST),
      POST_LIKE( "좋아요", HttpStatus.OK),
      POST_LIKE_CANCEL( "좋아요취소", HttpStatus.OK),
      DELETE_COMMENT( "댓글 삭제 성공", HttpStatus.OK),
+     DELETED_COMMENT( "삭제된 댓글입니다.", HttpStatus.OK),
      CREATE_COMMENT( "댓글 작성 성공", HttpStatus.OK),
      UPDATE_COMMENT( "댓글 수정 성공", HttpStatus.OK),
      CREATE_MEETING( "모임 글 작성 성공", HttpStatus.OK),
      UPDATE_MEETING( "모임 글 수정 성공", HttpStatus.OK),
      UPDATE_LINK( "모임 링크 추가 성공", HttpStatus.OK),
      DELETE_MEETING( "모임 글 삭제 성공", HttpStatus.OK),
+     CREATE_ENTER("모임 입장 성공", HttpStatus.OK),
+     UPDATE_PROFILE( "프로필 수정 성공", HttpStatus.OK),
      INVALID_PARAMETER("Invalid parameter included",HttpStatus.BAD_REQUEST),
      INTERNAL_SERVER_ERROR("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
      BAD_REQUEST("Bad request",HttpStatus.BAD_REQUEST),
@@ -48,7 +52,7 @@ public enum Code {
      OVERLAPPED_NICKNAME("중복된 닉네임 입니다.", HttpStatus.BAD_REQUEST),
      OVERLAPPED_EMAIL("중복된 email 입니다",HttpStatus.BAD_REQUEST),
      PASSWORD_CHECK("입력된 비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST),
-     임시이넘객체("임시객체입니다", HttpStatus.BAD_REQUEST),
+     NO_SUCH_CATEGORY("존재하지 않는 카테고리입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
      
      private final String StatusMsg;
