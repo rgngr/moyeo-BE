@@ -26,7 +26,7 @@ public class Attendant {
      private User user;
 
      @Column
-     private boolean attend;
+     private boolean entrance;
 
      @Column
      private boolean review;
@@ -34,11 +34,16 @@ public class Attendant {
      public Attendant(Meeting meeting, User user) {
           this.meeting = meeting;
           this.user = user;
-          this.attend = true; // false로 수정필요
+          this.entrance = false;
      }
 
      public void cancelAttendant(Meeting meeting) {
           this.meeting = meeting;
-          this.attend = false;
+          this.entrance = false;
+     }
+
+     public void enter(Meeting meeting) {
+          this.meeting = meeting;
+          this.entrance = true;
      }
 }

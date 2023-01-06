@@ -41,7 +41,7 @@ public class AttendantService {
             Attendant attendant = attendantRepository.findAttendantByMeetingId(meetingId);
             attendant.cancelAttendant(meeting);
             attendantRepository.delete(attendant);
-            return new AttendantResponseDto(attendant); // return null 하면 되지않을까
+            return null;
         }
     }
 
@@ -55,4 +55,20 @@ public class AttendantService {
         }
         return attendantList;
     }
+
+    // 모임 입장
+    public Code enter(Long meetingId) {
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
+                () -> new RestApiException(Code.NO_MEETING)
+        );
+
+        Attendant attendant = attendantRepository.findByMeetingIdAndUser(meetingId, user);
+        attendant.enter(meeting);
+        attendantRepository.save(attendant);
+        return Code.CREATE_ENTER;
+    }
+
 }
