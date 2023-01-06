@@ -47,11 +47,11 @@ public class UserController {
         return DataResponseDto.of( userService.login(RequestDto, response), Code.USER_LOGIN_SUCCESS.getStatusMsg());
     }
 
-//          // 1. data o , msg o
-////          return DataResponseDto.of("data test", "test 성공");
-//          // 2. data o msg 정상
-////          return DataResponseDto.of("data test");
-//          // 3. DATA X, MSG 따로
+          // 1. data o , msg o
+//          return DataResponseDto.of("data test", "test 성공");
+          // 2. data o msg 정상
+//          return DataResponseDto.of("data test");
+            // 3. DATA X, MSG 따로
 //          return ResponseDto.of(true, Code.USER_SIGNUP_SUCCESS);
     
     //https://kauth.kakao.com/oauth/authorize?client_id=ced49bfdb65f5f152e2e43f12e88bd86&redirect_uri=http://localhost:3000/api/user/kakao/callback&response_type=code
