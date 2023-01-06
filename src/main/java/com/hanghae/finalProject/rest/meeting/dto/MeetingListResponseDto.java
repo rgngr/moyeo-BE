@@ -44,6 +44,7 @@ public class MeetingListResponseDto {
           private int attendantsNum;
           private List<AttendantResponseDto.simpleResponseDto> attendantsList;
      
+          // 아직 이건 쓰는곳 없음
 //          public ResponseDto(Meeting meeting, Long userId){
 //               this.id = meeting.getId();
 //               this.masterId = meeting.getUser().getId();
@@ -58,7 +59,7 @@ public class MeetingListResponseDto {
 //               this.platform = meeting.getPlatform();
 //               this.secret = meeting.isSecret();
 //               this.password = meeting.getPassword();
-//               this.attend = false; // TODO 참석구현 후 수정필요
+//               this.attend = false; // TODO 참석구현 후 수정필요!!
 //          }
      
      }
