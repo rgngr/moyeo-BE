@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -136,32 +135,45 @@ public class MeetingService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           
           MeetingListResponseDto response = new MeetingListResponseDto();
-          // category enum으로 받아지는가 확인필요
-          // 우선 전체불러오기
-          // 이후 인기순 적용
-          // + 카테고리 적용버전
-          // 무한스크롤 적용
-          // 참석 기능 구현 후 참석여부 추가필요
-          List<MeetingListResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllByOrderByIdDesc(meetingIdx)
-               .stream()
-               .map(m -> {
-                    MeetingListResponseDto.ResponseDto responseDto = new MeetingListResponseDto.ResponseDto(m);
-                    responseDto.setIsMaster((user.getId() == m.getUser().getId())? true : false);
-                    return responseDto;})
-               .collect(Collectors.toList());
-          response.addMeetingList(responseDtoList);
+          List<MeetingListResponseDto.ResponseDto> responseDtoList = (sortBy.equals("new")) ?
+               meetingRepository.findAllSortByNewAndCategory(category, meetingIdx) // 신규순
+               : meetingRepository.findAllSortByPopularAndCategory(category, meetingIdx); // 인기순
+          
+          response.addMeetingList(responseDtoList.stream()
+               // meeting 작성자의 id와 로그인 유저의 아이디 비교
+               .peek(m -> {
+                         // master 처리 ,attendantsNum 처리,
+                         m.setMaster(m.getMasterId().equals(user.getId()));
+                         if (m.getAttendantsList().size() == 1 && m.getAttendantsList().get(0).getUserId() == null) {
+                              // getAttendantsList 안에 null인 경우도 넘어와서 객체 생겨버림
+                              m.setAttendantsList(null);
+                              m.setAttendantsNum(0);
+                         } else {
+                              m.setAttendantsNum(m.getAttendantsList().size());
+                         }
+                    }
+               )
+               .collect(Collectors.toList()));
           return response;
      }
-
-//     @Transactional
-//     public PostResponseDto.createResponse createPost(PostRequestDto postRequestDto) {
-//          User user = SecurityUtil.getCurrentUser();
-//          MultipartFile file = postRequestDto.getFile();
-//          String imgUrl = null;
-//          if(file != null && file.getContentType() != null) {
-//               imgUrl = s3Uploader.upload(file, "postImage");
-//          }
-//          Post post = postRepository.saveAndFlush(new Post(postRequestDto, user.getUsername(), imgUrl));
-//          return new PostResponseDto.createResponse(post, user.getNickname());
-//     }
+     
+     // 제목 검색 모임리스트 불러오기
+     @Transactional (readOnly = true)
+     public MeetingListResponseDto getMeetingsBySearch(String search, CategoryCode category, Long meetingId) {
+          User user = SecurityUtil.getCurrentUser(); // 비회원일경우(토큰못받았을경우) null
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+          
+          MeetingListResponseDto response = new MeetingListResponseDto();
+          response.addMeetingList(meetingRepository.findAllBySearchAndCategory(search, category, meetingId)
+               .stream()
+               // meeting 작성자의 id와 로그인 유저의 아이디 비교
+               .peek(m -> {
+                    // master 처리 ,attendantsNum 처리,
+                    m.setMaster(m.getMasterId().equals(user.getId()));
+                    m.setAttendantsNum(m.getAttendantsList().size());
+               })
+               .collect(Collectors.toList()));
+          return response;
+          
+     }
 }
