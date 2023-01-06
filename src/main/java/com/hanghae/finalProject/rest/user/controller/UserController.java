@@ -48,7 +48,7 @@ public class UserController {
     }
 
 //          // 1. data o , msg o
-////          return DataResponseDto.of("data test", "test 성공"); //data있고 별도 msg보낼 경우
+////          return DataResponseDto.of("data test", "test 성공"); 
 //          // 2. data o msg 정상
 ////          return DataResponseDto.of("data test");
 //          // 3. DATA X, MSG 따로
