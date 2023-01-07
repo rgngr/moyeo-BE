@@ -90,6 +90,10 @@ public class UserService {
 
      }
 
+     public Page<void> alarmList() {
+
+     }
+
 }
      
      // jwt token 에서 user정보뽑기 set
