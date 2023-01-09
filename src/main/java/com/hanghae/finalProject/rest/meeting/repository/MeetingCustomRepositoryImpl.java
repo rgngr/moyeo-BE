@@ -4,18 +4,15 @@ import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
-import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.querydsl.core.ResultTransformer;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberPath;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +42,10 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .select(meeting.id)
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
+                    meeting.startTime.goe(LocalDateTime.now()),
                     meeting.title.contains(search), // 검색어 필터링
-                    ltBookId(meetingIdx),// 무한스크롤용
-                    meeting.deleted.eq(false))
+                    meeting.deleted.eq(false),
+                    ltBookId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
                .limit(5)
                .fetch();
@@ -58,6 +56,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           // 2) 해당 id를 가진 meeting 리스트
           return jpaQueryFactory
                .from(meeting)
+               .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
+               .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
                .orderBy(meeting.id.desc())
                .transform(getList());
@@ -67,14 +67,16 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      public List<MeetingListResponseDto.ResponseDto> findAllSortByPopularAndCategory(CategoryCode category, Long pageNum) {
           // 1) 커버링 인덱스로 대상 조회
           List<Long> ids = jpaQueryFactory
-               .select(attendant.meeting.id)
-               .from(attendant)
-               .join(meeting)
-               .on(attendant.id.eq(meeting.id))
-               .groupBy(attendant.meeting.id)
+               .select(meeting.id) // 참석자명단의 미팅id
+               .from(meeting)
+               .leftJoin(attendant)
+               .on(meeting.id.eq(attendant.meeting.id))
+               .groupBy(meeting.id)
                .where(eqCategory(category),
+                    meeting.startTime.goe(LocalDateTime.now()),
                     meeting.deleted.eq(false)
                )
+               .orderBy(attendant.id.count().desc(), meeting.id.desc())
                .offset((pageNum == null) ? 0 : pageNum * 5)
                .limit(5)
                .fetch();
@@ -99,6 +101,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(
+                    meeting.startTime.goe(LocalDateTime.now()),
                     ltBookId(meetingIdx),
                     eqCategory(category),
                     meeting.deleted.eq(false)
@@ -149,6 +152,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           }
           return meeting.category.eq(category);
      }
+     
      
      // 인기순 : attendant 테이블에서 참석자 많은 meeting_id 순으로 정렬해와야 함
      // >> 무한스크롤 : 기존 meetingIdx 말고, 참석자 순으로 정렬필요

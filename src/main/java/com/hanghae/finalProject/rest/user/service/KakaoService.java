@@ -48,7 +48,7 @@ public class KakaoService {
           
           // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
           KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
-          
+          log.info("kakaoUserInfo : {}", kakaoUserInfo);
           // 3. 필요시에 회원가입
           User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
           
@@ -128,6 +128,7 @@ public class KakaoService {
      // 3. 필요시에 회원가입
      @Transactional
      User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
+          log.info("registerKakaoUserIfNeeded : {}", kakaoUserInfo);
           // DB 에 중복된 Kakao Id 가 있는지 확인
           Long kakaoId = kakaoUserInfo.getId();
           User kakaoUser = userRepository.findByKakaoId(kakaoId).orElseGet(new User());

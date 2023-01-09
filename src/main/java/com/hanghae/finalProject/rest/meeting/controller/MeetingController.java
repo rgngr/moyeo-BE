@@ -44,7 +44,7 @@ public class MeetingController {
     @ApiOperation (value = "모임명 검색")
     @GetMapping("/meetings/search")
     public ResponseDto getMeetingsBySearch(
-         @RequestParam(value="searchBy", required = false) String search,
+         @RequestParam(value="searchBy", defaultValue = "", required = false) String search,
          @RequestParam(value="category", required = false) CategoryCode category,
          @RequestParam(value="meetingId", required = false) Long meetingId
     ){

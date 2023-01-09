@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
+import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public class MeetingListResponseDto {
          private LocalDateTime startDate;
          private LocalDateTime startTime;
          private int duration;
-         private String platform;
+         private PlatformCode platform;
 //         private String link;
          private String content;
          private int maxNum;

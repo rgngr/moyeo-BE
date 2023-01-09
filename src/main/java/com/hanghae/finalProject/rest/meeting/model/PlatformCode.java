@@ -7,22 +7,23 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum CategoryCode {
-     공부하자,
-     수다떨자,
-     게임하자,
-     술먹자,
-     밥먹자;
+public enum PlatformCode {
+     GATHER_TOWN,
+     DISCORD,
+     ZOOM,
+     GOOGLE_MEET,
+     ZEP;
      
-     public static CategoryCode of(String categoryStr){
-          if(categoryStr == null){
+     
+     public static PlatformCode of(String platformStr){
+          if(platformStr == null){
                throw new IllegalArgumentException();
           }
-          for(CategoryCode cc : CategoryCode.values()){
-               if (cc.name().equals(categoryStr)) {
+          for(PlatformCode cc : PlatformCode.values()){
+               if (cc.name().equals(platformStr)) {
                     return cc;
                }
           }
-          throw new RestApiException(Code.NO_SUCH_CATEGORY);
+          throw new RestApiException(Code.NO_SUCH_PLATFORM);
      }
 }
