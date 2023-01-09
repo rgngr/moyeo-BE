@@ -4,19 +4,15 @@ import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
-import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.querydsl.core.ResultTransformer;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberPath;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +42,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .select(meeting.id)
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
+                    meeting.startTime.goe(LocalDateTime.now()),
                     meeting.title.contains(search), // 검색어 필터링
                     meeting.deleted.eq(false),
                     ltBookId(meetingIdx))// 무한스크롤용
@@ -69,7 +66,6 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      @Override
      public List<MeetingListResponseDto.ResponseDto> findAllSortByPopularAndCategory(CategoryCode category, Long pageNum) {
           // 1) 커버링 인덱스로 대상 조회
-//          NumberPath<Long> cntAttendant = Expressions.numberPath(Long.class, "quantity");
           List<Long> ids = jpaQueryFactory
                .select(meeting.id) // 참석자명단의 미팅id
                .from(meeting)
@@ -77,6 +73,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .on(meeting.id.eq(attendant.meeting.id))
                .groupBy(meeting.id)
                .where(eqCategory(category),
+                    meeting.startTime.goe(LocalDateTime.now()),
                     meeting.deleted.eq(false)
                )
                .orderBy(attendant.id.count().desc(), meeting.id.desc())
@@ -104,6 +101,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(
+                    meeting.startTime.goe(LocalDateTime.now()),
                     ltBookId(meetingIdx),
                     eqCategory(category),
                     meeting.deleted.eq(false)
