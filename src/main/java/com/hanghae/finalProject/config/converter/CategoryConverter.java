@@ -13,7 +13,8 @@ public class CategoryConverter implements AttributeConverter<CategoryCode, Strin
      
      @Override // enum을 DB에 어떤 값으로 넣을 것인지 정의
      public String convertToDatabaseColumn(CategoryCode attribute) {
-          return attribute.getCategory();
+//          return attribute.getCategory();
+          return attribute.name();
      }
      
   
@@ -23,7 +24,8 @@ public class CategoryConverter implements AttributeConverter<CategoryCode, Strin
                return null;
           }
           return Stream.of(CategoryCode.values())
-               .filter(c -> c.getCategory().equals(dbData))
+//               .filter(c -> c.getCategory().equals(dbData))
+               .filter(c -> c.name().equals(dbData))
                .findFirst()
                .orElse(null);
      }
