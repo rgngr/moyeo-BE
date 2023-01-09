@@ -2,6 +2,7 @@ package com.hanghae.finalProject.rest.meeting.dto;
 
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
+import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.Getter;
 import java.time.LocalDateTime;
 
@@ -18,7 +19,7 @@ public class MeetingDetailResponseDto {
     private int duration;
     private String content;
     private int maxNum;
-    private String platform;
+    private PlatformCode platform;
     private String link;
     private boolean secret;
     private String password;
