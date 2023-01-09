@@ -1,6 +1,7 @@
 package com.hanghae.finalProject.rest.meeting.dto;
 
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
+import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.Getter;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ public class MeetingRequestDto {
     @NotNull(message = "최대 정원을 입력해주세요.")
     private int maxNum;
 
-    private String platform;
+    private PlatformCode platform;
 
     private String link;
 

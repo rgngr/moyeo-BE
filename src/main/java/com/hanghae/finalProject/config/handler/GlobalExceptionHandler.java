@@ -59,6 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      
      @org.springframework.web.bind.annotation.ExceptionHandler
      public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
+          e.printStackTrace();
           return handleExceptionInternal(e, Code.INTERNAL_SERVER_ERROR, request);
      }
      @org.springframework.web.bind.annotation.ExceptionHandler
@@ -88,6 +89,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      
      @org.springframework.web.bind.annotation.ExceptionHandler
      public ResponseEntity<Object> exception(Exception e, WebRequest request) {
+          e.printStackTrace();
           return handleExceptionInternal(e, Code.INTERNAL_SERVER_ERROR, request);
      }
      

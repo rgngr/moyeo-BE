@@ -46,7 +46,7 @@ public class Meeting extends Timestamped {
      private int maxNum;
 
      @Column
-     private String platform;
+     private PlatformCode platform;
 
      @Column
      private String link;
