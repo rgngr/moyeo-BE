@@ -43,7 +43,8 @@ public enum Code {
      USER_LOGIN_SUCCESS("로그인 성공", HttpStatus.OK),
      
      ONLY_FOR_ADMIN("관리자만 가능합니다.", HttpStatus.BAD_REQUEST),
-     WRONG_USERNAME_PATTERN("유저명은 최소 4자 이상, 10자 이하이며 알파벳 소문자(a~z), 숫자(0~9)로 구성되어야 합니다.", HttpStatus.BAD_REQUEST),
+     WRONG_EMAIL_PATTERN("올바른 이메일 형식이 아닙니다.", HttpStatus.BAD_REQUEST),
+     WRONG_USERNAME_PATTERN("닉네임은 최소 5자 이상, 10자이하 이어야 합니다.", HttpStatus.BAD_REQUEST),
      WRONG_PASSWORD_PATTERN("비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다.", HttpStatus.BAD_REQUEST),
      WRONG_PASSWORD("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
      NO_USER("회원을 찾을 수 없습니다.",HttpStatus.BAD_REQUEST),
@@ -53,6 +54,7 @@ public enum Code {
      OVERLAPPED_EMAIL("중복된 email 입니다",HttpStatus.BAD_REQUEST),
      PASSWORD_CHECK("입력된 비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST),
      NO_SUCH_CATEGORY("존재하지 않는 카테고리입니다.", HttpStatus.BAD_REQUEST),
+     NO_SUCH_PLATFORM("존재하지 않는 플랫폼입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
      
      private final String StatusMsg;

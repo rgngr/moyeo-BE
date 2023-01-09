@@ -29,7 +29,8 @@ public class MeetingService {
      @Transactional
      public MeetingDetailResponseDto getMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();
-          
+          // 비회원도 공유를 통해서 페이지를 볼 수 있어야 되니까 null 예외 처리 XX
+
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {
@@ -59,8 +60,8 @@ public class MeetingService {
      @Transactional
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
-          // user null일 경우 에러처리 추가 필요
-          
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
           Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user));
           
           boolean isMaster = false;
@@ -79,7 +80,8 @@ public class MeetingService {
      @Transactional
      public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
-          
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {
@@ -96,7 +98,8 @@ public class MeetingService {
      @Transactional
      public void updateLink(Long id, MeetingLinkRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
-          
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {
@@ -113,7 +116,8 @@ public class MeetingService {
      @Transactional
      public void deleteMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();
-          
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {

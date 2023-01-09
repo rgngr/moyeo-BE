@@ -41,9 +41,7 @@ public class UserService {
           if (userRepository.existsByEmail(email)) {
                throw new RestApiException(Code.OVERLAPPED_EMAIL);
           }
-
           userRepository.save(new User(username, password, email));
-
      }
 
      @Transactional(readOnly = true)
