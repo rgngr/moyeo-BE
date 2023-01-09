@@ -9,6 +9,7 @@ import com.querydsl.core.ResultTransformer;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -68,15 +69,17 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      @Override
      public List<MeetingListResponseDto.ResponseDto> findAllSortByPopularAndCategory(CategoryCode category, Long pageNum) {
           // 1) 커버링 인덱스로 대상 조회
+//          NumberPath<Long> cntAttendant = Expressions.numberPath(Long.class, "quantity");
           List<Long> ids = jpaQueryFactory
-               .select(attendant.meeting.id) // 참석자명단의 미팅id
-               .from(attendant)
-               .join(meeting)
-               .on(attendant.id.eq(meeting.id))
-               .groupBy(attendant.meeting.id)
+               .select(meeting.id) // 참석자명단의 미팅id
+               .from(meeting)
+               .leftJoin(attendant)
+               .on(meeting.id.eq(attendant.meeting.id))
+               .groupBy(meeting.id)
                .where(eqCategory(category),
                     meeting.deleted.eq(false)
                )
+               .orderBy(attendant.id.count().desc(), meeting.id.desc())
                .offset((pageNum == null) ? 0 : pageNum * 5)
                .limit(5)
                .fetch();
