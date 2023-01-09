@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmailController {
 
     private final EmailService emailService;
-    @GetMapping("/login/mailConfirm")
+    @GetMapping("/user/mailConfirm")
     public String mailConfirm(@RequestParam String email) throws Exception {
         String code = emailService.sendSimpleMessage(email);
         log.info("인증코드 : " + code);
