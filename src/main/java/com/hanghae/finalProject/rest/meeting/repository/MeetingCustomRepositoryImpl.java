@@ -152,6 +152,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           return meeting.category.eq(category);
      }
      
+     
      // 인기순 : attendant 테이블에서 참석자 많은 meeting_id 순으로 정렬해와야 함
      // >> 무한스크롤 : 기존 meetingIdx 말고, 참석자 순으로 정렬필요
      // 참석자테이블 left join & group by 한후 정렬  & where meetingId = idx
