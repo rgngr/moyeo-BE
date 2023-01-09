@@ -46,8 +46,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
                     meeting.title.contains(search), // 검색어 필터링
-                    ltBookId(meetingIdx),// 무한스크롤용
-                    meeting.deleted.eq(false))
+                    meeting.deleted.eq(false),
+                    ltBookId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
                .limit(5)
                .fetch();
@@ -58,6 +58,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           // 2) 해당 id를 가진 meeting 리스트
           return jpaQueryFactory
                .from(meeting)
+               .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
+               .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
                .orderBy(meeting.id.desc())
                .transform(getList());
@@ -67,7 +69,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      public List<MeetingListResponseDto.ResponseDto> findAllSortByPopularAndCategory(CategoryCode category, Long pageNum) {
           // 1) 커버링 인덱스로 대상 조회
           List<Long> ids = jpaQueryFactory
-               .select(attendant.meeting.id)
+               .select(attendant.meeting.id) // 참석자명단의 미팅id
                .from(attendant)
                .join(meeting)
                .on(attendant.id.eq(meeting.id))
