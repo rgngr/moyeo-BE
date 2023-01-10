@@ -26,34 +26,20 @@ public class MeetingService {
      private final CalendarRepository calendarRepository;
      private final AlarmRepository alarmRepository;
      
+     // 모임 상세조회
      @Transactional
      public MeetingDetailResponseDto getMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();
           // 비회원도 공유를 통해서 페이지를 볼 수 있어야 되니까 null 예외 처리 XX
           
-          Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
+          // 모임 존재여부 확인
+          MeetingDetailResponseDto meetingDetailResponseDto = meetingRepository.findByIdAndAttendAndAlarmAndLike(id, user);
+          if(meetingDetailResponseDto==null) throw new RestApiException(Code.NO_MEETING);
           
-          if (meeting.isDeleted()) {
-               throw new RestApiException(Code.NO_MEETING);
+          if (user.getId() == meetingDetailResponseDto.getMasterId()) {
+               meetingDetailResponseDto.isMaster(true);
           }
-          
-          boolean isMaster = false;
-          if (user.getId() == meeting.getUser().getId()) {
-               isMaster = true;
-          }
-
-//        Calendar calendar = calendarRepository.findByMeetingIdAndUser(id, user).orElse(null);
-          boolean isAttend = false;
-//                calendar.isAttend();
-          
-          boolean isAlarm = alarmRepository.existsByMeetingIdAndUser(id, user);
-          
-          int likeNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
-          int hateNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
-          
-          return new MeetingDetailResponseDto(meeting, isMaster, isAttend, isAlarm, likeNum, hateNum);
+          return meetingDetailResponseDto;
           
      }
      
