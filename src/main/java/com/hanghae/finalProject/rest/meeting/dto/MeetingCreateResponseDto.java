@@ -27,10 +27,11 @@ public class MeetingCreateResponseDto {
     private int likeNum;
     private int hateNum;
 
-    public MeetingCreateResponseDto(Meeting meeting, boolean master) {
+    // 모임생성시 사용
+    public MeetingCreateResponseDto(Meeting meeting) {
         this.id = meeting.getId();
         this.masterId = meeting.getUser().getId();
-        this.master = master;
+        this.master = true;
         this.title = meeting.getTitle();
         this.category = meeting.getCategory();
         this.startDate = meeting.getStartDate();

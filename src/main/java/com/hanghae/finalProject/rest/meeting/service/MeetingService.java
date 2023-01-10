@@ -4,6 +4,8 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
+import com.hanghae.finalProject.rest.attendant.model.Attendant;
+import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.calendar.repository.CalendarRepository;
 import com.hanghae.finalProject.rest.meeting.dto.*;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
@@ -26,6 +28,7 @@ public class MeetingService {
      private final ReviewRepository reviewRepository;
      private final CalendarRepository calendarRepository;
      private final AlarmRepository alarmRepository;
+     private final AttendantRepository attendantRepository;
      
      // 모임 상세조회
      @Transactional
@@ -51,12 +54,11 @@ public class MeetingService {
           
           Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user));
           
-          boolean isMaster = false;
-          if (user.getId() == meeting.getUser().getId()) {
-               isMaster = true;
-          }
+          // 참석자리스트에 방장 추가
+          Attendant attendant = new Attendant(meeting, user);
+          attendantRepository.save(attendant);
           
-          return new MeetingCreateResponseDto(meeting, isMaster);
+          return new MeetingCreateResponseDto(meeting);
      }
      
      // 모임수정
