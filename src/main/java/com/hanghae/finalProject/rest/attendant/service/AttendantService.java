@@ -35,6 +35,7 @@ public class AttendantService {
         );
 
         if (attendantRepository.findByMeetingIdAndUser(meetingId, user) == null) {
+            // 참석하지 않은 유저인 경우 참석으로
             Attendant attendant = attendantRepository.save(new Attendant(meeting, user));
             return new AttendantResponseDto(attendant);
         } else {
@@ -48,12 +49,12 @@ public class AttendantService {
     // 모임 참석자 리스트 조회
     @Transactional(readOnly = true)
     public List<AttendantListResponseDto> getAttendantList(Long meetingId) {
-        List<AttendantListResponseDto> attendantList = new ArrayList<>();
-        List<Attendant> attendants = attendantRepository.findByMeetingId(meetingId);
-        for (Attendant attendant : attendants) {
-            attendantList.add(new AttendantListResponseDto(attendant));
-        }
-        return attendantList;
+        User user = SecurityUtil.getCurrentUser();
+        // 링크공유받은 비회원유저도 요청들어옴. exception 처리 x
+        // 팔로우여부도 같이 들고오기
+        List<AttendantListResponseDto> attendants = attendantRepository.findByMeetingIdAndFollow(meetingId, user);
+        
+        return attendants;
     }
 
     // 모임 입장

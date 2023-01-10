@@ -27,7 +27,7 @@ public class MeetingCreateResponseDto {
     private int likeNum;
     private int hateNum;
 
-    public MeetingCreateResponseDto(Meeting meeting, boolean master, int likeNum, int hateNum) {
+    public MeetingCreateResponseDto(Meeting meeting, boolean master) {
         this.id = meeting.getId();
         this.masterId = meeting.getUser().getId();
         this.master = master;
@@ -42,8 +42,6 @@ public class MeetingCreateResponseDto {
         this.link = meeting.getLink();
         this.secret = meeting.isSecret();
         this.password = meeting.getPassword();
-        this.likeNum = likeNum;
-        this.hateNum =hateNum;
     }
 
 }

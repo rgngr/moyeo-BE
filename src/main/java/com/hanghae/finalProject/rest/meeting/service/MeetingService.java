@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,13 +37,13 @@ public class MeetingService {
           MeetingDetailResponseDto meetingDetailResponseDto = meetingRepository.findByIdAndAttendAndAlarmAndLike(id, user);
           if(meetingDetailResponseDto==null) throw new RestApiException(Code.NO_MEETING);
           
-          if (user.getId() == meetingDetailResponseDto.getMasterId()) {
+          if (user != null && Objects.equals(user.getId(), meetingDetailResponseDto.getMasterId())) {
                meetingDetailResponseDto.isMaster(true);
           }
           return meetingDetailResponseDto;
-          
      }
      
+     // 모임생성
      @Transactional
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
@@ -55,14 +56,10 @@ public class MeetingService {
                isMaster = true;
           }
           
-          int likeNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
-          int hateNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
-          
-          return new MeetingCreateResponseDto(meeting, isMaster, likeNum, hateNum);
+          return new MeetingCreateResponseDto(meeting, isMaster);
      }
      
+     // 모임수정
      @Transactional
      public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
@@ -81,6 +78,7 @@ public class MeetingService {
           }
      }
      
+     // 링크 업데이트
      @Transactional
      public void updateLink(Long id, MeetingLinkRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
@@ -99,6 +97,7 @@ public class MeetingService {
           }
      }
      
+     // 모임 삭제
      @Transactional
      public void deleteMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();

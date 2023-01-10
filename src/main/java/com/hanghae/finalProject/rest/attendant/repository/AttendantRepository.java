@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AttendantRepository extends JpaRepository<Attendant, Long> {
+public interface AttendantRepository extends JpaRepository<Attendant, Long>, AttendantCustomRepository {
     Attendant findByMeetingIdAndUser(Long meetingId, User user);
     Attendant findAttendantByMeetingId(Long meetingId);
-    List<Attendant> findByMeetingId(Long meetingId);
 }

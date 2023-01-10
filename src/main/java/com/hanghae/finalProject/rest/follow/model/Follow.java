@@ -20,4 +20,6 @@ public class Follow {
      private User user; // 모임생성자
      
      //팔로우아이디
+     @Column(nullable = false)
+     private Long follow_id;
 }

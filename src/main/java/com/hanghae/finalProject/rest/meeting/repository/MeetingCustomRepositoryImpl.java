@@ -1,7 +1,6 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
-import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
@@ -10,8 +9,8 @@ import com.querydsl.core.ResultTransformer;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -19,32 +18,27 @@ import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import static com.hanghae.finalProject.rest.alarm.model.QAlarm.alarm;
 import static com.hanghae.finalProject.rest.attendant.model.QAttendant.attendant;
 import static com.hanghae.finalProject.rest.meeting.model.QMeeting.meeting;
-import static com.hanghae.finalProject.rest.user.model.QUser.user;
-import static com.hanghae.finalProject.rest.alarm.model.QAlarm.alarm;
 import static com.hanghae.finalProject.rest.review.model.QReview.review1;
+import static com.hanghae.finalProject.rest.user.model.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.jpa.JPAExpressions.select;
 
+@RequiredArgsConstructor
 @Repository
 public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      
      private final JPAQueryFactory jpaQueryFactory;
-     private final AttendantRepository attendantRepository;
      
-     public MeetingCustomRepositoryImpl(JPAQueryFactory jpaQueryFactory,
-                                        AttendantRepository attendantRepository) {
-          this.jpaQueryFactory = jpaQueryFactory;
-          this.attendantRepository = attendantRepository;
-     }
      
      @Override
      public MeetingDetailResponseDto findByIdAndAttendAndAlarmAndLike(Long meetingId, User user) {
           Long loggedId = user != null ? user.getId() : null;
-          MeetingDetailResponseDto responseDto = jpaQueryFactory
+          return jpaQueryFactory
                .select(Projections.fields(
                     MeetingDetailResponseDto.class,
                     meeting.id.as("id"),
@@ -60,30 +54,32 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.maxNum,
                     meeting.secret,
                     meeting.password,
+                    // 로그인 유저의 해당 모임 참석유무
                     ExpressionUtils.as(
-                         JPAExpressions.select(attendant.user.id.isNotNull())
+                         select(attendant.user.id.isNotNull())
                               .from(attendant)
                               .where(attendant.meeting.id.eq(meetingId), attendant.user.id.eq(loggedId)), "attend"),
+                    // 로그인 유저의 해당모임 알림활성화 유무
                     ExpressionUtils.as(
-                         JPAExpressions.select(alarm.user.id.isNotNull())
+                         select(alarm.user.id.isNotNull())
                               .from(alarm)
                               .where(alarm.meeting.id.eq(meetingId), alarm.user.id.eq(loggedId)), "alarm"),
+                    // 해당 모임의 좋아요 수
                     ExpressionUtils.as(
-                         JPAExpressions.select(
-                                   review1.review.count())
+                         select(
+                              review1.review.count())
                               .from(review1)
                               .where(review1.meeting.id.eq(meetingId), review1.review.eq(true)), "likeNum"),
+                    // 해당 모임의 싫어요 수
                     ExpressionUtils.as(
-                         JPAExpressions.select(
-                                   review1.review.count())
+                         select(
+                              review1.review.count())
                               .from(review1)
                               .where(review1.meeting.id.eq(meetingId), review1.review.eq(false)), "hateNum"))
                )
                .from(meeting)
                .where(meeting.id.eq(meetingId), meeting.deleted.isFalse())
                .fetchOne();
-          
-          return responseDto;
      }
      
      // 검색리스트
@@ -203,13 +199,6 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                return null;
           }
           return meeting.category.eq(category);
-     }
-     
-     // 로그인유저의 참석여부 확인
-     private Boolean isAttendant(Long id, User user) {
-          // 비회원유저일경우
-          if (user == null) return false;
-          return false;
      }
      
      // 인기순 : attendant 테이블에서 참석자 많은 meeting_id 순으로 정렬해와야 함
