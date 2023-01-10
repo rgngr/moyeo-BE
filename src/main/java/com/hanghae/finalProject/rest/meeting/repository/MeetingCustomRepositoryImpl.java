@@ -93,7 +93,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.startTime.goe(LocalDateTime.now()),
                     meeting.title.contains(search), // 검색어 필터링
                     meeting.deleted.eq(false),
-                    ltBookId(meetingIdx))// 무한스크롤용
+                    ltMeetingId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
                .limit(5)
                .fetch();
@@ -150,7 +150,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(
                     meeting.startTime.goe(LocalDateTime.now()),
-                    ltBookId(meetingIdx),
+                    ltMeetingId(meetingIdx),
                     eqCategory(category),
                     meeting.deleted.eq(false)
                )
@@ -186,7 +186,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      }
      
      // 무한스크롤용. 해당 idx 보다 작은것들 불러오기 (sortBy new 일때만 이거)
-     private BooleanExpression ltBookId(Long meetingIdx) {
+     private BooleanExpression ltMeetingId(Long meetingIdx) {
           if (meetingIdx == null) {
                return null; // BooleanExpression 자리에 null이 반환되면 조건문에서 자동으로 제거된다
           }

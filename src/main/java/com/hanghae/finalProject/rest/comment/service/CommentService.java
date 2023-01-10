@@ -12,7 +12,7 @@ import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
@@ -23,8 +23,8 @@ public class CommentService {
 
     // 댓글 조회
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> getCommentList(Long meetingId) {
-        List<CommentResponseDto> commentList = commentRepository.findByMeetingIdOrderByCreatedAtAsc(meetingId);
+    public List<CommentResponseDto> getCommentList(Long meetingId, Long commentId) {
+        List<CommentResponseDto> commentList = commentRepository.findByMeetingIdOrderByCreatedAtDesc(meetingId, commentId);
         
         return commentList;
     }

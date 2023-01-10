@@ -19,8 +19,11 @@ public class CommentController {
 
     @Operation(summary = "댓글 조회")
     @GetMapping("/comments")
-    public ResponseDto getCommentList(@PathVariable Long meetingId) {
-        return DataResponseDto.of(commentService.getCommentList(meetingId));
+    public ResponseDto getCommentList(
+         @PathVariable Long meetingId,
+         @RequestParam(value="commentId", required = false) Long commentId
+    ) {
+        return DataResponseDto.of(commentService.getCommentList(meetingId, commentId));
     }
 
     @Operation(summary = "댓글 작성")
