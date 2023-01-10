@@ -24,11 +24,8 @@ public class CommentService {
     // 댓글 조회
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getCommentList(Long meetingId) {
-        List<CommentResponseDto> commentList = new ArrayList<>();
-        List<Comment> comments = commentRepository.findByMeetingIdOrderByCreatedAtAsc(meetingId);
-        for (Comment comment : comments) {
-            commentList.add(new CommentResponseDto(comment));
-        }
+        List<CommentResponseDto> commentList = commentRepository.findByMeetingIdOrderByCreatedAtAsc(meetingId);
+        
         return commentList;
     }
 
