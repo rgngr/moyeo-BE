@@ -35,7 +35,7 @@ public class AttendantCustomRepositoryImpl implements AttendantCustomRepository 
                .join(user)
                .on(attendant.meeting.id.eq(meetingId), attendant.user.id.eq(user.id)) // 참석자 유저정보
                .leftJoin(follow)
-               .on(follow.user.id.eq(loggedId), follow.follow_id.eq(user.id)) // 로그인유저의 팔로우유무
+               .on(follow.user.id.eq(loggedId), follow.followId.eq(user.id)) // 로그인유저의 팔로우유무
                .where(attendant.meeting.id.eq(meetingId), user.deleted.isFalse())
                .fetch();
           
