@@ -28,6 +28,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                .from(comment1)
                .where(
                     comment1.meeting.id.eq(meetingId),
+                    comment1.deleted.isFalse(),
                     ltCommentId(commentId)
                )
                .orderBy(comment1.id.desc())

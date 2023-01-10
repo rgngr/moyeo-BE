@@ -47,19 +47,23 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public Code deleteComment(Long commentId) {
+    public void deleteComment(Long commentId) {
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
+        // 존재하는가 & 삭제된건 아닌가
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new RestApiException(Code.NO_COMMENT)
         );
-
+        if(comment.isDeleted()){
+            throw new RestApiException(Code.NO_COMMENT);
+        }
+        // 댓글작성자가 맞는가
         if (!user.getId().equals(comment.getUser().getId())) {
             throw new RestApiException(Code.INVALID_USER_DELETE);
         }
-
-        commentRepository.delete(comment);
-        return Code.DELETED_COMMENT;
+        // delete true
+        comment.delete();
+        commentRepository.save(comment);
     }
 }

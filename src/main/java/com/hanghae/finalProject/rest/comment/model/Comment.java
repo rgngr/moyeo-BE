@@ -32,10 +32,16 @@ public class Comment extends Timestamped {
 
      @Column
      private boolean deleted;
+     
+     
 
      public Comment(CommentRequestDto commentRequestDto,Meeting meeting, User user) {
           this.comment = commentRequestDto.getComment();
           this.meeting = meeting;
           this.user = user;
+     }
+     
+     public void delete() {
+          this.deleted = true;
      }
 }
