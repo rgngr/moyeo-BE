@@ -34,4 +34,10 @@ public class AttendantController {
         attendantService.enter(meetingId);
         return ResponseDto.of(true, Code.CREATE_ENTER);
     }
+    
+    @Operation(summary = "알림 받기/음소거")
+    @PatchMapping("/alarm")
+    public ResponseDto getAlarm(@PathVariable Long meetingId) {
+        return DataResponseDto.of(attendantService.getAlarm(meetingId));
+    }
 }
