@@ -126,7 +126,8 @@ public class MeetingService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           
           MeetingListResponseDto response = new MeetingListResponseDto();
-          List<MeetingListResponseDto.ResponseDto> responseDtoList = (sortBy.equals("new")) ? meetingRepository.findAllSortByNewAndCategory(category, meetingIdx) // 신규순
+          List<MeetingListResponseDto.ResponseDto> responseDtoList = (sortBy.equals("new")) ?
+               meetingRepository.findAllSortByNewAndCategory(category, meetingIdx) // 신규순
                : meetingRepository.findAllSortByPopularAndCategory(category, meetingIdx); // 인기순
           
           response.addMeetingList(responseDtoList.stream()
