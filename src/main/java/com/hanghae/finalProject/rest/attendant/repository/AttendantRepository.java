@@ -11,4 +11,6 @@ import java.util.List;
 public interface AttendantRepository extends JpaRepository<Attendant, Long>, AttendantCustomRepository {
     Attendant findByMeetingIdAndUser(Long meetingId, User user);
     Attendant findAttendantByMeetingId(Long meetingId);
+     List<Attendant> findAllByMeetingId(Long meetingId);
+     
 }

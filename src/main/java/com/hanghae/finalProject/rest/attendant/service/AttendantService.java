@@ -33,6 +33,11 @@ public class AttendantService {
         Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                 () -> new RestApiException(Code.NO_MEETING)
         );
+        // 최대정원 도달시 참석불가
+        List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meetingId);
+        if(meeting.getMaxNum() <= attendantList.size()){
+            throw new RestApiException(Code.NO_MORE_SEAT);
+        }
 
         if (attendantRepository.findByMeetingIdAndUser(meetingId, user) == null) {
             // 참석하지 않은 유저인 경우 참석으로
@@ -62,6 +67,7 @@ public class AttendantService {
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
+        // 존재하는 모임인가
         Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                 () -> new RestApiException(Code.NO_MEETING)
         );

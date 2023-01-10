@@ -12,6 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttendantListResponseDto {
+    
+    
     private Long userId;
     private String username;
     private String profileUrl;
