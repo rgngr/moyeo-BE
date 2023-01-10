@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AttendantRepository extends JpaRepository<Attendant, Long>, AttendantCustomRepository {
-    Attendant findByMeetingIdAndUser(Long meetingId, User user);
-    Attendant findAttendantByMeetingId(Long meetingId);
+    Optional<Attendant> findByMeetingIdAndUser(Long meetingId, User user);
      List<Attendant> findAllByMeetingId(Long meetingId);
      
 }

@@ -42,15 +42,23 @@ public class AttendantService {
           if (meeting.getMaxNum() <= attendantList.size()) {
                throw new RestApiException(Code.NO_MORE_SEAT);
           }
-          
-          if (attendantRepository.findByMeetingIdAndUser(meetingId, user) == null) {
+          Attendant oriAttendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
+          if (oriAttendant== null) {
                // 참석하지 않은 유저인 경우 참석으로
                Attendant attendant = attendantRepository.save(new Attendant(meeting, user));
+               // 참석시 알람받기가 기본임
+               alarmRepository.save(new Alarm(user, meeting));
                return new AttendantResponseDto(attendant);
           } else {
-               Attendant attendant = attendantRepository.findAttendantByMeetingId(meetingId);
-               attendant.cancelAttendant(meeting);
-               attendantRepository.delete(attendant);
+               // 기존에 참석했던 유저의 경우
+               oriAttendant.cancelAttendant(meeting);
+               // 알람받기 리스트에 있을경우 알람 삭제필요
+               Alarm alarm = alarmRepository.findByMeetingIdAndUser(meeting.getId(), user).orElseGet(new Alarm());
+               if(alarm!=null){
+                    alarmRepository.delete(alarm);
+               }
+               // 참석자 명단에서 삭제
+               attendantRepository.delete(oriAttendant);
                return null;
           }
      }
@@ -77,7 +85,11 @@ public class AttendantService {
                () -> new RestApiException(Code.NO_MEETING)
           );
           // 참석하기로한 모임인가
-          Attendant attendant = attendantRepository.findByMeetingIdAndUser(meetingId, user);
+          Attendant attendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
+          if(attendant==null){
+               // 참석하기 누르지않은 모임일 경우
+               throw new RestApiException(Code.NOT_ATTENDANCE_YET);
+          }
           attendant.enter(meeting);
           attendantRepository.save(attendant);
           return Code.CREATE_ENTER;

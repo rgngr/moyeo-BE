@@ -56,6 +56,7 @@ public enum Code {
      NO_SUCH_CATEGORY("존재하지 않는 카테고리입니다.", HttpStatus.BAD_REQUEST),
      NO_SUCH_PLATFORM("존재하지 않는 플랫폼입니다.", HttpStatus.BAD_REQUEST),
      NO_MORE_SEAT("정원이 가득 찼습니다.", HttpStatus.BAD_REQUEST),
+     NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
      
      private final String StatusMsg;
