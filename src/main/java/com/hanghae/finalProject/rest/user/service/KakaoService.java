@@ -109,8 +109,10 @@ public class KakaoService {
                kakaoUserInfoRequest,
                String.class
           );
-          
+          log.info("Post https://kapi.kakao.com/v2/user/me success!!");
           String responseBody = response.getBody();
+          log.info("responseBody >> {} ", responseBody);
+          
           ObjectMapper objectMapper = new ObjectMapper();
           JsonNode jsonNode = objectMapper.readTree(responseBody);
           Long id = jsonNode.get("id").asLong();
