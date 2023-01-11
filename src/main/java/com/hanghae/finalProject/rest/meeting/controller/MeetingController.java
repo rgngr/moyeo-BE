@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -76,6 +77,16 @@ public class MeetingController {
     public ResponseDto deleteMeeting(@PathVariable Long id) {
         meetingService.deleteMeeting(id);
         return ResponseDto.of(true, Code.DELETE_MEETING);
+    }
+    
+    @ApiOperation (value = "나의 월별 캘린더 불러오기")
+    @GetMapping("/mine")
+    public ResponseDto getMyMeetings(
+         @RequestParam(value="year", required = false) Long year,
+         @RequestParam(value="month", required = false) Long month
+    ){
+        log.info(String.valueOf(LocalDateTime.now().getMonth()));
+        return DataResponseDto.of(meetingService.getMyMeetings(year, month));
     }
 
 

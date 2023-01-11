@@ -183,4 +183,9 @@ public class MeetingService {
           return response;
           
      }
+     
+     @Transactional (readOnly = true)
+     public MyMeetingResponseDto getMyMeetings(Long year, Long month) {
+          return null;
+     }
 }
