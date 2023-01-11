@@ -1,5 +1,8 @@
 package com.hanghae.finalProject.rest.user.service;
 
+//import com.hanghae.finalProject.rest.user.dto.EmailCertificationResponse;
+import com.hanghae.finalProject.rest.user.model.Email;
+import com.hanghae.finalProject.rest.user.repository.EmailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +28,13 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String id;
 
+    private final EmailRepository emailRepository;
+
+//    private final PasswordEncoder passwordencode;//
+
+
+
+    // @Cacheable("ePw")
     public String sendSimpleMessage(String to)throws MessagingException, UnsupportedEncodingException {
         //인증번호 생성
         StringBuffer key = new StringBuffer();
@@ -59,10 +69,90 @@ public class EmailService {
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
-
+        Email email = new Email(to,ePw);
+        emailRepository.save(email);
         return ePw;
     }
 
+//    public void verifyEmail(EmailCertificationRequest requestDto) {
+//        if (isVerify(requestDto)) {
+//            throw new AuthenticationNumberMismatchException("인증번호가 일치하지 않습니다.");
+//        }
+//        EmailCertificationDao.removeEmailCertification(requestDto.getEmail());
+//    }
+//
+//    private boolean isVerify(EmailCertificationRequest requestDto) {        //Certification
+//        return !(EmailCertificationDao.hasKey(requestDto.getEmail()) &&
+//                EmailCertificationDao.getEmailCertification(requestDto.getEmail())
+//                        .equals(requestDto.getCertificationNumber()));
+//    }
+    /////////////////////////////////////////
+                        //DAO 가져옴
+//    private final SmsCertificationDao smsCertificationDao;
+                        //Properties 가져옴
+//    private final AppProperties appProperties;
+//
+//    // 인증 메세지 내용 생성
+//    public String makeSmsContent(String certificationNumber) {
+//        SmsMessageTemplate content = new SmsMessageTemplate();
+//        return content.builderCertificationContent(certificationNumber);
+//    }
+//          //HashMap을 리턴값으로 가지고
+//    public HashMap<String, String> makeParams(String to, String text) {
+//        HashMap<String, String> params = new HashMap<>();
+//        params.put("from", appProperties.getCoolSmsFromPhoneNumber());
+//        params.put("type", SMS_TYPE);
+//        params.put("app_version", APP_VERSION);
+//        params.put("to", to);
+//        params.put("text", text);
+//        return params;
+//    }
+//
+//    // coolSms API를 이용하여 인증번호 발송하고, 발송 정보를 Redis에 저장
+//    public void sendSms(String phone) {
+//        Message coolsms = new Message(appProperties.getCoolSmsKey(),
+//                appProperties.getCoolSmsSecret());
+//        String randomNumber = makeRandomNumber();
+//        String content = makeSmsContent(randomNumber);
+//        HashMap<String, String> params = makeParams(phone, content);
+//
+//        try {
+//            JSONObject result = coolsms.send(params);
+//            if (result.get("success_count").toString().equals("0")) {
+//                throw new SmsSendFailedException();
+//            }
+//        } catch (CoolsmsException exception) {
+//            exception.printStackTrace();
+//        }
+//
+//        smsCertificationDao.createSmsCertification(phone, randomNumber);
+//    }
+//
+//    //사용자가 입력한 인증번호가 Redis에 저장된 인증번호와 동일한지 확인
+//    public void verifySms(SmsCertificationRequest requestDto) {
+//        if (isVerify(requestDto)) {
+//            throw new AuthenticationNumberMismatchException("인증번호가 일치하지 않습니다.");
+//        }
+//        smsCertificationDao.removeSmsCertification(requestDto.getPhone());
+//    }
+//
+//    private boolean isVerify(SmsCertificationRequest requestDto) {
+//        return !(smsCertificationDao.hasKey(requestDto.getPhone()) &&
+//                smsCertificationDao.getSmsCertification(requestDto.getPhone())
+//                        .equals(requestDto.getCertificationNumber()));
+//    }
+
+
+
+
+
+
+
+
+
+
+
+    ////////////////////////////////////////////
     // 인증코드 만들기
 //    public int createKey() {
 //        java.util.Random generator = new java.util.Random();
