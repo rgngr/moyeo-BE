@@ -7,6 +7,7 @@ import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.calendar.repository.CalendarRepository;
+import com.hanghae.finalProject.rest.follow.repository.FollowRepository;
 import com.hanghae.finalProject.rest.meeting.dto.*;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ public class MeetingService {
      private final CalendarRepository calendarRepository;
      private final AlarmRepository alarmRepository;
      private final AttendantRepository attendantRepository;
+     private final FollowRepository followRepository;
      
      // 모임 상세조회
      @Transactional
@@ -129,8 +132,8 @@ public class MeetingService {
           List<MeetingListResponseDto.ResponseDto> responseDtoList = (sortBy.equals("new")) ?
                meetingRepository.findAllSortByNewAndCategory(category, meetingIdx) // 신규순
                : meetingRepository.findAllSortByPopularAndCategory(category, meetingIdx); // 인기순
-          
-          response.addMeetingList(responseDtoList.stream()
+     
+          responseDtoList = responseDtoList.stream()
                // meeting 작성자의 id와 로그인 유저의 아이디 비교
                .peek(m -> {
                     // master 처리 ,attendantsNum 처리,
@@ -142,8 +145,15 @@ public class MeetingService {
                     } else {
                          m.setAttendantsNum(m.getAttendantsList().size());
                     }
-               }).collect(Collectors.toList()));
-          return response;
+               }).collect(Collectors.toList());
+          
+          // 인기순일 경우 : 재정렬 필요 > 인기순 + 마감날짜빠른순
+          if(sortBy.equals("popular")){
+               responseDtoList = responseDtoList.stream().sorted(Comparator.comparing(MeetingListResponseDto.ResponseDto::getAttendantsNum).reversed()
+                    .thenComparing(MeetingListResponseDto.ResponseDto::getStartTime)).collect(Collectors.toList());
+          }
+          
+          return response.addMeetingList(responseDtoList);
      }
      
      // 제목 검색 모임리스트 불러오기

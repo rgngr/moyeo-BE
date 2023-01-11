@@ -138,8 +138,9 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .from(meeting)
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
+//               .groupBy(meeting.id)
                .where(meeting.id.in(ids))
-               .orderBy(meeting.id.desc())
+//               .orderBy(attendant.id.count().desc(), meeting.id.desc())
                .transform(getList());
      }
      
