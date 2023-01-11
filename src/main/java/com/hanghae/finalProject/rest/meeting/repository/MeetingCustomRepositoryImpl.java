@@ -1,13 +1,16 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
-import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
+import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
+import com.hanghae.finalProject.rest.user.model.User;
 import com.querydsl.core.ResultTransformer;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -16,22 +19,67 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hanghae.finalProject.rest.alarm.model.QAlarm.alarm;
 import static com.hanghae.finalProject.rest.attendant.model.QAttendant.attendant;
 import static com.hanghae.finalProject.rest.meeting.model.QMeeting.meeting;
+import static com.hanghae.finalProject.rest.review.model.QReview.review1;
 import static com.hanghae.finalProject.rest.user.model.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.jpa.JPAExpressions.select;
 
+@RequiredArgsConstructor
 @Repository
 public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      
      private final JPAQueryFactory jpaQueryFactory;
-     private final AttendantRepository attendantRepository;
      
-     public MeetingCustomRepositoryImpl(JPAQueryFactory jpaQueryFactory,
-                                        AttendantRepository attendantRepository) {
-          this.jpaQueryFactory = jpaQueryFactory;
-          this.attendantRepository = attendantRepository;
+     
+     @Override
+     public MeetingDetailResponseDto findByIdAndAttendAndAlarmAndLike(Long meetingId, User user) {
+          Long loggedId = user != null ? user.getId() : null;
+          return jpaQueryFactory
+               .select(Projections.fields(
+                    MeetingDetailResponseDto.class,
+                    meeting.id.as("id"),
+                    meeting.user.id.as("masterId"),
+                    meeting.title,
+                    meeting.category,
+                    meeting.startDate,
+                    meeting.startTime,
+                    meeting.duration,
+                    meeting.platform,
+                    meeting.link,
+                    meeting.content,
+                    meeting.maxNum,
+                    meeting.secret,
+                    meeting.password,
+                    // 로그인 유저의 해당 모임 참석유무
+                    ExpressionUtils.as(
+                         select(attendant.user.id.isNotNull())
+                              .from(attendant)
+                              .where(attendant.meeting.id.eq(meetingId), attendant.user.id.eq(loggedId)), "attend"),
+                    // 로그인 유저의 해당모임 알림활성화 유무
+                    ExpressionUtils.as(
+                         select(alarm.user.id.isNotNull())
+                              .from(alarm)
+                              .where(alarm.meeting.id.eq(meetingId), alarm.user.id.eq(loggedId)), "alarm"),
+                    // 해당 모임의 좋아요 수
+                    ExpressionUtils.as(
+                         select(
+                              review1.review.count())
+                              .from(review1)
+                              .where(review1.meeting.id.eq(meetingId), review1.review.eq(true)), "likeNum"),
+                    // 해당 모임의 싫어요 수
+                    ExpressionUtils.as(
+                         select(
+                              review1.review.count())
+                              .from(review1)
+                              .where(review1.meeting.id.eq(meetingId), review1.review.eq(false)), "hateNum"))
+               )
+               .from(meeting)
+               .where(meeting.id.eq(meetingId), meeting.deleted.isFalse())
+               .fetchOne();
      }
      
      // 검색리스트
@@ -45,7 +93,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.startTime.goe(LocalDateTime.now()),
                     meeting.title.contains(search), // 검색어 필터링
                     meeting.deleted.eq(false),
-                    ltBookId(meetingIdx))// 무한스크롤용
+                    ltMeetingId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
                .limit(5)
                .fetch();
@@ -91,6 +139,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
+               .orderBy(meeting.id.desc())
                .transform(getList());
      }
      
@@ -102,7 +151,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(
                     meeting.startTime.goe(LocalDateTime.now()),
-                    ltBookId(meetingIdx),
+                    ltMeetingId(meetingIdx),
                     eqCategory(category),
                     meeting.deleted.eq(false)
                )
@@ -138,7 +187,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      }
      
      // 무한스크롤용. 해당 idx 보다 작은것들 불러오기 (sortBy new 일때만 이거)
-     private BooleanExpression ltBookId(Long meetingIdx) {
+     private BooleanExpression ltMeetingId(Long meetingIdx) {
           if (meetingIdx == null) {
                return null; // BooleanExpression 자리에 null이 반환되면 조건문에서 자동으로 제거된다
           }
@@ -152,7 +201,6 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           }
           return meeting.category.eq(category);
      }
-     
      
      // 인기순 : attendant 테이블에서 참석자 많은 meeting_id 순으로 정렬해와야 함
      // >> 무한스크롤 : 기존 meetingIdx 말고, 참석자 순으로 정렬필요

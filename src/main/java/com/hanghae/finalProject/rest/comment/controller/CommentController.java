@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "comment", description = "댓글 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/meetings/{meetingId}")
@@ -19,8 +18,11 @@ public class CommentController {
 
     @Operation(summary = "댓글 조회")
     @GetMapping("/comments")
-    public ResponseDto getCommentList(@PathVariable Long meetingId) {
-        return DataResponseDto.of(commentService.getCommentList(meetingId));
+    public ResponseDto getCommentList(
+         @PathVariable Long meetingId,
+         @RequestParam(value="commentId", required = false) Long commentId
+    ) {
+        return DataResponseDto.of(commentService.getCommentList(meetingId, commentId));
     }
 
     @Operation(summary = "댓글 작성")
@@ -34,6 +36,6 @@ public class CommentController {
     @DeleteMapping("/comments/{commentId}")
     public ResponseDto deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
-        return ResponseDto.of(true, Code.DELETED_COMMENT);
+        return ResponseDto.of(true, Code.DELETE_COMMENT);
     }
 }

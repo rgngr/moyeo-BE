@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 
-@Tag (name="user", description = "사용자 API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor

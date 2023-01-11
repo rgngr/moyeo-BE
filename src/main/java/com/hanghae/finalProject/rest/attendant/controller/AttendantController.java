@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "attendant", description = "모임 참석 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/meetings/{meetingId}")
@@ -33,5 +32,11 @@ public class AttendantController {
     public ResponseDto enter(@PathVariable Long meetingId) {
         attendantService.enter(meetingId);
         return ResponseDto.of(true, Code.CREATE_ENTER);
+    }
+    
+    @Operation(summary = "알림 받기/음소거")
+    @PatchMapping("/alarm")
+    public ResponseDto getAlarm(@PathVariable Long meetingId) {
+        return DataResponseDto.of(attendantService.getAlarm(meetingId));
     }
 }
