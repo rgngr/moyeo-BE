@@ -15,9 +15,6 @@ public class MeetingRequestDto {
     @NotNull(message = "카테고리를 선택해주세요.")
     private CategoryCode category;
 
-    @NotNull(message = "시작 날짜를 선택해주세요.")
-    private LocalDateTime startDate;
-
     @NotNull(message = "시작 시간을 선택해주세요.")
     private LocalDateTime startTime;
 

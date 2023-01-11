@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class KakaoLoginResponseDto {
+     
+     private Long id;
      @Schema (description = "유저명")
      private String username;
      

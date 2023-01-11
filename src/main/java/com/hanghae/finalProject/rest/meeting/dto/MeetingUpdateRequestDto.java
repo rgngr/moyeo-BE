@@ -11,9 +11,6 @@ public class MeetingUpdateRequestDto {
     @NotNull(message = "제목을 입력해주세요.")
     private String title;
 
-    @NotNull(message = "시작 날짜를 선택해주세요.")
-    private LocalDateTime startDate;
-
     @NotNull(message = "시작 시간을 선택해주세요.")
     private LocalDateTime startTime;
 

@@ -30,19 +30,14 @@ public class MeetingListResponseDto {
          private boolean master;
          private String title;
          private CategoryCode category;
-         private LocalDateTime startDate;
          private LocalDateTime startTime;
          private int duration;
          private PlatformCode platform;
-//         private String link;
          private String content;
          private int maxNum;
          private boolean secret;
          private String password;
          private boolean attend;
-//         private boolean alarm;
-//         private int likeNum;
-//         private int hateNum;
           private int attendantsNum;
           private List<AttendantResponseDto.simpleResponseDto> attendantsList;
      

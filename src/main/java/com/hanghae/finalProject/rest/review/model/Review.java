@@ -25,4 +25,10 @@ public class Review {
 
      @Column(nullable = false)
      private boolean review;
+     
+     public Review(Meeting meeting, User user, boolean review){
+          this.meeting = meeting;
+          this.user = user;
+          this.review = review;
+     }
 }

@@ -15,7 +15,6 @@ public class MeetingCreateResponseDto {
     private boolean master;
     private String title;
     private CategoryCode category;
-    private LocalDateTime startDate;
     private LocalDateTime startTime;
     private int duration;
     private String content;
@@ -34,7 +33,6 @@ public class MeetingCreateResponseDto {
         this.master = true;
         this.title = meeting.getTitle();
         this.category = meeting.getCategory();
-        this.startDate = meeting.getStartDate();
         this.startTime = meeting.getStartTime();
         this.duration = meeting.getDuration();
         this.content = meeting.getContent();
