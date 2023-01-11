@@ -47,6 +47,10 @@ public class Attendant implements Supplier<Attendant> {
           this.meeting = meeting;
           this.entrance = true;
      }
+     
+     public void makeReview(Boolean review){
+          this.review = review;
+     }
      @Override
      public Attendant get() {
           return null;

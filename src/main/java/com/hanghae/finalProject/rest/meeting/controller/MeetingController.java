@@ -78,27 +78,4 @@ public class MeetingController {
         meetingService.deleteMeeting(id);
         return ResponseDto.of(true, Code.DELETE_MEETING);
     }
-    
-    @ApiOperation (value = "나의 월별 캘린더 불러오기")
-    @GetMapping("/mine")
-    public ResponseDto getMyMeetings(
-         @RequestParam(value="year", required = false) Long year,
-         @RequestParam(value="month", required = false) Long month
-    ){
-        log.info(String.valueOf(LocalDateTime.now().getMonth()));
-        return DataResponseDto.of(meetingService.getMyMeetings(year, month));
-    }
-
-
-
-    //     public ResponseDto signup(@RequestBody @Valid SignupRequestDto requestDto) {
-//          userService.signUp(requestDto);
-//          // 1. data o , msg o
-////          return DataResponseDto.of("data test", "test 성공"); //data있고 별도 msg보낼 경우
-//          // 2. data o msg 정상
-////          return DataResponseDto.of("data test");
-//          // 3. DATA X, MSG 따로
-//          return ResponseDto.of(true, Code.USER_SIGNUP_SUCCESS);
-//     }
-
 }
