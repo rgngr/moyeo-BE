@@ -109,7 +109,7 @@ public class KakaoService {
                String.class
           );
           String responseBody = response.getBody();
-          log.info("responseBody >> {} ", responseBody);
+          log.info("responseBody!! >> {} ", responseBody);
           
           ObjectMapper objectMapper = new ObjectMapper();
           JsonNode jsonNode = objectMapper.readTree(responseBody);
@@ -125,7 +125,7 @@ public class KakaoService {
                email = jsonNode.get("kakao_account")
                     .get("email").asText();
           }
-          
+          log.info("email : {}", email);
           log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email + ", " + profile_image);
           return new KakaoUserInfoDto(id, nickname, email, profile_image);
      }
