@@ -57,7 +57,7 @@ public class KakaoService {
           response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
           // 강제로그인
           forceLogin(kakaoUser);
-          return new KakaoLoginResponseDto(kakaoUser.getUsername(), kakaoUser.getProfileUrl(), createToken);
+          return new KakaoLoginResponseDto(kakaoUser.getId(), kakaoUser.getUsername(), kakaoUser.getProfileUrl(), createToken);
      }
      
      // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -109,8 +109,10 @@ public class KakaoService {
                kakaoUserInfoRequest,
                String.class
           );
-          
+          log.info("Post https://kapi.kakao.com/v2/user/me success!!");
           String responseBody = response.getBody();
+          log.info("responseBody >> {} ", responseBody);
+          
           ObjectMapper objectMapper = new ObjectMapper();
           JsonNode jsonNode = objectMapper.readTree(responseBody);
           Long id = jsonNode.get("id").asLong();
