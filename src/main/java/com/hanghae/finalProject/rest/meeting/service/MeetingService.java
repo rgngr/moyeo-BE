@@ -187,17 +187,4 @@ public class MeetingService {
                }).collect(Collectors.toList()));
           return response;
      }
-     
-     @Transactional (readOnly = true)
-     public MyMeetingResponseDto getMyMeetings(Integer year, Integer month) {
-          year = (year == null || year == 0) ? LocalDateTime.now().getYear() : year;
-          month = (month == null || month == 0) ? LocalDateTime.now().getMonthValue() : month;
-          
-          User user = SecurityUtil.getCurrentUser(); // 비회원일경우(토큰못받았을경우) null
-          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          
-          MyMeetingResponseDto response = new MyMeetingResponseDto();
-          List<MyMeetingResponseDto.ResponseDto> responseDtoList = meetingRepository.findAllByUserIdAndMonth(user.getId(), year, month);
-          return response.addMeetingList(responseDtoList);
-     }
 }

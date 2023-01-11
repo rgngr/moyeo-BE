@@ -2,6 +2,7 @@ package com.hanghae.finalProject.rest.meeting.repository;
 
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
+import com.hanghae.finalProject.rest.meeting.dto.MyMeetingResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.user.model.User;
 
