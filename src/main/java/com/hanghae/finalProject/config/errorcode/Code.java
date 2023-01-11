@@ -41,7 +41,8 @@ public enum Code {
      USER_SIGNUP_SUCCESS("회원가입 성공", HttpStatus.OK),
      USER_SIGNUP_FAIL("회원가입 실패", HttpStatus.BAD_REQUEST),
      USER_LOGIN_SUCCESS("로그인 성공", HttpStatus.OK),
-     
+     USER_FOLLOW_SUCCESS("유저 팔로우 성공", HttpStatus.OK),
+     USER_UNFOLLOW_SUCCESS("유저 언팔로우 성공", HttpStatus.OK),
      ONLY_FOR_ADMIN("관리자만 가능합니다.", HttpStatus.BAD_REQUEST),
      WRONG_EMAIL_PATTERN("올바른 이메일 형식이 아닙니다.", HttpStatus.BAD_REQUEST),
      WRONG_USERNAME_PATTERN("닉네임은 최소 5자 이상, 10자이하 이어야 합니다.", HttpStatus.BAD_REQUEST),
@@ -56,6 +57,10 @@ public enum Code {
      PASSWORD_CHECK("입력된 비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST),
      NO_SUCH_CATEGORY("존재하지 않는 카테고리입니다.", HttpStatus.BAD_REQUEST),
      NO_SUCH_PLATFORM("존재하지 않는 플랫폼입니다.", HttpStatus.BAD_REQUEST),
+     NO_MORE_SEAT("정원이 가득 찼습니다.", HttpStatus.BAD_REQUEST),
+     NO_MORE_REVIEW("이미 후기를 작성하였습니다.", HttpStatus.BAD_REQUEST),
+     NO_AUTH_REVIEW("후기를 작성할 수 없습니다.", HttpStatus.BAD_REQUEST),
+     NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
 
      private final String StatusMsg;

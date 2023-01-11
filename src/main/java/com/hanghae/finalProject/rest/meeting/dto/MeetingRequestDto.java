@@ -1,6 +1,7 @@
 package com.hanghae.finalProject.rest.meeting.dto;
 
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
+import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.Getter;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -14,9 +15,6 @@ public class MeetingRequestDto {
     @NotNull(message = "카테고리를 선택해주세요.")
     private CategoryCode category;
 
-    @NotNull(message = "시작 날짜를 선택해주세요.")
-    private LocalDateTime startDate;
-
     @NotNull(message = "시작 시간을 선택해주세요.")
     private LocalDateTime startTime;
 
@@ -29,7 +27,7 @@ public class MeetingRequestDto {
     @NotNull(message = "최대 정원을 입력해주세요.")
     private int maxNum;
 
-    private String platform;
+    private PlatformCode platform;
 
     private String link;
 

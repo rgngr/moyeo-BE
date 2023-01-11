@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.function.Supplier;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @Table(indexes = @Index(name = "idx__meetingId", columnList = "meeting_id"))
-public class Attendant {
+public class Attendant implements Supplier<Attendant> {
 
      @Id
      @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -45,5 +46,13 @@ public class Attendant {
      public void enter(Meeting meeting) {
           this.meeting = meeting;
           this.entrance = true;
+     }
+     
+     public void makeReview(Boolean review){
+          this.review = review;
+     }
+     @Override
+     public Attendant get() {
+          return null;
      }
 }

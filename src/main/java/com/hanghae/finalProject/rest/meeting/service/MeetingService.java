@@ -4,7 +4,10 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
+import com.hanghae.finalProject.rest.attendant.model.Attendant;
+import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.calendar.repository.CalendarRepository;
+import com.hanghae.finalProject.rest.follow.repository.FollowRepository;
 import com.hanghae.finalProject.rest.meeting.dto.*;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
@@ -15,7 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,63 +31,46 @@ public class MeetingService {
      private final ReviewRepository reviewRepository;
      private final CalendarRepository calendarRepository;
      private final AlarmRepository alarmRepository;
+     private final AttendantRepository attendantRepository;
+     private final FollowRepository followRepository;
      
+     // 모임 상세조회
      @Transactional
      public MeetingDetailResponseDto getMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();
           // 비회원도 공유를 통해서 페이지를 볼 수 있어야 되니까 null 예외 처리 XX
-
-          Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
-          if (meeting.isDeleted()) {
-               throw new RestApiException(Code.NO_MEETING);
+          // 모임 존재여부 확인
+          MeetingDetailResponseDto meetingDetailResponseDto = meetingRepository.findByIdAndAttendAndAlarmAndLike(id, user);
+          if (meetingDetailResponseDto == null) throw new RestApiException(Code.NO_MEETING);
+          
+          if (user != null && Objects.equals(user.getId(), meetingDetailResponseDto.getMasterId())) {
+               meetingDetailResponseDto.isMaster(true);
           }
-          
-          boolean isMaster = false;
-          if (user.getId() == meeting.getUser().getId()) {
-               isMaster = true;
-          }
-
-//        Calendar calendar = calendarRepository.findByMeetingIdAndUser(id, user).orElse(null);
-          boolean isAttend = false;
-//                calendar.isAttend();
-          
-          boolean isAlarm = alarmRepository.existsByMeetingIdAndUser(id, user);
-          
-          int likeNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
-          int hateNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
-          
-          return new MeetingDetailResponseDto(meeting, isMaster, isAttend, isAlarm, likeNum, hateNum);
-          
+          return meetingDetailResponseDto;
      }
      
+     // 모임생성
      @Transactional
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
+          
           Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user));
           
-          boolean isMaster = false;
-          if (user.getId() == meeting.getUser().getId()) {
-               isMaster = true;
-          }
+          // 참석자리스트에 방장 추가
+          Attendant attendant = new Attendant(meeting, user);
+          attendantRepository.save(attendant);
           
-          int likeNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsTrue(meeting.getId()).orElse(0L);
-          int hateNum = 0;
-//                reviewRepository.countByMeetingIdAndLikeIsFalse(meeting.getId()).orElse(0L);
-          
-          return new MeetingCreateResponseDto(meeting, isMaster, likeNum, hateNum);
+          return new MeetingCreateResponseDto(meeting);
      }
      
+     // 모임수정
      @Transactional
      public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
+          
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {
@@ -95,11 +84,12 @@ public class MeetingService {
           }
      }
      
+     // 링크 업데이트
      @Transactional
      public void updateLink(Long id, MeetingLinkRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
+          
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {
@@ -113,11 +103,12 @@ public class MeetingService {
           }
      }
      
+     // 모임 삭제
      @Transactional
      public void deleteMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
+          
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {
@@ -143,22 +134,33 @@ public class MeetingService {
                meetingRepository.findAllSortByNewAndCategory(category, meetingIdx) // 신규순
                : meetingRepository.findAllSortByPopularAndCategory(category, meetingIdx); // 인기순
           
-          response.addMeetingList(responseDtoList.stream()
+          responseDtoList = responseDtoList.stream()
                // meeting 작성자의 id와 로그인 유저의 아이디 비교
                .peek(m -> {
-                         // master 처리 ,attendantsNum 처리,
-                         m.setMaster(m.getMasterId().equals(user.getId()));
-                         if (m.getAttendantsList().size() == 1 && m.getAttendantsList().get(0).getUserId() == null) {
-                              // getAttendantsList 안에 null인 경우도 넘어와서 객체 생겨버림
-                              m.setAttendantsList(null);
-                              m.setAttendantsNum(0);
-                         } else {
-                              m.setAttendantsNum(m.getAttendantsList().size());
-                         }
+                    // master 처리
+                    m.setMaster(m.getMasterId().equals(user.getId()));
+                    // attendantsNum 처리,
+                    // getAttendantsList 안에 null인 경우도 넘어와서 객체 생겨버림
+                    if (m.getAttendantsList().size() == 1 && m.getAttendantsList().get(0).getUserId() == null) {
+                         m.setAttendantsList(null);
+                         m.setAttendantsNum(0);
+                    } else {
+                         // 총 참석인원
+                         m.setAttendantsNum(m.getAttendantsList().size());
+                         // 참석자리스트에 로그인유저가 있는가
+                         m.setAttend(m.getAttendantsList().stream().anyMatch(a -> a.getUserId().equals(user.getId())));
                     }
-               )
-               .collect(Collectors.toList()));
-          return response;
+               }).collect(Collectors.toList());
+          
+          // 인기순일 경우 : 재정렬 필요 > 인기순 + 마감날짜빠른순 + 최신순
+          if (sortBy.equals("popular")) {
+               responseDtoList = responseDtoList.stream().sorted(Comparator.comparing(MeetingListResponseDto.ResponseDto::getAttendantsNum).reversed()
+                    .thenComparing(MeetingListResponseDto.ResponseDto::getStartTime).reversed()
+                    .thenComparing(MeetingListResponseDto.ResponseDto::getId).reversed()).collect(Collectors.toList()
+               );
+          }
+          
+          return response.addMeetingList(responseDtoList);
      }
      
      // 제목 검색 모임리스트 불러오기
@@ -168,16 +170,21 @@ public class MeetingService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           
           MeetingListResponseDto response = new MeetingListResponseDto();
-          response.addMeetingList(meetingRepository.findAllBySearchAndCategory(search, category, meetingId)
-               .stream()
+          response.addMeetingList(meetingRepository.findAllBySearchAndCategory(search, category, meetingId).stream()
                // meeting 작성자의 id와 로그인 유저의 아이디 비교
                .peek(m -> {
                     // master 처리 ,attendantsNum 처리,
                     m.setMaster(m.getMasterId().equals(user.getId()));
-                    m.setAttendantsNum(m.getAttendantsList().size());
-               })
-               .collect(Collectors.toList()));
+                    if (m.getAttendantsList().size() == 1 && m.getAttendantsList().get(0).getUserId() == null) {
+                         // getAttendantsList 안에 null인 경우도 넘어와서 객체 생겨버림
+                         m.setAttendantsList(null);
+                         m.setAttendantsNum(0);
+                    } else {
+                         // 로그인유저의 참석유무
+                         m.setAttend(m.getAttendantsList().stream().anyMatch(a -> a.getUserId().equals(user.getId())));
+                         m.setAttendantsNum(m.getAttendantsList().size());
+                    }
+               }).collect(Collectors.toList()));
           return response;
-          
      }
 }

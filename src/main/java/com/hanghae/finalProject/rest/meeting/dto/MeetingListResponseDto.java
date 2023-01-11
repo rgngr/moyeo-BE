@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
+import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,8 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MeetingListResponseDto {
      List<ResponseDto> meetingList = new ArrayList<>();
-     public void addMeetingList(List<ResponseDto> meetingList){
+     public MeetingListResponseDto addMeetingList(List<ResponseDto> meetingList){
           this.meetingList = meetingList;
+          return this;
      }
      
      @Setter
@@ -28,19 +30,14 @@ public class MeetingListResponseDto {
          private boolean master;
          private String title;
          private CategoryCode category;
-         private LocalDateTime startDate;
          private LocalDateTime startTime;
          private int duration;
-         private String platform;
-//         private String link;
+         private PlatformCode platform;
          private String content;
          private int maxNum;
          private boolean secret;
          private String password;
          private boolean attend;
-//         private boolean alarm;
-//         private int likeNum;
-//         private int hateNum;
           private int attendantsNum;
           private List<AttendantResponseDto.simpleResponseDto> attendantsList;
      

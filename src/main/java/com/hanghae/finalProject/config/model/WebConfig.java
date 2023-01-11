@@ -1,5 +1,6 @@
 package com.hanghae.finalProject.config.model;
 
+import com.hanghae.finalProject.config.converter.PlatFormCodeRequestConverter;
 import com.hanghae.finalProject.config.jwt.JwtUtil;
 import com.hanghae.finalProject.config.converter.CategoryCodeRequestConverter;
 import org.springframework.context.annotation.Configuration;
@@ -23,5 +24,6 @@ public class WebConfig implements WebMvcConfigurer {
      public void addFormatters(FormatterRegistry registry) {
           WebMvcConfigurer.super.addFormatters(registry);
           registry.addConverter(new CategoryCodeRequestConverter());
+          registry.addConverter(new PlatFormCodeRequestConverter());
      }
 }

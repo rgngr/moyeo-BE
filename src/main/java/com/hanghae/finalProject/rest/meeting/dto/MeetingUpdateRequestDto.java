@@ -1,5 +1,6 @@
 package com.hanghae.finalProject.rest.meeting.dto;
 
+import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.Getter;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -10,9 +11,6 @@ public class MeetingUpdateRequestDto {
     @NotNull(message = "제목을 입력해주세요.")
     private String title;
 
-    @NotNull(message = "시작 날짜를 선택해주세요.")
-    private LocalDateTime startDate;
-
     @NotNull(message = "시작 시간을 선택해주세요.")
     private LocalDateTime startTime;
 
@@ -22,7 +20,7 @@ public class MeetingUpdateRequestDto {
     @NotNull(message = "성새 설명을 입력해주세요.")
     private String content;
 
-    private String platform;
+    private PlatformCode platform;
 
     private String link;
 

@@ -16,23 +16,24 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/meetings")
 public class MeetingController {
 
     private final MeetingService  meetingService;
     
     @ApiOperation (value = "모임 상세 조회")
-    @GetMapping("/meetings/{id}")
+    @GetMapping("/{id}")
     public ResponseDto getMeeting(@PathVariable Long id) {
         return DataResponseDto.of(meetingService.getMeeting(id));
     }
     
     @ApiOperation (value = "모임 전체 조회")
-    @GetMapping("/meetings")
+    @GetMapping("")
     public ResponseDto getMeetings(
          @RequestParam(value="sortby", defaultValue = "popular", required = false) String sortBy,
          @RequestParam(value="category", required = false) CategoryCode category,
@@ -42,9 +43,9 @@ public class MeetingController {
     }
     
     @ApiOperation (value = "모임명 검색")
-    @GetMapping("/meetings/search")
+    @GetMapping("/search")
     public ResponseDto getMeetingsBySearch(
-         @RequestParam(value="searchBy", required = false) String search,
+         @RequestParam(value="searchBy", defaultValue = "", required = false) String search,
          @RequestParam(value="category", required = false) CategoryCode category,
          @RequestParam(value="meetingId", required = false) Long meetingId
     ){
@@ -52,42 +53,29 @@ public class MeetingController {
     }
     
     @ApiOperation (value = "모임 생성")
-    @PostMapping("/meetings")
+    @PostMapping("")
     public ResponseDto createMeeting(@RequestBody @Valid MeetingRequestDto requestDto) {
         return DataResponseDto.of(meetingService.createMeeting(requestDto), Code.CREATE_MEETING.getStatusMsg());
     }
     
     @ApiOperation (value = "모임 수정")
-    @PatchMapping("/meetings/{id}")
+    @PatchMapping("/{id}")
     public ResponseDto updateAllMeeting(@PathVariable Long id, @RequestBody @Valid MeetingUpdateRequestDto requestDto) {
         meetingService.updateAllMeeting(id,requestDto);
         return ResponseDto.of(true, Code.UPDATE_MEETING);
     }
     
     @ApiOperation (value = "모임 링크 수정")
-    @PatchMapping("/meetings/{id}/link")
+    @PatchMapping("/{id}/link")
     public ResponseDto updateLink(@PathVariable Long id, @RequestBody @Valid MeetingLinkRequestDto requestDto) {
         meetingService.updateLink(id, requestDto);
         return ResponseDto.of(true, Code.UPDATE_LINK);
     }
     
     @ApiOperation (value = "모임 삭제")
-    @DeleteMapping("/meetings/{id}")
+    @DeleteMapping("/{id}")
     public ResponseDto deleteMeeting(@PathVariable Long id) {
         meetingService.deleteMeeting(id);
         return ResponseDto.of(true, Code.DELETE_MEETING);
     }
-
-
-
-    //     public ResponseDto signup(@RequestBody @Valid SignupRequestDto requestDto) {
-//          userService.signUp(requestDto);
-//          // 1. data o , msg o
-////          return DataResponseDto.of("data test", "test 성공"); //data있고 별도 msg보낼 경우
-//          // 2. data o msg 정상
-////          return DataResponseDto.of("data test");
-//          // 3. DATA X, MSG 따로
-//          return ResponseDto.of(true, Code.USER_SIGNUP_SUCCESS);
-//     }
-
 }
