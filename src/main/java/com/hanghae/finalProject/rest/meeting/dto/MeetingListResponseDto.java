@@ -30,7 +30,6 @@ public class MeetingListResponseDto {
          private boolean master;
          private String title;
          private CategoryCode category;
-         private LocalDateTime startDate;
          private LocalDateTime startTime;
          private int duration;
          private PlatformCode platform;
