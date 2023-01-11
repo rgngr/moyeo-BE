@@ -147,10 +147,12 @@ public class MeetingService {
                     }
                }).collect(Collectors.toList());
           
-          // 인기순일 경우 : 재정렬 필요 > 인기순 + 마감날짜빠른순
+          // 인기순일 경우 : 재정렬 필요 > 인기순 + 마감날짜빠른순 + 최신순
           if(sortBy.equals("popular")){
                responseDtoList = responseDtoList.stream().sorted(Comparator.comparing(MeetingListResponseDto.ResponseDto::getAttendantsNum).reversed()
-                    .thenComparing(MeetingListResponseDto.ResponseDto::getStartTime)).collect(Collectors.toList());
+                    .thenComparing(MeetingListResponseDto.ResponseDto::getStartTime).reversed()
+                    .thenComparing(MeetingListResponseDto.ResponseDto::getId).reversed()).collect(Collectors.toList()
+                    );
           }
           
           return response.addMeetingList(responseDtoList);
@@ -180,5 +182,10 @@ public class MeetingService {
                }).collect(Collectors.toList()));
           return response;
           
+     }
+     
+     @Transactional (readOnly = true)
+     public MyMeetingResponseDto getMyMeetings(Long year, Long month) {
+          return null;
      }
 }

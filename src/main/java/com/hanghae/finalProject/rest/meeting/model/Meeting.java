@@ -31,9 +31,6 @@ public class Meeting extends Timestamped {
      private CategoryCode category;
 
      @Column(nullable = false)
-     private LocalDateTime startDate;
-
-     @Column(nullable = false)
      private LocalDateTime startTime;
 
      @Column(nullable = false)
@@ -63,7 +60,6 @@ public class Meeting extends Timestamped {
      public Meeting(MeetingRequestDto requestDto, User user) {
           this.title = requestDto.getTitle();
           this.category = requestDto.getCategory();
-          this.startDate = requestDto.getStartDate();
           this.startTime = requestDto.getStartTime();
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
@@ -77,7 +73,6 @@ public class Meeting extends Timestamped {
 
      public void updateAll(MeetingUpdateRequestDto requestDto) {
           this.title = requestDto.getTitle();
-          this.startDate = requestDto.getStartDate();
           this.startTime = requestDto.getStartTime();
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
