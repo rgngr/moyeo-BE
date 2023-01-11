@@ -119,11 +119,11 @@ public class KakaoService {
           String profile_image = jsonNode.get("properties")
                .get("profile_image").asText();
           String email = "";
-          if(jsonNode.get("kakao_account").get("email").isNull()){
-               email = id + "@kakao.com";
-          }else{
+          if(jsonNode.get("kakao_account").has("email")){
                email = jsonNode.get("kakao_account")
                     .get("email").asText();
+          }else{
+               email = id + "@kakao.com";
           }
           log.info("email : {}", email);
           log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email + ", " + profile_image);
