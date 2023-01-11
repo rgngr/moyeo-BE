@@ -15,8 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MeetingListResponseDto {
      List<ResponseDto> meetingList = new ArrayList<>();
-     public void addMeetingList(List<ResponseDto> meetingList){
+     public MeetingListResponseDto addMeetingList(List<ResponseDto> meetingList){
           this.meetingList = meetingList;
+          return this;
      }
      
      @Setter
