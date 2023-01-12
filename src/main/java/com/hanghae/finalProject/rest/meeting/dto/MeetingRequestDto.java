@@ -4,11 +4,13 @@ import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.Getter;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Getter
 public class MeetingRequestDto {
-
+    
+    @Size(max = 20)
     @NotNull(message = "제목을 입력해주세요.")
     private String title;
 
@@ -32,7 +34,8 @@ public class MeetingRequestDto {
     private String link;
 
     private boolean secret;
-
+    
+    @Size (min = 4, max = 4)
     private String password;
 
 }
