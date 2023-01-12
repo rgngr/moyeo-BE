@@ -1,6 +1,6 @@
 package com.hanghae.finalProject.rest.calendar.repository;
 
-import com.hanghae.finalProject.rest.meeting.dto.MyMeetingResponseDto;
+import com.hanghae.finalProject.rest.calendar.dto.MyMeetingResponseDto;
 
 import java.util.List;
 

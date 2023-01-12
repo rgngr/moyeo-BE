@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.rest.meeting.dto;
+package com.hanghae.finalProject.rest.calendar.dto;
 
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.PlatformCode;

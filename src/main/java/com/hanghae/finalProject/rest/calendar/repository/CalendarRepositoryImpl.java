@@ -1,7 +1,7 @@
 package com.hanghae.finalProject.rest.calendar.repository;
 
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
-import com.hanghae.finalProject.rest.meeting.dto.MyMeetingResponseDto;
+import com.hanghae.finalProject.rest.calendar.dto.MyMeetingResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
