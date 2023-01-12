@@ -14,4 +14,6 @@ public interface AttendantRepository extends JpaRepository<Attendant, Long>, Att
     Optional<Attendant> findByMeetingIdAndUser(Long meetingId, User user);
      List<Attendant> findAllByMeetingId(Long meetingId);
      Optional<Attendant> findByUserAndMeeting(User user, Meeting meeting);
+     boolean existsByMeetingAndUser(Meeting meeting, User user);
+     
 }
