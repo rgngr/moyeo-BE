@@ -4,6 +4,7 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
+import com.hanghae.finalProject.rest.alarm.service.AlarmService;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.calendar.repository.CalendarRepository;
@@ -33,6 +34,7 @@ public class MeetingService {
      private final AlarmRepository alarmRepository;
      private final AttendantRepository attendantRepository;
      private final FollowRepository followRepository;
+     private final AlarmService alarmService;
      
      // 모임 상세조회
      @Transactional
@@ -79,6 +81,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateAll(requestDto);
+               alarmService.alarmUpdateMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -98,6 +101,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateLink(requestDto);
+               alarmService.alarmUpdateLink(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -117,6 +121,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.deleteMeeting();
+               alarmService.alarmDeleteMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
