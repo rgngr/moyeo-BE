@@ -109,6 +109,10 @@ public class AttendantService {
           Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                () -> new RestApiException(Code.NO_MEETING)
           );
+          // 모임에 참석하기로한 유저인가
+          if(!attendantRepository.existsByMeetingAndUser(meeting, user)){
+               throw new RestApiException(Code.NOT_ATTENDANCE_YET);
+          }
           Alarm alarm = alarmRepository.findByMeetingIdAndUser(meeting.getId(), user).orElseGet(new Alarm());
           
           if (alarm == null) {

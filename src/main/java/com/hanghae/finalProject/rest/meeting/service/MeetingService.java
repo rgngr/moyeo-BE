@@ -57,7 +57,12 @@ public class MeetingService {
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          
+          // 비밀방일경우 비번4글자 확인
+          if(requestDto.isSecret()){
+               if(requestDto.getPassword().length()!=4){
+                    throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
+               }
+          }
           Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user));
           
           // 참석자리스트에 방장 추가
@@ -72,7 +77,12 @@ public class MeetingService {
      public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          
+          // 비밀방일경우 비번4글자 확인
+          if(requestDto.isSecret()){
+               if(requestDto.getPassword().length()!=4){
+                    throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
+               }
+          }
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           
           if (meeting.isDeleted()) {
