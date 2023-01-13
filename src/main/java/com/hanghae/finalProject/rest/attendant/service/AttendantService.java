@@ -6,6 +6,7 @@ import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
+import com.hanghae.finalProject.rest.alarm.service.AlarmService;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantListResponseDto;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
@@ -27,6 +28,8 @@ public class AttendantService {
      private final AttendantRepository attendantRepository;
      private final MeetingRepository meetingRepository;
      private final AlarmRepository alarmRepository;
+
+     private final AlarmService alarmService;
      
      // 모임 참석/취소
      @Transactional
@@ -48,6 +51,7 @@ public class AttendantService {
                Attendant attendant = attendantRepository.save(new Attendant(meeting, user));
                // 참석시 알람받기가 기본임
                alarmRepository.save(new Alarm(user, meeting));
+               alarmService.alarmAttend(meeting, user);
                return new AttendantResponseDto(attendant);
           } else {
                // 기존에 참석했던 유저의 경우
@@ -59,6 +63,7 @@ public class AttendantService {
                }
                // 참석자 명단에서 삭제
                attendantRepository.delete(oriAttendant);
+               alarmService.alarmCancelAttend(meeting, user);
                return null;
           }
      }

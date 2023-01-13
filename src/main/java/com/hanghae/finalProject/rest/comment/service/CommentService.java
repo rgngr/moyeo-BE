@@ -2,6 +2,7 @@ package com.hanghae.finalProject.rest.comment.service;
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
+import com.hanghae.finalProject.rest.alarm.service.AlarmService;
 import com.hanghae.finalProject.rest.comment.dto.CommentRequestDto;
 import com.hanghae.finalProject.rest.comment.dto.CommentResponseDto;
 import com.hanghae.finalProject.rest.comment.model.Comment;
@@ -20,6 +21,8 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MeetingRepository meetingRepository;
+
+    private final AlarmService alarmService;
 
     // 댓글 조회
     @Transactional(readOnly = true)
@@ -41,6 +44,8 @@ public class CommentService {
         );
 
         Comment comment = commentRepository.save(new Comment(commentRequestDto, meeting, user));
+
+        alarmService.alarmComment(meeting);
 
         return new CommentResponseDto(comment);
     }

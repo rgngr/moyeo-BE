@@ -11,5 +11,6 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     boolean existsByMeetingIdAndUser(Long meetingId, User user);
     
     Optional<Alarm> findByMeetingIdAndUser(Long meetingId, User user);
-    
+
+    boolean existsByMeetingIdAndUserId(Long id, Long attendantId);
 }
