@@ -3,14 +3,11 @@ package com.hanghae.finalProject.rest.alarm.service;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
-import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.util.List;
-
 import static com.hanghae.finalProject.rest.alarm.controller.SseController.sseEmitters;
 
 @Service
@@ -43,12 +40,12 @@ public class AlarmService {
             SseEmitter sseEmitter = sseEmitters.get(masterId);
             try {
                 sseEmitter.send(SseEmitter.event().name("newAttend")
-                        .data(attendant+"이/가 참석 예정입니다!"));
+                        .data(attendant+"이/가 "+meeting.getTitle()+"에 참석 예정입니다!"));
 
                 List<Attendant> attendants = attendantRepository.findAllByMeetingId(meeting.getId());
                 if (meeting.getMaxNum() <= attendants.size()) {
                     sseEmitter.send(SseEmitter.event().name("fullAttend")
-                            .data(attendant+"이/가 참석 예정입니다!"));
+                            .data(meeting.getTitle()+"의 정원이 다 찼습니다!"));
                 }
             } catch (Exception e) {
                 sseEmitters.remove(masterId);
@@ -64,8 +61,8 @@ public class AlarmService {
         if (sseEmitters.containsKey(masterId)) {
             SseEmitter sseEmitter = sseEmitters.get(masterId);
             try {
-                sseEmitter.send(SseEmitter.event().name("newAttend")
-                        .data(attendant+"이/가 참석을 취소입니다!"));
+                sseEmitter.send(SseEmitter.event().name("cancelAttend")
+                        .data(attendant+"이/가 "+meeting.getTitle()+"참석을 취소했습니다!"));
             } catch (Exception e) {
                 sseEmitters.remove(masterId);
             }
@@ -73,15 +70,16 @@ public class AlarmService {
     }
 
     public void alarmUpdateMeeting(Meeting meeting) {
+
         List<Attendant> attendants = attendantRepository.findAllByMeetingId(meeting.getId());
 
         for (Attendant attendant : attendants) {
-            Long attendantId = attendant.getId();
+            Long attendantId = attendant.getUser().getId();
 
             if (sseEmitters.containsKey(attendantId)) {
                 SseEmitter sseEmitter = sseEmitters.get(attendantId);
                 try {
-                    sseEmitter.send(SseEmitter.event().name("updateAllMeeting")
+                    sseEmitter.send(SseEmitter.event().name("updateMeeting")
                             .data(meeting.getTitle()+"의 내용이 수정되었습니다. 확인해주세요!"));
                 } catch (Exception e) {
                     sseEmitters.remove(attendantId);
@@ -92,10 +90,11 @@ public class AlarmService {
     }
 
     public void alarmUpdateLink(Meeting meeting) {
+
         List<Attendant> attendants = attendantRepository.findAllByMeetingId(meeting.getId());
 
         for (Attendant attendant : attendants) {
-            Long attendantId = attendant.getId();
+            Long attendantId = attendant.getUser().getId();
 
             if (sseEmitters.containsKey(attendantId)) {
                 SseEmitter sseEmitter = sseEmitters.get(attendantId);
@@ -111,10 +110,11 @@ public class AlarmService {
     }
 
     public void alarmDeleteMeeting(Meeting meeting) {
+
         List<Attendant> attendants = attendantRepository.findAllByMeetingId(meeting.getId());
 
         for (Attendant attendant : attendants) {
-            Long attendantId = attendant.getId();
+            Long attendantId = attendant.getUser().getId();
 
             if (sseEmitters.containsKey(attendantId)) {
                 SseEmitter sseEmitter = sseEmitters.get(attendantId);
