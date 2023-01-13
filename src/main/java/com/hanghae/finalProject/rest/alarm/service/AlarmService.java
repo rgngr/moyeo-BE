@@ -1,5 +1,6 @@
 package com.hanghae.finalProject.rest.alarm.service;
 
+import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
@@ -15,6 +16,7 @@ import static com.hanghae.finalProject.rest.alarm.controller.SseController.sseEm
 public class AlarmService {
 
     private final AttendantRepository attendantRepository;
+    private final AlarmRepository alarmRepository;
 
     public void alarmComment(Meeting meeting) {
 
@@ -76,16 +78,18 @@ public class AlarmService {
         for (Attendant attendant : attendants) {
             Long attendantId = attendant.getUser().getId();
 
-            if (sseEmitters.containsKey(attendantId)) {
-                SseEmitter sseEmitter = sseEmitters.get(attendantId);
-                try {
-                    sseEmitter.send(SseEmitter.event().name("updateMeeting")
-                            .data(meeting.getTitle()+"의 내용이 수정되었습니다. 확인해주세요!"));
-                } catch (Exception e) {
-                    sseEmitters.remove(attendantId);
+            boolean isAlarm = alarmRepository.existsByMeetingIdAndUserId(meeting.getId(), attendantId);
+            if (isAlarm) {
+                if (sseEmitters.containsKey(attendantId)) {
+                    SseEmitter sseEmitter = sseEmitters.get(attendantId);
+                    try {
+                        sseEmitter.send(SseEmitter.event().name("updateMeeting")
+                                .data(meeting.getTitle()+"의 내용이 수정되었습니다. 확인해주세요!"));
+                    } catch (Exception e) {
+                        sseEmitters.remove(attendantId);
+                    }
                 }
             }
-
         }
     }
 
@@ -96,16 +100,18 @@ public class AlarmService {
         for (Attendant attendant : attendants) {
             Long attendantId = attendant.getUser().getId();
 
-            if (sseEmitters.containsKey(attendantId)) {
-                SseEmitter sseEmitter = sseEmitters.get(attendantId);
-                try {
-                    sseEmitter.send(SseEmitter.event().name("updateLink")
-                            .data(meeting.getTitle()+"의 모임 링크가 생성/수정되었습니다. 확인해주세요!"));
-                } catch (Exception e) {
-                    sseEmitters.remove(attendantId);
+            boolean isAlarm = alarmRepository.existsByMeetingIdAndUserId(meeting.getId(), attendantId);
+            if (isAlarm) {
+                if (sseEmitters.containsKey(attendantId)) {
+                    SseEmitter sseEmitter = sseEmitters.get(attendantId);
+                    try {
+                        sseEmitter.send(SseEmitter.event().name("updateLink")
+                                .data(meeting.getTitle()+"의 모임 링크가 생성/수정되었습니다. 확인해주세요!"));
+                    } catch (Exception e) {
+                        sseEmitters.remove(attendantId);
+                    }
                 }
             }
-
         }
     }
 
@@ -116,16 +122,18 @@ public class AlarmService {
         for (Attendant attendant : attendants) {
             Long attendantId = attendant.getUser().getId();
 
-            if (sseEmitters.containsKey(attendantId)) {
-                SseEmitter sseEmitter = sseEmitters.get(attendantId);
-                try {
-                    sseEmitter.send(SseEmitter.event().name("deleteMeeting")
-                            .data(meeting.getTitle()+"이/가 삭제되었습니다. 다른 모임에 참가해보세요!"));
-                } catch (Exception e) {
-                    sseEmitters.remove(attendantId);
+            boolean isAlarm = alarmRepository.existsByMeetingIdAndUserId(meeting.getId(), attendantId);
+            if (isAlarm) {
+                if (sseEmitters.containsKey(attendantId)) {
+                    SseEmitter sseEmitter = sseEmitters.get(attendantId);
+                    try {
+                        sseEmitter.send(SseEmitter.event().name("deleteMeeting")
+                                .data(meeting.getTitle()+"이/가 삭제되었습니다. 다른 모임에 참가해보세요!"));
+                    } catch (Exception e) {
+                        sseEmitters.remove(attendantId);
+                    }
                 }
             }
-
         }
     }
 
