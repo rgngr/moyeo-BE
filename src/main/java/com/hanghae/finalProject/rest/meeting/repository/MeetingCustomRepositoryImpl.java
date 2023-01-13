@@ -57,6 +57,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.secret,
                     meeting.password,
                     // 로그인 유저의 해당 모임 참석유무
+                    
                     ExpressionUtils.as(
                          select(attendant.user.id.isNotNull())
                               .from(attendant)
@@ -205,14 +206,14 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      // 참석자 로그인유저 확인 조건문. 없을경우 null
      private BooleanExpression eqAttendantUser(Long loggedId) {
           if (ObjectUtils.isEmpty(loggedId)) {
-               return null;
+               return attendant.user.id.eq(0L);
           }
           return attendant.user.id.eq(loggedId);
      }
      // 리뷰 로그인유저 확인 조건문. 없을경우 null
      private BooleanExpression eqReviewUser(Long loggedId) {
           if (ObjectUtils.isEmpty(loggedId)) {
-               return null;
+               return alarm.user.id.eq(0L);
           }
           return alarm.user.id.eq(loggedId);
      }
