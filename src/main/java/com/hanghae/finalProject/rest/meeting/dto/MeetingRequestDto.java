@@ -40,7 +40,7 @@ public class MeetingRequestDto {
 
     private boolean secret;
     
-    @Size (min = 4, max = 4)
+//    @Size (min = 4, max = 4)
     private String password;
 
 }
