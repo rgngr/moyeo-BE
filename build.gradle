@@ -66,14 +66,17 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
-    //implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
-    // https://mvnrepository.com/artifact/redis.clients/jedis
-    implementation 'redis.clients:jedis:3.3.0'
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+    //REDIS
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.2.5.RELEASE'
+    //LocalDateTime 직렬화 역직렬화 오류 해결용
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
+        // jedis
+//    implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
+//    implementation 'redis.clients:jedis:3.3.0'
+        // redisson
+//    implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.19.0'
+//    implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
 }
 //빌드 시 plain jar 파일은 만들어지지 않도록
 jar {
