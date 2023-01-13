@@ -5,16 +5,13 @@ import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.util.function.SupplierUtils;
 
 import javax.persistence.*;
-import java.util.function.Supplier;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Alarm implements Supplier<Alarm>  {
+public class AlarmList extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,14 +24,20 @@ public class Alarm implements Supplier<Alarm>  {
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name ="meeting_id", nullable = false)
     private Meeting meeting;
-    
-    public Alarm(User user, Meeting meeting) {
-        this.user = user;
+
+    @Column(nullable = false)
+    private String content;
+
+    private boolean isRead = false;
+
+    public AlarmList(Meeting meeting, User user, String content) {
         this.meeting = meeting;
+        this.user = user;
+        this.content = content;
     }
-    
-    @Override
-    public Alarm get() {
-        return null;
+
+    public void readAlarm() {
+        this.isRead = true;
     }
+
 }
