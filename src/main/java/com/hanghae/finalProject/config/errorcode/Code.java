@@ -23,6 +23,7 @@ public enum Code {
      UPDATE_COMMENT( "댓글 수정 성공", HttpStatus.OK),
      CREATE_MEETING( "모임 글 작성 성공", HttpStatus.OK),
      UPDATE_MEETING( "모임 글 수정 성공", HttpStatus.OK),
+     GET_UPDATE_PAGE( "모임 글 수정 페이지 불러고이 성공", HttpStatus.OK),
      UPDATE_LINK( "모임 링크 추가 성공", HttpStatus.OK),
      DELETE_MEETING( "모임 글 삭제 성공", HttpStatus.OK),
      CREATE_ENTER("모임 입장 성공", HttpStatus.OK),
