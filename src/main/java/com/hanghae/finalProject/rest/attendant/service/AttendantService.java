@@ -28,7 +28,6 @@ public class AttendantService {
      private final AttendantRepository attendantRepository;
      private final MeetingRepository meetingRepository;
      private final AlarmRepository alarmRepository;
-
      private final AlarmService alarmService;
      
      // 모임 참석/취소
@@ -51,6 +50,7 @@ public class AttendantService {
                Attendant attendant = attendantRepository.save(new Attendant(meeting, user));
                // 참석시 알람받기가 기본임
                alarmRepository.save(new Alarm(user, meeting));
+               // 참석 알람
                alarmService.alarmAttend(meeting, user);
                return new AttendantResponseDto(attendant);
           } else {
@@ -63,6 +63,7 @@ public class AttendantService {
                }
                // 참석자 명단에서 삭제
                attendantRepository.delete(oriAttendant);
+               // 참석 취소 알람
                alarmService.alarmCancelAttend(meeting, user);
                return null;
           }
