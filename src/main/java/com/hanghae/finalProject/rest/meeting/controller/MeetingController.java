@@ -64,7 +64,14 @@ public class MeetingController {
         meetingService.updateAllMeeting(id,requestDto);
         return ResponseDto.of(true, Code.UPDATE_MEETING);
     }
-    
+
+    @ApiOperation (value = "모임 수정 페이지")
+    @GetMapping("/{id}/update")
+    public ResponseDto getUpdatePage(@PathVariable Long id) {
+        return DataResponseDto.of(meetingService.getUpdatePage(id), Code.GET_UPDATE_PAGE.getStatusMsg());
+    }
+
+
     @ApiOperation (value = "모임 링크 수정")
     @PatchMapping("/{id}/link")
     public ResponseDto updateLink(@PathVariable Long id, @RequestBody @Valid MeetingLinkRequestDto requestDto) {

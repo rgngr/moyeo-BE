@@ -96,6 +96,24 @@ public class MeetingService {
                throw new RestApiException(Code.INVALID_USER);
           }
      }
+
+     @Transactional (readOnly = true)
+     public MeetingUpdatePageResponseDto getUpdatePage(Long id) {
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
+
+          if (meeting.isDeleted()) {
+               throw new RestApiException(Code.NO_MEETING);
+          }
+
+          if (user.getId() == meeting.getUser().getId()) {
+               return new MeetingUpdatePageResponseDto(meeting);
+          } else {
+               throw new RestApiException(Code.INVALID_USER);
+          }
+     }
      
      // 링크 업데이트
      @Transactional
