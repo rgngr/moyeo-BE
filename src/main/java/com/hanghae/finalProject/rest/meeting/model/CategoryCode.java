@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CategoryCode {
+     OTT,
      공부하자,
      수다떨자,
      게임하자,
