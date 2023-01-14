@@ -14,7 +14,7 @@ import java.util.List;
 public class CalendarService {
      private final CalendarRepository calendarRepository;
      
-//     @Cacheable (value = "Calendar", key = "#userId+','+#year+','+#month")
+     @Cacheable (value = "Calendar", key = "#userId+','+#year+','+#month")
      @Transactional (readOnly = true)
      public MyMeetingResponseDto getMyMeetings( Long userId, Integer year, Integer month) {
           MyMeetingResponseDto response = new MyMeetingResponseDto();
