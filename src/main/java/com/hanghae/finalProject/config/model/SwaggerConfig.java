@@ -22,7 +22,7 @@ public class SwaggerConfig {
      public Docket api() {
           return new Docket(DocumentationType.SWAGGER_2)
                .select()
-               .apis(RequestHandlerSelectors.basePackage("com.hanghae.instagram")) // 특정 패키지경로를 API문서화 한다. 1차 필터
+               .apis(RequestHandlerSelectors.basePackage("com.hanghae.finalProject")) // 특정 패키지경로를 API문서화 한다. 1차 필터
                .paths(PathSelectors.any()) // apis중에서 특정 path조건 API만 문서화 하는 2차 필터 "/**"
                .build()
                .groupName("API 1.0.0") // group별 명칭을 주어야 한다.
@@ -34,11 +34,11 @@ public class SwaggerConfig {
      }
      private ApiInfo apiInfo() {
           return new ApiInfoBuilder()
-               .title("인스타그램 클론코딩 REST API")
-               .description("항해 인스타그램 프로젝트 swagger")
+               .title("항해 파이널 프로젝트 REST API")
+               .description("항해 프로젝트 swagger")
                .version("1.0.0")
                .termsOfServiceUrl("")
-               .contact(new Contact("gamemini", "https://github.com/clone-instagram/clone-instagram-BE", "joj1043@kakao.com"))
+               .contact(new Contact("방만츄", "https://github.com/clone-instagram/clone-instagram-BE", "joj1043@kakao.com"))
                .license("")
                .licenseUrl("")
                .build()

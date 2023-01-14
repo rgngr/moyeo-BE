@@ -1,12 +1,9 @@
 package com.hanghae.finalProject.config.dto;
 
 import com.hanghae.finalProject.config.errorcode.Code;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class ErrorResponseDto extends ResponseDto  {
      
      private ErrorResponseDto(Code errorCode) {

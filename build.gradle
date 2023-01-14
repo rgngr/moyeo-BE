@@ -1,7 +1,14 @@
+buildscript {
+    ext { // forQueryDsl
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.6'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+    id 'org.springframework.boot' version '2.7.6'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"  // forQueryDsl
 }
 
 group = 'com.hanghae'
@@ -9,49 +16,97 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-	// AWS S3
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    // AWS S3
 //	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.4.2'
-	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.2'
-	implementation 'software.amazon.awssdk:aws-sdk-java:2.18.35'
-	//test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	// mysql
-	implementation 'mysql:mysql-connector-java'
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	// h2
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.2'
+    implementation 'software.amazon.awssdk:aws-sdk-java:2.18.35'
+    //test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    // mysql
+    implementation 'mysql:mysql-connector-java'
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    // h2
 //	runtimeOnly 'com.h2database:h2'
-	// swagger
-	implementation "io.springfox:springfox-boot-starter:3.0.0"
+    // swagger
+    implementation "io.springfox:springfox-boot-starter:3.0.0"
 
-	//jwt
-	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+    // querydsl
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // make query parameter log
+    //	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
+
+    //jwt
+    compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
+
+    //REDIS
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //LocalDateTime 직렬화 역직렬화 오류 해결용
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
+        // jedis
+//    implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
+//    implementation 'redis.clients:jedis:3.3.0'
+        // redisson
+//    implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.19.0'
+//    implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
+}
+//빌드 시 plain jar 파일은 만들어지지 않도록
+jar {
+    enabled = false
 
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
+}
+
+//forQueryDsl
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl { //forQueryDsl
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets { //forQueryDsl
+    main.java.srcDir querydslDir
+}
+
+configurations { // forQueryDsl
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl { // forQueryDsl
+    options.annotationProcessorPath = configurations.querydsl
 }

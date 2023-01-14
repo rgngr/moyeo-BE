@@ -2,10 +2,10 @@ package com.hanghae.finalProject.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.finalProject.config.dto.ErrorResponseDto;
+import com.hanghae.finalProject.config.errorcode.Code;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +32,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
           if(token != null) {
                // 토큰 검증
                if(!jwtUtil.validateToken(token)){
-                    jwtExceptionHandler(response, "Token Error", HttpStatus.UNAUTHORIZED.value());
+//                    throw new RestApiException(Code.INVALID_TOKEN);
+                    jwtExceptionHandler(response, Code.INVALID_TOKEN);
                     return;
                }
                // 토큰에서 유저정보 뽑기
@@ -54,14 +55,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
      }
      
      // 토큰에러 예외처리
-     public void jwtExceptionHandler(HttpServletResponse response, String msg, int statusCode) {
-          response.setStatus(statusCode); // HttpStatus.UNAUTHORIZED.value()
+     public void jwtExceptionHandler(HttpServletResponse response, Code code) throws IOException {
+          response.setStatus(code.getStatusCode().value()); // HttpStatus.UNAUTHORIZED.value()
           response.setContentType("application/json");
           try {
-               String json = new ObjectMapper().writeValueAsString(new ErrorResponseDto(msg, statusCode));
+               String json = new ObjectMapper().writeValueAsString(ErrorResponseDto.of(code));
                response.getWriter().write(json);
           } catch (Exception e) {
                log.error(e.getMessage());
+               throw e;
           }
      }
      
