@@ -57,15 +57,16 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.secret,
                     meeting.password,
                     // 로그인 유저의 해당 모임 참석유무
+                    
                     ExpressionUtils.as(
                          select(attendant.user.id.isNotNull())
                               .from(attendant)
-                              .where(attendant.meeting.id.eq(meetingId), attendant.user.id.eq(loggedId)), "attend"),
+                              .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "attend"),
                     // 로그인 유저의 해당모임 알림활성화 유무
                     ExpressionUtils.as(
                          select(alarm.user.id.isNotNull())
                               .from(alarm)
-                              .where(alarm.meeting.id.eq(meetingId), alarm.user.id.eq(loggedId)), "alarm"),
+                              .where(alarm.meeting.id.eq(meetingId), eqReviewUser(loggedId)), "alarm"),
                     // 해당 모임의 좋아요 수
                     ExpressionUtils.as(
                          select(
@@ -202,6 +203,20 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           return meeting.category.eq(category);
      }
      
+     // 참석자 로그인유저 확인 조건문. 없을경우 null
+     private BooleanExpression eqAttendantUser(Long loggedId) {
+          if (ObjectUtils.isEmpty(loggedId)) {
+               return attendant.user.id.eq(0L);
+          }
+          return attendant.user.id.eq(loggedId);
+     }
+     // 리뷰 로그인유저 확인 조건문. 없을경우 null
+     private BooleanExpression eqReviewUser(Long loggedId) {
+          if (ObjectUtils.isEmpty(loggedId)) {
+               return alarm.user.id.eq(0L);
+          }
+          return alarm.user.id.eq(loggedId);
+     }
      // 인기순 : attendant 테이블에서 참석자 많은 meeting_id 순으로 정렬해와야 함
      // >> 무한스크롤 : 기존 meetingIdx 말고, 참석자 순으로 정렬필요
      // 참석자테이블 left join & group by 한후 정렬  & where meetingId = idx

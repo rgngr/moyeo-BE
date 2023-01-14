@@ -60,7 +60,7 @@ public class Meeting extends Timestamped {
      public Meeting(MeetingRequestDto requestDto, User user) {
           this.title = requestDto.getTitle();
           this.category = requestDto.getCategory();
-          this.startTime = requestDto.getStartTime();
+          this.startTime = LocalDateTime.of(requestDto.getStartDate(), requestDto.getStartTime());
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
           this.maxNum = requestDto.getMaxNum();
@@ -73,7 +73,7 @@ public class Meeting extends Timestamped {
 
      public void updateAll(MeetingUpdateRequestDto requestDto) {
           this.title = requestDto.getTitle();
-          this.startTime = requestDto.getStartTime();
+          this.startTime = LocalDateTime.of(requestDto.getStartDate(), requestDto.getStartTime());
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
           this.platform = requestDto.getPlatform();

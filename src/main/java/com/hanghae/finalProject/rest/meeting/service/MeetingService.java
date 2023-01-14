@@ -57,7 +57,12 @@ public class MeetingService {
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          
+          // 비밀방일경우 비번4글자 확인
+          if(requestDto.isSecret()){
+               if(requestDto.getPassword().length()!=4){
+                    throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
+               }
+          }
           Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user));
           
           // 참석자리스트에 방장 추가
@@ -70,25 +75,22 @@ public class MeetingService {
      // 모임수정
      @Transactional
      public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) {
-
-          // 로그인 및 유저 확인
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
-          // 해당 모임 글 존재 여부 확인
+          // 비밀방일경우 비번4글자 확인
+          if(requestDto.isSecret()){
+               if(requestDto.getPassword().length()!=4){
+                    throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
+               }
+          }
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
-
-
-          // 해당 모임 글 삭제 여부 확인
+          
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
-
-          // 작성자 일치 여부 확인
+          
           if (user.getId() == meeting.getUser().getId()) {
-               // 글 수정
                meeting.updateAll(requestDto);
-               // 모임 글 수정 알람
                alarmService.alarmUpdateMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
@@ -109,7 +111,6 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateLink(requestDto);
-               // 모임 링크 생성/수정 알람
                alarmService.alarmUpdateLink(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
@@ -130,7 +131,6 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.deleteMeeting();
-               // 모임 글 삭제 알람
                alarmService.alarmDeleteMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
