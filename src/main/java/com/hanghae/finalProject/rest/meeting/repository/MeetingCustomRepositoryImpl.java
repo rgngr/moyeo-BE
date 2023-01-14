@@ -13,6 +13,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -124,7 +125,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .on(meeting.id.eq(attendant.meeting.id))
                .groupBy(meeting.id)
                .where(eqCategory(category),
-                    meeting.startTime.goe(LocalDateTime.now()),
+                    meeting.startTime.goe(LocalDateTime.now().toLocalDate().atStartOfDay()),
                     meeting.deleted.eq(false)
                )
                .orderBy(attendant.id.count().desc(), meeting.id.desc())
@@ -152,7 +153,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(
-                    meeting.startTime.goe(LocalDateTime.now()),
+//                    meeting.startTime.goe(LocalDateTime.now()),
+                    meeting.startTime.goe(LocalDateTime.now().toLocalDate().atStartOfDay()),
                     ltMeetingId(meetingIdx),
                     eqCategory(category),
                     meeting.deleted.eq(false)
