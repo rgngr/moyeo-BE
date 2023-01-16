@@ -2,10 +2,12 @@ package com.hanghae.finalProject.rest.attendant.service;
 
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
+import com.hanghae.finalProject.config.util.RedisUtil;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
+import com.hanghae.finalProject.rest.alarm.service.AlarmService;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantListResponseDto;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
@@ -14,12 +16,18 @@ import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AttendantService {
@@ -27,6 +35,10 @@ public class AttendantService {
      private final AttendantRepository attendantRepository;
      private final MeetingRepository meetingRepository;
      private final AlarmRepository alarmRepository;
+     private final AlarmService alarmService;
+     
+     @Autowired
+     private ApplicationContext applicationContext;
      
      // 모임 참석/취소
      @Transactional
@@ -37,28 +49,33 @@ public class AttendantService {
           Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                () -> new RestApiException(Code.NO_MEETING)
           );
-          // 최대정원 도달시 참석불가
-          List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meetingId);
-          if (meeting.getMaxNum() <= attendantList.size()) {
-               throw new RestApiException(Code.NO_MORE_SEAT);
-          }
+
           Attendant oriAttendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
           if (oriAttendant== null) {
+               // 최대정원 도달시 참석불가
+               List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meetingId);
+               if (meeting.getMaxNum() <= attendantList.size()) {
+                    throw new RestApiException(Code.NO_MORE_SEAT);
+               }
                // 참석하지 않은 유저인 경우 참석으로
                Attendant attendant = attendantRepository.save(new Attendant(meeting, user));
                // 참석시 알람받기가 기본임
                alarmRepository.save(new Alarm(user, meeting));
+               // 참석 알람
+               alarmService.alarmAttend(meeting, user);
                return new AttendantResponseDto(attendant);
           } else {
                // 기존에 참석했던 유저의 경우
                oriAttendant.cancelAttendant(meeting);
                // 알람받기 리스트에 있을경우 알람 삭제필요
                Alarm alarm = alarmRepository.findByMeetingIdAndUser(meeting.getId(), user).orElseGet(new Alarm());
-               if(alarm!=null){
+               if (alarm != null) {
                     alarmRepository.delete(alarm);
                }
                // 참석자 명단에서 삭제
                attendantRepository.delete(oriAttendant);
+               // 참석 취소 알람
+               alarmService.alarmCancelAttend(meeting, user);
                return null;
           }
      }
@@ -75,6 +92,7 @@ public class AttendantService {
      }
      
      // 모임 입장
+//     @CacheEvict (value = "Calendar", allEntries = true)
      @Transactional
      public Code enter(Long meetingId) {
           User user = SecurityUtil.getCurrentUser();
@@ -86,13 +104,18 @@ public class AttendantService {
           );
           // 참석하기로한 모임인가
           Attendant attendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
-          if(attendant==null){
+          if (attendant == null) {
                // 참석하기 누르지않은 모임일 경우
                throw new RestApiException(Code.NOT_ATTENDANCE_YET);
+          }
+          // 처음 입장하는 경우 월별데이터 캐시 삭제 필요 (for attend false>true update)
+          if (!attendant.isEntrance()) {
+               getSpringProxy().deleteCache(user.getId(), meeting.getStartTime().getYear(), meeting.getStartTime().getMonthValue());
           }
           attendant.enter(meeting);
           attendantRepository.save(attendant);
           return Code.CREATE_ENTER;
+          
      }
      
      @Transactional
@@ -104,6 +127,10 @@ public class AttendantService {
           Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                () -> new RestApiException(Code.NO_MEETING)
           );
+          // 모임에 참석하기로한 유저인가
+          if (!attendantRepository.existsByMeetingAndUser(meeting, user)) {
+               throw new RestApiException(Code.NOT_ATTENDANCE_YET);
+          }
           Alarm alarm = alarmRepository.findByMeetingIdAndUser(meeting.getId(), user).orElseGet(new Alarm());
           
           if (alarm == null) {
@@ -117,4 +144,7 @@ public class AttendantService {
           }
      }
      
+     private RedisUtil getSpringProxy () {
+          return applicationContext.getBean(RedisUtil.class);
+     }
 }

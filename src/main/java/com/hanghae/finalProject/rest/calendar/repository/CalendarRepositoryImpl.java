@@ -1,7 +1,7 @@
 package com.hanghae.finalProject.rest.calendar.repository;
 
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
-import com.hanghae.finalProject.rest.meeting.dto.MyMeetingResponseDto;
+import com.hanghae.finalProject.rest.calendar.dto.MyMeetingResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
      @Override
      public List<MyMeetingResponseDto.ResponseDto> findAllByUserIdAndMonth(Long loggedId, int year, int month) {
           LocalDateTime startDate = LocalDateTime.of(year, month, 1, 0,0);
-          LocalDateTime endDate = LocalDateTime.of(year, month+1, 1, 0,0).minusNanos(1L);
+          LocalDateTime endDate = LocalDateTime.of(year, month+1, 1, 0,0).minusSeconds(1L);
           log.info("startDate : {} , endDate : {} ",startDate, endDate);
           
           return jpaQueryFactory
@@ -48,6 +48,7 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
                .join(attendant)
                .on(meeting.id.eq(attendant.meeting.id), attendant.user.id.eq(loggedId))
                .where(meeting.startTime.between(startDate, endDate))
+               .orderBy(meeting.startTime.asc())
                .fetch();
      }
 }

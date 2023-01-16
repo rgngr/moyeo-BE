@@ -42,13 +42,12 @@ public class KakaoService {
      private String KAKAO_REST_API_KEY;
      
      public KakaoLoginResponseDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
-          log.info("service!!!!!!!");
           // 1. "인가 코드"로 "액세스 토큰" 요청
           String accessToken = getToken(code);
           
           // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
           KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
-          log.info("kakaoUserInfo : {}", kakaoUserInfo);
+          
           // 3. 필요시에 회원가입
           User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
           
@@ -57,7 +56,7 @@ public class KakaoService {
           response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
           // 강제로그인
           forceLogin(kakaoUser);
-          return new KakaoLoginResponseDto(kakaoUser.getUsername(), kakaoUser.getProfileUrl(), createToken);
+          return new KakaoLoginResponseDto(kakaoUser.getId(), kakaoUser.getUsername(), kakaoUser.getProfileUrl(), createToken);
      }
      
      // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -109,8 +108,9 @@ public class KakaoService {
                kakaoUserInfoRequest,
                String.class
           );
-          
           String responseBody = response.getBody();
+          log.info("responseBody!! >> {} ", responseBody);
+          
           ObjectMapper objectMapper = new ObjectMapper();
           JsonNode jsonNode = objectMapper.readTree(responseBody);
           Long id = jsonNode.get("id").asLong();
@@ -118,9 +118,14 @@ public class KakaoService {
                .get("nickname").asText();
           String profile_image = jsonNode.get("properties")
                .get("profile_image").asText();
-          String email = jsonNode.get("kakao_account")
-               .get("email").asText();
-          
+          String email = "";
+          if(jsonNode.get("kakao_account").has("email")){
+               email = jsonNode.get("kakao_account")
+                    .get("email").asText();
+          }else{
+               email = id + "@kakao.com";
+          }
+          log.info("email : {}", email);
           log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email + ", " + profile_image);
           return new KakaoUserInfoDto(id, nickname, email, profile_image);
      }

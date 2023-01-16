@@ -8,4 +8,5 @@ public class CacheKey {
     public static final String EMAIL = "Email";
 
     public static final int EMAIL_EXPIRE_SEC = 30; //180 sec
+
 }
