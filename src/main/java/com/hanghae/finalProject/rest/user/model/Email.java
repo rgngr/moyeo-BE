@@ -1,15 +1,16 @@
 package com.hanghae.finalProject.rest.user.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 @AllArgsConstructor
 @ToString
 @Setter
 @Getter
+@RedisHash("Email")
 public class Email {
 
     @Id

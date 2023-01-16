@@ -32,7 +32,8 @@ public class MeetingRequestDto {
 
     @NotNull(message = "최대 정원을 입력해주세요.")
     private int maxNum;
-
+    
+    @NotNull(message = "플랫폼을 입력해주세요.")
     private PlatformCode platform;
 
     private String link;
