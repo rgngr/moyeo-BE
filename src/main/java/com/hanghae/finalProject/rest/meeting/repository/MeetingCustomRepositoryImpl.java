@@ -1,7 +1,6 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
-import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
@@ -13,7 +12,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -37,7 +35,6 @@ import static com.querydsl.jpa.JPAExpressions.select;
 public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      
      private final JPAQueryFactory jpaQueryFactory;
-     private final AttendantRepository attendantRepository;
      
      @Override
      public MeetingDetailResponseDto findByIdAndAttendAndAlarmAndLike(Long meetingId, User user) {
