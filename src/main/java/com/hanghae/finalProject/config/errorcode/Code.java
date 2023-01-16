@@ -47,7 +47,11 @@ public enum Code {
      WRONG_EMAIL_PATTERN("올바른 이메일 형식이 아닙니다.", HttpStatus.BAD_REQUEST),
      WRONG_USERNAME_PATTERN("닉네임은 최소 5자 이상, 10자이하 이어야 합니다.", HttpStatus.BAD_REQUEST),
      WRONG_PASSWORD_PATTERN("비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다.", HttpStatus.BAD_REQUEST),
-     Email_Code("이메일인증코드 발송완료", HttpStatus.OK),
+
+     EMAIL_CODE("이메일인증코드 발송완료", HttpStatus.OK),
+     EMAIL_CONFIRM_BAD("이메일을 확인해주세요",HttpStatus.BAD_REQUEST),
+     EMAIL_CONFIRM_CODE_BAD("인증코드를 확인해주세요",HttpStatus.BAD_REQUEST),
+     EMAIL_CONFIRM_SUCCESS("인증완료",HttpStatus.OK),
      WRONG_PASSWORD("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
      NO_USER("회원을 찾을 수 없습니다.",HttpStatus.BAD_REQUEST),
      WRONG_ADMIN_TOKEN("관리자 암호가 틀려 등록이 불가능합니다.", HttpStatus.BAD_REQUEST),
