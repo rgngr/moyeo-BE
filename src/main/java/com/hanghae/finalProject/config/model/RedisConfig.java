@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+
 //@EnableRedisRepositories //  Redis Repository 활성화
 @Configuration
 @EnableCaching
@@ -74,3 +75,4 @@ public class RedisConfig {
                .build();
      }
 }
+
