@@ -89,7 +89,7 @@ public class MeetingService {
                }
           }
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
-          
+          LocalDateTime dateOrigin = meeting.getStartTime();
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
@@ -99,7 +99,7 @@ public class MeetingService {
                List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meeting.getId()).stream()
                     // 캘린더 캐시데이터 삭제
                     .peek(
-                         a -> getSpringProxy().deleteCache(a.getId(), meeting.getStartTime().getYear(), meeting.getStartTime().getMonthValue())
+                         a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
                     ).collect(Collectors.toList());
                // 알림보내기
                alarmService.alarmUpdateMeeting(meeting);
