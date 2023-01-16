@@ -1,19 +1,19 @@
 package com.hanghae.finalProject.rest.user.service;
 
 //import com.hanghae.finalProject.rest.user.dto.EmailCertificationResponse;
+
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.rest.user.model.Email;
 import com.hanghae.finalProject.rest.user.repository.EmailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -21,18 +21,18 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
-@PropertySource("classpath:application.properties")
+@PropertySource ("classpath:application.properties")
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
+    private final EmailRepository emailRepository;
 
     @Value("${spring.mail.username}")
     private String id;
 
-    private final EmailRepository emailRepository;
 
 //    private final PasswordEncoder passwordencode;//
 
