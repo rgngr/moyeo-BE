@@ -62,7 +62,7 @@ public class AttendantService {
                // 참석시 알람받기가 기본임
                alarmRepository.save(new Alarm(user, meeting));
                // 해당 월 캐시 삭제
-               getSpringProxy().deleteCache(user.getId(), meeting.getStartTime().getYear(), meeting.getStartTime().getMonthValue());
+               getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
                // 참석 알람
                alarmService.alarmAttend(meeting, user);
                return new AttendantResponseDto(attendant);
@@ -77,7 +77,7 @@ public class AttendantService {
                // 참석자 명단에서 삭제
                attendantRepository.delete(oriAttendant);
                // 해당 월 캐시 삭제
-               getSpringProxy().deleteCache(user.getId(), meeting.getStartTime().getYear(), meeting.getStartTime().getMonthValue());
+               getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
                // 참석 취소 알람
                alarmService.alarmCancelAttend(meeting, user);
                return null;
@@ -114,7 +114,7 @@ public class AttendantService {
           }
           // 처음 입장하는 경우 월별데이터 캐시 삭제 필요 (for attend false>true update)
           if (!attendant.isEntrance()) {
-               getSpringProxy().deleteCache(user.getId(), meeting.getStartTime().getYear(), meeting.getStartTime().getMonthValue());
+               getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
           }
           attendant.enter(meeting);
           attendantRepository.save(attendant);
