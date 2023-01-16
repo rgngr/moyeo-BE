@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.hanghae.finalProject.rest.attendant.model.QAttendant.attendant;
@@ -25,8 +25,8 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
      // 나의 월별 데이터 들고오기
      @Override
      public List<MyMeetingResponseDto.ResponseDto> findAllByUserIdAndMonth(Long loggedId, int year, int month) {
-          LocalDateTime startDate = LocalDateTime.of(year, month, 1, 0,0);
-          LocalDateTime endDate = LocalDateTime.of(year, month+1, 1, 0,0).minusSeconds(1L);
+          LocalDate startDate = LocalDate.of(year, month, 1);
+          LocalDate endDate = LocalDate.of(year, month+1, 1).minusDays(1L);
           log.info("startDate : {} , endDate : {} ",startDate, endDate);
           
           return jpaQueryFactory
@@ -35,6 +35,7 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
                     meeting.id.as("id"),
                     meeting.title,
                     meeting.category,
+                    meeting.startDate,
                     meeting.startTime,
                     meeting.duration,
                     meeting.platform,
@@ -47,7 +48,7 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
                .from(meeting)
                .join(attendant)
                .on(meeting.id.eq(attendant.meeting.id), attendant.user.id.eq(loggedId))
-               .where(meeting.startTime.between(startDate, endDate))
+               .where(meeting.startDate.between(startDate, endDate))
                .orderBy(meeting.startTime.asc())
                .fetch();
      }

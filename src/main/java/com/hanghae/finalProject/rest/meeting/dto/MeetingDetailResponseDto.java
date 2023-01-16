@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Setter
 @Getter
@@ -21,7 +23,8 @@ public class MeetingDetailResponseDto {
     private boolean master = false;
     private String title;
     private CategoryCode category;
-    private LocalDateTime startTime;
+    private LocalDate startDate;
+    private LocalTime startTime;
     private int duration;
     private String content;
     private int maxNum;
@@ -44,6 +47,7 @@ public class MeetingDetailResponseDto {
             this.master = master;
             this.title = meeting.getTitle();
             this.category = meeting.getCategory();
+            this.startDate = meeting.getStartDate();
             this.startTime = meeting.getStartTime();
             this.duration = meeting.getDuration();
             this.content = meeting.getContent();
