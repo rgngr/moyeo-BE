@@ -2,6 +2,7 @@ package com.hanghae.finalProject.rest.meeting.service;
 
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
+import com.hanghae.finalProject.config.util.RedisUtil;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
 import com.hanghae.finalProject.rest.alarm.service.AlarmService;
@@ -16,6 +17,8 @@ import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,8 @@ public class MeetingService {
      private final AttendantRepository attendantRepository;
      private final FollowRepository followRepository;
      private final AlarmService alarmService;
+     @Autowired
+     private ApplicationContext applicationContext;
      
      // 모임 상세조회
      @Transactional
@@ -58,8 +63,8 @@ public class MeetingService {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           // 비밀방일경우 비번4글자 확인
-          if(requestDto.isSecret()){
-               if(requestDto.getPassword().length()!=4){
+          if (requestDto.isSecret()) {
+               if (requestDto.getPassword().length() != 4) {
                     throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
                }
           }
@@ -78,8 +83,8 @@ public class MeetingService {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           // 비밀방일경우 비번4글자 확인
-          if(requestDto.isSecret()){
-               if(requestDto.getPassword().length()!=4){
+          if (requestDto.isSecret()) {
+               if (requestDto.getPassword().length() != 4) {
                     throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
                }
           }
@@ -91,23 +96,30 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateAll(requestDto);
+               List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meeting.getId()).stream()
+                    // 캘린더 캐시데이터 삭제
+                    .peek(
+                         a -> getSpringProxy().deleteCache(a.getId(), meeting.getStartTime().getYear(), meeting.getStartTime().getMonthValue())
+                    ).collect(Collectors.toList());
+               // 알림보내기
                alarmService.alarmUpdateMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
      }
-
+     
+     // GET 모임수정페이지
      @Transactional (readOnly = true)
      public MeetingUpdatePageResponseDto getUpdatePage(Long id) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
+          
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
-
+          
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
-
+          
           if (user.getId() == meeting.getUser().getId()) {
                return new MeetingUpdatePageResponseDto(meeting);
           } else {
@@ -219,5 +231,9 @@ public class MeetingService {
                     }
                }).collect(Collectors.toList()));
           return response;
+     }
+     
+     private RedisUtil getSpringProxy() {
+          return applicationContext.getBean(RedisUtil.class);
      }
 }
