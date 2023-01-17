@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -96,7 +97,7 @@ public class AttendantService {
           if (user != null) {
                for(int i=0; i<attendants.size(); i++){
                     // 로그인유저가 방장이 아니고, 참석자중에 있을 경우
-                    if (attendants.get(i).getUserId()==user.getId() && i!=0){
+                    if (Objects.equals(attendants.get(i).getUserId(), user.getId()) && i!=0){
                          loggedUserDto = attendants.remove(i);
                          break;
                     };
@@ -133,7 +134,6 @@ public class AttendantService {
           attendant.enter(meeting);
           attendantRepository.save(attendant);
           return Code.CREATE_ENTER;
-          
      }
      
      @Transactional

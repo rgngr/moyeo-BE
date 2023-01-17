@@ -37,7 +37,7 @@ public enum Code {
      NO_COMMENT("댓글이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
      NO_ATTENDANT("해당 모임에 찾으시는 참석자가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
      INVALID_USER("작성자만 삭제/수정할 수 있습니다.", HttpStatus.BAD_REQUEST),
-     INVALID_USER_DELETE("작성자만 삭제할 수 있습니다.", HttpStatus.BAD_REQUEST),
+     INVALID_USER_DELETE("작성자만 할 수 있습니다.", HttpStatus.BAD_REQUEST),
      DELETE_USER( "회원 탈퇴 성공", HttpStatus.OK),
      NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT("Security Context에 인증 정보가 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
      USER_SIGNUP_SUCCESS("회원가입 성공", HttpStatus.OK),
