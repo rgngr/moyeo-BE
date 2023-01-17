@@ -64,6 +64,12 @@ public class UserService {
           return new LoginResponseDto(user);
      }
 
+     public Object getMypage() {
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+          return null;
+     }
+
      // 프로필 수정
      @Transactional
      public ProfileResponseDto updateProfile(ProfileRequestDto requestDto, MultipartFile file,
