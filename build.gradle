@@ -62,21 +62,18 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
+    // email 인증용
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
+	implementation 'redis.clients:jedis:3.3.0'
+
 //    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.6.RELEASE'
-
-    //REDIS
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     //LocalDateTime 직렬화 역직렬화 오류 해결용
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
-        // jedis
-//    implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
-//    implementation 'redis.clients:jedis:3.3.0'
-        // redisson
-//    implementation group: 'org.redisson', name: 'redisson-spring-boot-starter', version: '3.19.0'
-//    implementation group: 'org.springframework.session', name: 'spring-session-data-redis'
+//    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
 }
 //빌드 시 plain jar 파일은 만들어지지 않도록
 jar {

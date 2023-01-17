@@ -35,7 +35,7 @@ public class WebSecurityConfig {
           http.cors();
           // CSRF 설정
           http.csrf().disable();
-          
+
           // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
           http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
           http.authorizeRequests()

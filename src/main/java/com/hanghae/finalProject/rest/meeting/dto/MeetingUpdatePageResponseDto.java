@@ -25,8 +25,8 @@ public class MeetingUpdatePageResponseDto {
     public MeetingUpdatePageResponseDto(Meeting meeting) {
         this.title = meeting.getTitle();
         this.category = meeting.getCategory();
-        this.startDate = meeting.getStartTime().toLocalDate();
-        this.startTime = meeting.getStartTime().toLocalTime();
+        this.startDate = meeting.getStartDate();
+        this.startTime = meeting.getStartTime();
         this.duration = meeting.getDuration();
         this.content = meeting.getContent();
         this.maxNum = meeting.getMaxNum();
