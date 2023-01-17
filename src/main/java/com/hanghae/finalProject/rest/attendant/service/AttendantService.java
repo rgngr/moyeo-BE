@@ -49,9 +49,9 @@ public class AttendantService {
           Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                () -> new RestApiException(Code.NO_MEETING)
           );
-
+          
           Attendant oriAttendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
-          if (oriAttendant== null) {
+          if (oriAttendant == null) {
                // 최대정원 도달시 참석불가
                List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meetingId);
                if (meeting.getMaxNum() <= attendantList.size()) {
@@ -91,7 +91,21 @@ public class AttendantService {
           // 링크공유받은 비회원유저도 요청들어옴. exception 처리 x
           // 팔로우여부도 같이 들고오기
           List<AttendantListResponseDto> attendants = attendantRepository.findByMeetingIdAndFollow(meetingId, user);
-          
+          AttendantListResponseDto loggedUserDto = null;
+          // 방장이 첫번째, 로그인유저가 있을경우 로그인유저가 두번째로 오게하기
+          if (user != null) {
+               for(int i=0; i<attendants.size(); i++){
+                    // 로그인유저가 방장이 아니고, 참석자중에 있을 경우
+                    if (attendants.get(i).getUserId()==user.getId() && i!=0){
+                         loggedUserDto = attendants.remove(i);
+                         break;
+                    };
+               }
+               // 로그인 유저를 방장 다음번째로 넣어야 함 (방장일경우 패스)
+               if(loggedUserDto!=null){
+                    attendants.add(1, loggedUserDto);
+               }
+          }
           return attendants;
      }
      
@@ -148,7 +162,7 @@ public class AttendantService {
           }
      }
      
-     private RedisUtil getSpringProxy () {
+     private RedisUtil getSpringProxy() {
           return applicationContext.getBean(RedisUtil.class);
      }
 }
