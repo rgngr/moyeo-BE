@@ -91,9 +91,13 @@ public class UserService {
           }
 
      }
-
-
-
+     
+     
+     public Object getMypage() {
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+          return null;
+     }
 }
      
      // jwt token 에서 user정보뽑기 set

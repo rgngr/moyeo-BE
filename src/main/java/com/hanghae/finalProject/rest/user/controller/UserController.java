@@ -67,5 +67,11 @@ public class UserController {
     public ResponseDto updateProfile(@RequestParam(value="file") MultipartFile file) throws IOException {
             return DataResponseDto.of(userService.updateProfile(file), Code.UPDATE_PROFILE.getStatusMsg());
     }
+    
+    @Operation(summary = "마이페이지 불러오기")
+    @GetMapping("/mypage")
+    public ResponseDto getMypage(){
+        return DataResponseDto.of(userService.getMypage());
+    }
 
 }
