@@ -64,34 +64,67 @@ public class UserService {
           return new LoginResponseDto(user);
      }
 
+     // 프로필 수정
      @Transactional
-     public ProfileResponseDto updateProfile(MultipartFile file) throws IOException {
+     public ProfileResponseDto updateProfile(ProfileRequestDto requestDto, MultipartFile file,
+                                             HttpServletResponse response) throws IOException {
+          // 로그인 확인 및 현재 유저 정보 들고 오기
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
-          String currentProfileUrl = user.getProfileUrl();
-
-          if(!file.isEmpty()) {
-               String profileUrl = s3Uploader.upload(file,"file");
-               user.updateProfile(profileUrl);
-               userRepository.saveAndFlush(user);
-
-               return new ProfileResponseDto(user);
-
-          } else {
-               if(currentProfileUrl != null) {
-                    s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
-
-                    user.deleteProfileUrl();
-                    return new ProfileResponseDto(user);
-               } else {
-                    throw new RestApiException(Code.NO_IMAGE);
-               }
-
+          // 현재 username
+          String currentUsername = user.getUsername();
+          //username update >> username은 NOT_NULL
+          user.updateUsername(requestDto.getUsername());
+          //토큰 재발급
+          if (!requestDto.getUsername().equals(currentUsername)) {
+               response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
           }
+
+          //profileMsg update
+          if (requestDto.getProfileMsg() == null) {
+               user.updateProfileMsg("");
+          } else {
+               user.updateProfileMsg(requestDto.getProfileMsg());
+          }
+
+          // 현재 profileUrl
+          String currentProfileUrl = user.getProfileUrl();
+          //profileUrl update
+          if(file.isEmpty()) {
+               user.updateProfileUrl(currentProfileUrl);
+          } else {
+               String profileUrl = s3Uploader.upload(file,"file");
+               user.updateProfileUrl(profileUrl);
+          }
+
+          userRepository.saveAndFlush(user);
+
+          return new ProfileResponseDto(user);
 
      }
 
+     // 프로필 수정 페이지 불러오기
+     @Transactional
+     public ProfileResponseDto updateProfilePage() {
+          // 로그인 확인 및 현재 유저 정보 들고 오기
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          // username, profileUrl, profileMsg
+          return new ProfileResponseDto(user);
+     }
+
+     // 프로필 이미지 삭제
+     @Transactional
+     public void deleteProfileUrl() {
+          // 로그인 확인 및 현재 유저 정보 들고 오기
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          //prufileUrl = null
+          user.deleteProfileUrl();
+     }
 
 
 }
