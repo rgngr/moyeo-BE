@@ -6,12 +6,15 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+
+import java.io.Serializable;
+
 @AllArgsConstructor
 @ToString
 @Setter
 @Getter
-@RedisHash("Email")
-public class Email {
+@RedisHash(value = "Email", timeToLive = 180L)
+public class Email implements Serializable {
 
     @Id
     private String email;

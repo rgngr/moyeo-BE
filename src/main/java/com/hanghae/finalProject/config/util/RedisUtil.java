@@ -1,8 +1,11 @@
 package com.hanghae.finalProject.config.util;
 
+import com.hanghae.finalProject.rest.user.model.Email;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
