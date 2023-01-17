@@ -12,7 +12,9 @@ import java.util.Optional;
 @Repository
 public interface AttendantRepository extends JpaRepository<Attendant, Long>, AttendantCustomRepository {
     Optional<Attendant> findByMeetingIdAndUser(Long meetingId, User user);
+    Optional<Attendant> findByMeetingIdAndUserId(Long meetingId, Long userId);
      List<Attendant> findAllByMeetingId(Long meetingId);
      Optional<Attendant> findByUserAndMeeting(User user, Meeting meeting);
-     boolean existsByMeetingAndUser(Meeting meeting, User user);     
+     boolean existsByMeetingAndUser(Meeting meeting, User user);
+     
 }

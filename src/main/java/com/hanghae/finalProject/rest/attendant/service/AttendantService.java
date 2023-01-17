@@ -12,6 +12,8 @@ import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantListResponseDto;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
+import com.hanghae.finalProject.rest.dropMember.dto.DropMember;
+import com.hanghae.finalProject.rest.dropMember.repository.DropMemberRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -36,6 +39,7 @@ public class AttendantService {
      private final MeetingRepository meetingRepository;
      private final AlarmRepository alarmRepository;
      private final AlarmService alarmService;
+     private final DropMemberRepository dropMemberRepository;
      
      @Autowired
      private ApplicationContext applicationContext;
@@ -49,7 +53,11 @@ public class AttendantService {
           Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                () -> new RestApiException(Code.NO_MEETING)
           );
-          
+          // 강퇴당한 유저일 경우 참석 불가
+          if (dropMemberRepository.existsByMeetingAndUserId(meeting, user.getId())) {
+               throw new RestApiException(Code.INVALID_MEETING);
+          }
+          // 참석자테이블에 존재하는가
           Attendant oriAttendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
           if (oriAttendant == null) {
                // 최대정원 도달시 참석불가
@@ -96,7 +104,7 @@ public class AttendantService {
           if (user != null) {
                for(int i=0; i<attendants.size(); i++){
                     // 로그인유저가 방장이 아니고, 참석자중에 있을 경우
-                    if (attendants.get(i).getUserId()==user.getId() && i!=0){
+                    if (Objects.equals(attendants.get(i).getUserId(), user.getId()) && i!=0){
                          loggedUserDto = attendants.remove(i);
                          break;
                     };
@@ -120,6 +128,10 @@ public class AttendantService {
           Meeting meeting = meetingRepository.findByIdAndDeletedIsFalse(meetingId).orElseThrow(
                () -> new RestApiException(Code.NO_MEETING)
           );
+          // 강퇴당한 유저일 경우 입장 불가
+          if (dropMemberRepository.existsByMeetingAndUserId(meeting, user.getId())) {
+               throw new RestApiException(Code.INVALID_MEETING);
+          }
           // 참석하기로한 모임인가
           Attendant attendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
           if (attendant == null) {
@@ -133,7 +145,6 @@ public class AttendantService {
           attendant.enter(meeting);
           attendantRepository.save(attendant);
           return Code.CREATE_ENTER;
-          
      }
      
      @Transactional
