@@ -92,11 +92,13 @@ public class UserService {
 
      }
      
-     
-     public Object getMypage() {
+     // 마이페이지 첫화면 불러오기
+     public MypageResponseDto getMypage() {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          return null;
+     
+          //참여모임수, 팔로워(나를 팔로우 추가한사람) 수 , 팔로잉(내가 팔로우) 수
+          return userRepository.findByUserAndAttendantAndFollow(user);
      }
 }
      
