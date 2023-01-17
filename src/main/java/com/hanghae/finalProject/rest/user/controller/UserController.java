@@ -82,5 +82,11 @@ public class UserController {
         userService.deleteProfileUrl();
         return ResponseDto.of(true, Code.DELETE_PROFILE_URL);
     }
+    
+    @Operation(summary = "마이페이지 불러오기")
+    @GetMapping("/mypage")
+    public ResponseDto getMypage(){
+        return DataResponseDto.of(userService.getMypage());
+    }
 
 }

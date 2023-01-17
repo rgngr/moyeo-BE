@@ -33,6 +33,9 @@ public class User implements Supplier<User> {
      private String profileMsg;
      
      @Column
+     private String profileMsg;
+     
+     @Column
      private Boolean deleted = false;
      
      @Column(unique = true)
