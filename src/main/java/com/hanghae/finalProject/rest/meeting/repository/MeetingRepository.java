@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Long>, MeetingCustomRepository {
+     
+     
      Optional<Meeting> findByIdAndDeletedIsFalse(Long meetingId);
 }

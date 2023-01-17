@@ -12,7 +12,6 @@ import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantListResponseDto;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
-import com.hanghae.finalProject.rest.dropMember.dto.DropMember;
 import com.hanghae.finalProject.rest.dropMember.repository.DropMemberRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
@@ -20,13 +19,10 @@ import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,14 +50,14 @@ public class AttendantService {
                () -> new RestApiException(Code.NO_MEETING)
           );
           // 강퇴당한 유저일 경우 참석 불가
-          if (dropMemberRepository.existsByMeetingAndUserId(meeting, user.getId())) {
+          if (dropMemberRepository.existsByMeetingAndUser(meeting, user)) {
                throw new RestApiException(Code.INVALID_MEETING);
           }
           // 참석자테이블에 존재하는가
-          Attendant oriAttendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
+          Attendant oriAttendant = attendantRepository.findByMeetingAndUser(meeting, user).orElseGet(new Attendant());
           if (oriAttendant == null) {
                // 최대정원 도달시 참석불가
-               List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meetingId);
+               List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting);
                if (meeting.getMaxNum() <= attendantList.size()) {
                     throw new RestApiException(Code.NO_MORE_SEAT);
                }
@@ -78,7 +74,7 @@ public class AttendantService {
                // 기존에 참석했던 유저의 경우
                oriAttendant.cancelAttendant(meeting);
                // 알람받기 리스트에 있을경우 알람 삭제필요
-               Alarm alarm = alarmRepository.findByMeetingIdAndUser(meeting.getId(), user).orElseGet(new Alarm());
+               Alarm alarm = alarmRepository.findByMeetingAndUser(meeting, user).orElseGet(new Alarm());
                if (alarm != null) {
                     alarmRepository.delete(alarm);
                }
@@ -129,11 +125,11 @@ public class AttendantService {
                () -> new RestApiException(Code.NO_MEETING)
           );
           // 강퇴당한 유저일 경우 입장 불가
-          if (dropMemberRepository.existsByMeetingAndUserId(meeting, user.getId())) {
+          if (dropMemberRepository.existsByMeetingAndUser(meeting, user)) {
                throw new RestApiException(Code.INVALID_MEETING);
           }
           // 참석하기로한 모임인가
-          Attendant attendant = attendantRepository.findByMeetingIdAndUser(meetingId, user).orElseGet(new Attendant());
+          Attendant attendant = attendantRepository.findByMeetingAndUser(meeting, user).orElseGet(new Attendant());
           if (attendant == null) {
                // 참석하기 누르지않은 모임일 경우
                throw new RestApiException(Code.NOT_ATTENDANCE_YET);
@@ -147,6 +143,7 @@ public class AttendantService {
           return Code.CREATE_ENTER;
      }
      
+     // 모임의 알림 활성화/음소거
      @Transactional
      public AlarmResponseDto getAlarm(Long meetingId) {
           User user = SecurityUtil.getCurrentUser();
@@ -160,7 +157,7 @@ public class AttendantService {
           if (!attendantRepository.existsByMeetingAndUser(meeting, user)) {
                throw new RestApiException(Code.NOT_ATTENDANCE_YET);
           }
-          Alarm alarm = alarmRepository.findByMeetingIdAndUser(meeting.getId(), user).orElseGet(new Alarm());
+          Alarm alarm = alarmRepository.findByMeetingAndUser(meeting, user).orElseGet(new Alarm());
           
           if (alarm == null) {
                // 알람 안받기로한 사람이었던 경우 알람받기 추가
