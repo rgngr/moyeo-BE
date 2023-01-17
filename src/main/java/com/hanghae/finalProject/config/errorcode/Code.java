@@ -16,7 +16,7 @@ public enum Code {
      OK("정상", HttpStatus.OK),
      FILE_SAVE_FAIL("파일 저장에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
      WRONG_IMAGE_FORMAT("지원하지 않는 파일 형식입니다.", HttpStatus.BAD_REQUEST),
-     NO_IMAGE("이미지 파일을 선택해주세요.", HttpStatus.BAD_REQUEST),
+
      DELETE_COMMENT( "댓글 삭제 성공", HttpStatus.OK),
      DELETED_COMMENT( "삭제된 댓글입니다.", HttpStatus.OK),
      CREATE_COMMENT( "댓글 작성 성공", HttpStatus.OK),
@@ -28,6 +28,8 @@ public enum Code {
      DELETE_MEETING( "모임 글 삭제 성공", HttpStatus.OK),
      CREATE_ENTER("모임 입장 성공", HttpStatus.OK),
      UPDATE_PROFILE( "프로필 수정 성공", HttpStatus.OK),
+     UPDATE_PROFILE_PAGE( "프로필 수정 페이지 불러오기 성공", HttpStatus.OK),
+     DELETE_PROFILE_URL( "프로필 이미지 삭제 성공", HttpStatus.OK),
      INVALID_PARAMETER("Invalid parameter included",HttpStatus.BAD_REQUEST),
      INTERNAL_SERVER_ERROR("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
      BAD_REQUEST("Bad request",HttpStatus.BAD_REQUEST),
