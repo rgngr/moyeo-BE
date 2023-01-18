@@ -69,13 +69,13 @@ public class UserController {
     }
 
     @ApiOperation(value = "프로필 이미지 변경")
-    @PatchMapping(value = "/profileUrl",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/profile-url",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseDto updateProfileUrl(@RequestParam(value="file") MultipartFile file) throws IOException {
         return DataResponseDto.of(userService.updateProfileUrl(file), Code.UPDATE_PROFILE_URL.getStatusMsg());
     }
 
     @ApiOperation(value = "프로필 이미지 삭제")
-    @DeleteMapping(value = "/profileUrl")
+    @DeleteMapping(value = "/profile-url")
     public ResponseDto deleteProfileUrl() {
         userService.deleteProfileUrl();
         return ResponseDto.of(true, Code.DELETE_PROFILE_URL);
