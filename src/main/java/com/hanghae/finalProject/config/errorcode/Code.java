@@ -72,7 +72,9 @@ public enum Code {
      NO_MORE_REVIEW("이미 후기를 작성하였습니다.", HttpStatus.BAD_REQUEST),
      NO_AUTH_REVIEW("후기를 작성할 수 없습니다.", HttpStatus.BAD_REQUEST),
      NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),
-     INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
+     INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED),
+     ALARM_CONNECT_ERROR("alarm connect error", HttpStatus.INTERNAL_SERVER_ERROR);
+
 
      private final String StatusMsg;
      private final HttpStatus statusCode;

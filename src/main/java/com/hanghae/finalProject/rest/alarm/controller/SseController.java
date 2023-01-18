@@ -21,35 +21,35 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/api")
 public class SseController {
 
-    public static Map<Long, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
-
-    @GetMapping(value = "/sub", consumes = MediaType.ALL_VALUE)
-    public SseEmitter subscribe() {
-
-        //로그인 확인 및 현재 유저 정보 들고오기
-        User user = SecurityUtil.getCurrentUser();
-        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
-        // userId
-        Long userId = user.getId();
-
-        // 현재 유저의 SseEmitter 생성
-        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-        try {
-            // 연결!!
-            sseEmitter.send(SseEmitter.event().name("connect"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // userId싱 key값으로 해서 SseEmitter를 저장
-        sseEmitters.put(userId, sseEmitter);
-
-        sseEmitter.onCompletion(() -> sseEmitters.remove(userId));
-        sseEmitter.onTimeout(() -> sseEmitters.remove(userId));
-        sseEmitter.onError((e) -> sseEmitters.remove(userId));
-
-        return sseEmitter;
-    }
+//    public static Map<Long, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
+//
+//    @GetMapping(value = "/sub", consumes = MediaType.ALL_VALUE)
+//    public SseEmitter subscribe() {
+//
+//        //로그인 확인 및 현재 유저 정보 들고오기
+//        User user = SecurityUtil.getCurrentUser();
+//        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+//
+//        // userId
+//        Long userId = user.getId();
+//
+//        // 현재 유저의 SseEmitter 생성
+//        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+//        try {
+//            // 연결!!
+//            sseEmitter.send(SseEmitter.event().name("connect"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // userId싱 key값으로 해서 SseEmitter를 저장
+//        sseEmitters.put(userId, sseEmitter);
+//
+//        sseEmitter.onCompletion(() -> sseEmitters.remove(userId));
+//        sseEmitter.onTimeout(() -> sseEmitters.remove(userId));
+//        sseEmitter.onError((e) -> sseEmitters.remove(userId));
+//
+//        return sseEmitter;
+//    }
 
 }

@@ -5,7 +5,6 @@ import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
 @Getter
@@ -28,7 +27,7 @@ public class AlarmList extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    private boolean isRead = false;
+    private boolean isRead;
 
     public AlarmList(Meeting meeting, User user, String content) {
         this.meeting = meeting;
