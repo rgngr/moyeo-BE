@@ -21,6 +21,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
      
      private final JPAQueryFactory jpaQueryFactory;
      
+     // 댓글리스트 조회
      @Override
      public List<CommentResponseDto> findByMeetingOrderByCreatedAtDesc(Long meetingId, Long commentId) {
           List<Long> ids = jpaQueryFactory
@@ -49,7 +50,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                .join(user)
                .on(comment1.user.id.eq(user.id))
                .where(comment1.id.in(ids))
-               .orderBy(comment1.createdAt.desc())
+               .orderBy(comment1.createdAt.asc())
                .fetch();
      }
      
