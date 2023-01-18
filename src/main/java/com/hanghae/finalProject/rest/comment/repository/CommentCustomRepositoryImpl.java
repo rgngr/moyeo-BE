@@ -22,7 +22,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
      private final JPAQueryFactory jpaQueryFactory;
      
      @Override
-     public List<CommentResponseDto> findByMeetingIdOrderByCreatedAtDesc(Long meetingId, Long commentId) {
+     public List<CommentResponseDto> findByMeetingOrderByCreatedAtDesc(Long meetingId, Long commentId) {
           List<Long> ids = jpaQueryFactory
                .select(comment1.id)
                .from(comment1)
