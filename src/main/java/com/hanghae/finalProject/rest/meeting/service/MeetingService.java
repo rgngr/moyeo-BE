@@ -97,7 +97,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateAll(requestDto);
-               List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meeting.getId()).stream()
+               List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting).stream()
                     // 캘린더 캐시데이터 삭제
                     .peek(
                          a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
