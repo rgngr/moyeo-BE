@@ -62,25 +62,29 @@ public class UserController {
         return DataResponseDto.of(kakaoService.kakaoLogin(code, response), Code.USER_LOGIN_SUCCESS.getStatusMsg());
     }
 
-    @ApiOperation(value = "프로필 수정")
-    @PatchMapping(value = "/profile",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseDto updateProfile(@Valid @RequestPart ProfileRequestDto requestDto,
-                                     @RequestPart (value = "file", required = false) MultipartFile file,
-                                     HttpServletResponse response) throws IOException {
-        return DataResponseDto.of(userService.updateProfile(requestDto, file, response), Code.UPDATE_PROFILE.getStatusMsg());
+    @ApiOperation(value = "프로필 수정 페이지 불러오기")
+    @GetMapping(value = "/profile/update-page")
+    public ResponseDto getProfileUpdatePage() {
+        return DataResponseDto.of(userService.getProfileUpdatePage(), Code.GET_PROFILE_UPDATE_PAGE.getStatusMsg());
     }
 
-    @ApiOperation(value = "프로필 수정 페이지")
-    @GetMapping(value = "/profile/update-page")
-    public ResponseDto updateProfilePage() {
-        return DataResponseDto.of(userService.updateProfilePage(), Code.UPDATE_PROFILE_PAGE.getStatusMsg());
+    @ApiOperation(value = "프로필 이미지 변경")
+    @PatchMapping(value = "/profileUrl",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseDto updateProfileUrl(@RequestParam(value="file") MultipartFile file) throws IOException {
+        return DataResponseDto.of(userService.updateProfileUrl(file), Code.UPDATE_PROFILE_URL.getStatusMsg());
     }
 
     @ApiOperation(value = "프로필 이미지 삭제")
-    @PatchMapping(value = "/profileUrl")
+    @DeleteMapping(value = "/profileUrl")
     public ResponseDto deleteProfileUrl() {
         userService.deleteProfileUrl();
         return ResponseDto.of(true, Code.DELETE_PROFILE_URL);
+    }
+
+    @ApiOperation(value = "프로필 username/자기소개 수정")
+    @PatchMapping(value = "/profile")
+    public ResponseDto updateProfile(@Valid @RequestBody ProfileRequestDto requestDto, HttpServletResponse response){
+        return DataResponseDto.of(userService.updateProfile(requestDto, response), Code.UPDATE_PROFILE.getStatusMsg());
     }
     
     @Operation(summary = "마이페이지 불러오기")
