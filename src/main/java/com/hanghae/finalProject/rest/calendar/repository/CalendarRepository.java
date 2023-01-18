@@ -9,5 +9,4 @@ import java.util.Optional;
 
 
 public interface CalendarRepository extends JpaRepository<Calendar, Long>, CalendarCustomRepository {
-    Optional<Calendar> findByMeetingIdAndUser(Long id, User user);
 }
