@@ -34,7 +34,7 @@ public class FollowService {
           );
           
           // 기존에 팔로우한 사람인가
-          Follow isFollow = followRepository.findByUserIdAndFollowId(user.getId(), followId).orElseGet(new Follow());
+          Follow isFollow = followRepository.findByUserAndFollowId(user, followId).orElseGet(new Follow());
           if (isFollow == null) {
                // 기존 팔로우 x
                followRepository.save(new Follow(user, followId));

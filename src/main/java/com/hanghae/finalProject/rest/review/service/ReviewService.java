@@ -52,7 +52,7 @@ public class ReviewService {
           // 참석자테이블에 review true 업데이트
           attendant.makeReview(true);
           // 로그인 유저의 해당 월 캐시데이터 삭제
-          getSpringProxy().deleteCache(user.getId(), meeting.getStartTime().getYear(), meeting.getStartTime().getMonthValue());
+          getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
           return new ReviewResponseDto(review.getId(), user.getUsername(), review.isReview());
      }
      

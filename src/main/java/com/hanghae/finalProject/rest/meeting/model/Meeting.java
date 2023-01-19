@@ -9,7 +9,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Entity
@@ -29,9 +31,12 @@ public class Meeting extends Timestamped {
 
      @Column(nullable = false)
      private CategoryCode category;
+     
+     @Column(nullable = false)
+     private LocalDate startDate;
 
      @Column(nullable = false)
-     private LocalDateTime startTime;
+     private LocalTime startTime;
 
      @Column(nullable = false)
      private int duration;
@@ -60,7 +65,8 @@ public class Meeting extends Timestamped {
      public Meeting(MeetingRequestDto requestDto, User user) {
           this.title = requestDto.getTitle();
           this.category = requestDto.getCategory();
-          this.startTime = LocalDateTime.of(requestDto.getStartDate(), requestDto.getStartTime());
+          this.startDate = requestDto.getStartDate();
+          this.startTime =  requestDto.getStartTime();
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
           this.maxNum = requestDto.getMaxNum();
@@ -73,7 +79,8 @@ public class Meeting extends Timestamped {
 
      public void updateAll(MeetingUpdateRequestDto requestDto) {
           this.title = requestDto.getTitle();
-          this.startTime = LocalDateTime.of(requestDto.getStartDate(), requestDto.getStartTime());
+          this.startDate = requestDto.getStartDate();
+          this.startTime =  requestDto.getStartTime();
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
           this.platform = requestDto.getPlatform();

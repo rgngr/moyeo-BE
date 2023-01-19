@@ -46,6 +46,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.user.id.as("masterId"),
                     meeting.title,
                     meeting.category,
+                    meeting.startDate,
                     meeting.startTime,
                     meeting.duration,
                     meeting.platform,
@@ -91,7 +92,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .select(meeting.id)
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
-                    meeting.startTime.goe(LocalDateTime.now()),
+                    meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     meeting.title.contains(search), // 검색어 필터링
                     meeting.deleted.eq(false),
                     ltMeetingId(meetingIdx))// 무한스크롤용
@@ -122,7 +123,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .on(meeting.id.eq(attendant.meeting.id))
                .groupBy(meeting.id)
                .where(eqCategory(category),
-                    meeting.startTime.goe(LocalDateTime.now().toLocalDate().atStartOfDay()),
+                    meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     meeting.deleted.eq(false)
                )
                .orderBy(attendant.id.count().desc(), meeting.id.desc())
@@ -150,8 +151,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(
-//                    meeting.startTime.goe(LocalDateTime.now()),
-                    meeting.startTime.goe(LocalDateTime.now().toLocalDate().atStartOfDay()),
+                    meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     ltMeetingId(meetingIdx),
                     eqCategory(category),
                     meeting.deleted.eq(false)
@@ -169,6 +169,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.user.id.as("masterId"),
                     meeting.title,
                     meeting.category,
+                    meeting.startDate,
                     meeting.startTime,
                     meeting.duration,
                     meeting.platform,

@@ -1,10 +1,11 @@
 package com.hanghae.finalProject.rest.calendar.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +38,14 @@ public class MyMeetingResponseDto implements Serializable {
           private String title;
           private CategoryCode category;
      
-//          @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-          @JsonDeserialize (using = LocalDateTimeDeserializer.class)
-          @JsonSerialize (using = LocalDateTimeSerializer.class)
-          private LocalDateTime startTime;
+          @JsonDeserialize (using = LocalDateDeserializer.class)
+          @JsonSerialize (using = LocalDateSerializer.class)
+          private LocalDate startDate;
+     
+          @JsonDeserialize (using = LocalTimeDeserializer.class)
+          @JsonSerialize (using = LocalTimeSerializer.class)
+          private LocalTime startTime;
+          
           private int duration;
           private PlatformCode platform;
           private String content;

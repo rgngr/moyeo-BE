@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -89,14 +90,14 @@ public class MeetingService {
                }
           }
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
-          LocalDateTime dateOrigin = meeting.getStartTime();
+          LocalDate dateOrigin = meeting.getStartDate();
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateAll(requestDto);
-               List<Attendant> attendantList = attendantRepository.findAllByMeetingId(meeting.getId()).stream()
+               List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting).stream()
                     // 캘린더 캐시데이터 삭제
                     .peek(
                          a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
