@@ -69,10 +69,7 @@ public class KakaoService {
           MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
           body.add("grant_type", "authorization_code");
           body.add("client_id", KAKAO_REST_API_KEY);
-//          body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
-//          body.add("redirect_uri", "https://sparta-hippo.shop/api/user/kakao/callback");
-//          body.add("redirect_uri", "http://localhost:3000/api/users/kakao/callback");
-          body.add("redirect_uri", "https://final-project-fe-3.vercel.app/api/users/kakao/callback");
+          body.add("redirect_uri", "https://moyeo.vercel.app/api/users/kakao/callback");
           body.add("code", code);
           
           // HTTP 요청 보내기
