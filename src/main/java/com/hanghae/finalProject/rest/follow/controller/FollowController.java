@@ -11,13 +11,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping ("/api/follow/{followId}")
+@RequestMapping ("/api/follow/")
 public class FollowController {
      private final FollowService followService;
      
      @Operation (summary = "팔로우/언팔로우")
-     @PostMapping ("")
+     @PostMapping ("{followId}")
      public ResponseDto follow(@PathVariable Long followId) {
           return ResponseDto.of(true, followService.follow(followId));
+     }
+     @Operation (summary = "내 팔로잉 리스트 불러오기")
+     @GetMapping ("/list")
+     public ResponseDto followingList() {
+          return DataResponseDto.of(followService.followingList(),Code.USER_LOGIN_SUCCESS.getStatusMsg());
      }
 }
