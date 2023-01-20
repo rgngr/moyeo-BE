@@ -2,6 +2,8 @@ package com.hanghae.finalProject.rest.comment.service;
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
+import com.hanghae.finalProject.rest.alarm.model.AlarmList;
+import com.hanghae.finalProject.rest.alarm.repository.AlarmListRepository;
 import com.hanghae.finalProject.rest.alarm.service.AlarmService;
 import com.hanghae.finalProject.rest.comment.dto.CommentRequestDto;
 import com.hanghae.finalProject.rest.comment.dto.CommentResponseDto;
@@ -21,6 +23,7 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MeetingRepository meetingRepository;
+    private final AlarmListRepository alarmListRepository;
 
     private final AlarmService alarmService;
 

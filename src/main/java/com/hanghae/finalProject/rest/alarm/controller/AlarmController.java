@@ -4,8 +4,11 @@ import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
 import com.hanghae.finalProject.rest.alarm.service.AlarmService;
 import com.hanghae.finalProject.rest.attendant.service.AttendantService;
+import com.hanghae.finalProject.rest.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -23,9 +26,8 @@ public class AlarmController {
      }
 
      @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
-     public SseEmitter subscribe(@RequestParam String token,
-                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-          return alarmService.subscribe(token, lastEventId);
+     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+          return alarmService.subscribe(lastEventId);
      }
 
 }
