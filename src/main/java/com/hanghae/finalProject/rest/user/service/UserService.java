@@ -30,7 +30,8 @@ public class UserService {
      private final PasswordEncoder passwordEncoder;
 
      private final S3Uploader s3Uploader;
-
+     
+     // 회원가입
      @Transactional
      public void signUp(SignupRequestDto requestDto) {
           String username = requestDto.getUsername();
@@ -46,6 +47,7 @@ public class UserService {
           userRepository.save(new User(username, password, email));
      }
 
+     // 로그인
      @Transactional(readOnly = true)
      public LoginResponseDto login(LoginRequestDto RequestDto, HttpServletResponse response){
           String email = RequestDto.getEmail();
