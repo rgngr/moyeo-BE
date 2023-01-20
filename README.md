@@ -25,8 +25,7 @@ https://moyeo.vercel.app
  <br><br>
  ## ⭐API 명세서 [LINK](https://descriptive-handbell-23e.notion.site/b53182796d1940959c2223cdf8792b44?v=2e290f73ddaf429eb21e9efffed7121d)
 
- ## ⭐ERD
- <img width="784" alt="스크린샷_20221229_051305" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcCtqz9%2FbtrWO2BiCvA%2FICUfcK9BXKbukblypkwOgK%2Fimg.png">
+
 
  ---
  ##  💉트러블 슈팅💉
@@ -58,16 +57,22 @@ https://moyeo.vercel.app
 ![아마존 AWS](https://user-images.githubusercontent.com/108880977/209103421-1cf57ef4-8620-4932-8704-60d0ec14ed1f.svg)
 ![EC22](https://user-images.githubusercontent.com/108880977/209104209-b04b40b7-a847-4263-aeb8-de19bc7fa8d9.svg)
 <img src="https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=AmazonS3&logoColor=white">
+(https://camo.githubusercontent.com/a069a550246061f739515a814dfcb2825db8fcce1017180544585ac1982b0426/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f52656469732d4443333832443f7374796c653d666f722d7468652d6261646765266c6f676f3d5265646973266c6f676f436f6c6f723d7768697465)
  ---
+ 
  ### Member 
  BE 😶장영주, 😶김지민, 😶윤덕현
  
  FE 😀박선영, 😀정소영
- 
- 
+
  - FE 프론트엔드 깃허브로 이동
  https://github.com/MoyeoProject/moyeo-FE
+
+
+ ## ⭐ ERD
+ <img width="784" alt="스크린샷_20221229_051305" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcCtqz9%2FbtrWO2BiCvA%2FICUfcK9BXKbukblypkwOgK%2Fimg.png">
  
- ## ⚙️ 서비스 아키텍처 Service Architecture
+ 
+ ## ⭐ Service Architecture
 <img width="1078" alt="스크린샷 2023-01-20 오후 2 36 01" src="https://user-images.githubusercontent.com/89244209/213624847-94761ad2-59bb-4845-84ee-90dc923d72ce.png">
  
