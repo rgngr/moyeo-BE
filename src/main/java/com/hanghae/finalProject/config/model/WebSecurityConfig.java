@@ -40,15 +40,11 @@ public class WebSecurityConfig {
           http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
           http.authorizeRequests()
                // 토큰검증 필요없는 페이지 설정
-               .antMatchers(HttpMethod.POST, "/api/user/**").permitAll()
-               .antMatchers(HttpMethod.POST, "/api/login/mailConfirm/**").permitAll()
-//               .antMatchers(HttpMethod.GET, "/api/posts/{\\d+}").permitAll()
-//               .antMatchers(HttpMethod.GET, "/api/posts").permitAll()
-
-               .antMatchers(HttpMethod.GET, "/api/posts/{\\d+}").permitAll()
-               .antMatchers(HttpMethod.GET, "/api/posts").permitAll()
-
-               .antMatchers( "/api/**").permitAll() // TODO : 임시
+               .antMatchers(HttpMethod.POST, "/api/users/**").permitAll()
+               .antMatchers(HttpMethod.GET, "/api/users/kakao/callback").permitAll()
+               .antMatchers(HttpMethod.GET, "/api/users/mail-code/**").permitAll()
+               .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}").permitAll() // 모임 상세 조회
+               .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}/attendants").permitAll() // 모임 참석자 리스트
                .antMatchers("/api/doc").permitAll()
                .antMatchers("/swagger-ui/**").permitAll() //스웨거 권한설정 X
                .antMatchers("/swagger-resources/**").permitAll() //스웨거 권한설정 X

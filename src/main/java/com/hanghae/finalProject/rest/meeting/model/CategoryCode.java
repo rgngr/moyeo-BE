@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CategoryCode {
-     OTT,
-     공부하자,
-     수다떨자,
-     게임하자,
-     술먹자,
-     밥먹자;
+     일단모여,
+     취미모여,
+     영화모여,
+     공부모여,
+     수다모여,
+     게임모여,
+     술모여,
+     밥모여;
      
      public static CategoryCode of(String categoryStr){
           if(categoryStr == null){

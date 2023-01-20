@@ -97,7 +97,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.deleted.eq(false),
                     ltMeetingId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
-               .limit(5)
+               .limit(5L)
                .fetch();
           // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
           if (CollectionUtils.isEmpty(ids)) {

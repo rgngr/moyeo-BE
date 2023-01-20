@@ -1,4 +1,4 @@
-package com.hanghae.finalProject.rest.dropMember.dto;
+package com.hanghae.finalProject.rest.dropMember.model;
 
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.user.model.User;

@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
      public void addCorsMappings(CorsRegistry registry) {
           registry.addMapping("/**")
                // 서버에서 응답하는 리소스에 접근가능한 출처 명시
-               .allowedOrigins("http://localhost:3000", "https://final-project-fe-3.vercel.app") // , "https://www.dear-mylove.com"
+               .allowedOrigins("http://localhost:3000", "https://moyeo.vercel.app/") // , "https://www.dear-mylove.com"
                .allowedHeaders("*")
                .allowedMethods("*")
           .exposedHeaders(JwtUtil.AUTHORIZATION_HEADER); //JSON 으로 Token 내용 전달

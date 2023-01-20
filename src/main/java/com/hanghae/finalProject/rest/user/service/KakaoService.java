@@ -28,6 +28,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Slf4j
@@ -69,10 +70,7 @@ public class KakaoService {
           MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
           body.add("grant_type", "authorization_code");
           body.add("client_id", KAKAO_REST_API_KEY);
-//          body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
-//          body.add("redirect_uri", "https://sparta-hippo.shop/api/user/kakao/callback");
-//          body.add("redirect_uri", "http://localhost:3000/api/users/kakao/callback");
-          body.add("redirect_uri", "https://final-project-fe-3.vercel.app/api/users/kakao/callback");
+          body.add("redirect_uri", "https://moyeo.vercel.app/api/users/kakao/callback");
           body.add("code", code);
           
           // HTTP 요청 보내기
@@ -149,6 +147,7 @@ public class KakaoService {
                // email: kakao email
                String email = kakaoUserInfo.getEmail();
                String profileUrl = kakaoUserInfo.getProfile_image();
+               profileUrl = (profileUrl.split("/")[4]).equals("dpk9l1")? null : profileUrl;
                
                kakaoUser = new User(kakaoUserInfo.getNickname(), kakaoId, encodedPassword, email, profileUrl);
                userRepository.save(kakaoUser);
