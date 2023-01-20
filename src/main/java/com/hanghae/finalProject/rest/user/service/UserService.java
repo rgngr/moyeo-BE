@@ -129,20 +129,13 @@ public class UserService {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
-          //username update >> username은 NOT_NULL
-          user.updateUsername(requestDto.getUsername());
           // 현재 username
           String currentUsername = user.getUsername();
+          //username/자기소개 update
+          user.updateProfileContent(requestDto.getUsername(), requestDto.getProfileMsg());
           //토큰 재발급
           if (!requestDto.getUsername().equals(currentUsername)) {
                response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
-          }
-
-          //profileMsg update
-          if (requestDto.getProfileMsg() == null) {
-               user.updateProfileMsg("");
-          } else {
-               user.updateProfileMsg(requestDto.getProfileMsg());
           }
 
           userRepository.saveAndFlush(user);

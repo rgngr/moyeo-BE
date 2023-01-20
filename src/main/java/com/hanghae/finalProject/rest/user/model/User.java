@@ -64,15 +64,12 @@ public class User implements Supplier<User> {
           return null;
      }
 
-     public void updateUsername(String username) {
-          this.username = username;
-     }
-
      public void updateProfileUrl(String profileUrl) {
           this.profileUrl = profileUrl;
      }
 
-     public void updateProfileMsg(String profileMsg) {
+     public void updateProfileContent(String username, String profileMsg) {
+          this.username = username;
           this.profileMsg = profileMsg;
      }
 
