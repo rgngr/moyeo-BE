@@ -1,21 +1,27 @@
 
 
 # 모여 | Moyeo
+
 이불 밖은 위험해! <br />
 메타버스의 시대가 펼쳐지면서 방구석 모임이 늘어났습니다. <br />
 좋아하는 취미생활을 방구석에서 공유하고 싶은 사람들을 위한 모임 <br />
 
+
 ## 🔗 배포 링크 Hosting URL
+
 https://moyeo.vercel.app
 <br />
 
+
 ### ⭐ 개발기간
+
 - 2022.12.30 ~ 진행중
 
 
 ---
 
 ### ⭐ 주요기능
+
 1. 링크를 공유하고 함께할 사람들을 모을 수 있는 모임 생성 기능
 2. 원하는 모임을 골라서 참석예약 후 까먹지 않도록 모임시작전 알림 받기!
 3. 내가 참석하기로한 모임들을 한눈에 볼 수 있는 나의 모임 달력
@@ -81,9 +87,11 @@ https://moyeo.vercel.app
 
 
  ### ⭐ ERD
+ 
  <img width="784" alt="스크린샷_20221229_051305" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcCtqz9%2FbtrWO2BiCvA%2FICUfcK9BXKbukblypkwOgK%2Fimg.png">
  
  
  ### ⭐ Service Architecture
+ 
 <img width="1078" alt="스크린샷 2023-01-20 오후 2 36 01" src="https://user-images.githubusercontent.com/89244209/213624847-94761ad2-59bb-4845-84ee-90dc923d72ce.png">
  
