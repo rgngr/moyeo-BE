@@ -17,6 +17,7 @@ import java.time.LocalTime;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(indexes = @Index(name = "idx__meeting_start_date", columnList = "startDate"))
 public class Meeting extends Timestamped {
 
      @Id
