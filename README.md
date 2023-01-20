@@ -7,18 +7,15 @@
 좋아하는 취미생활을 방구석에서 공유하고 싶은 사람들을 위한 모임 <br />
 
 
-## 🔗 배포 링크 Hosting URL
+### 🔗 배포 링크 Hosting URL
 
 https://moyeo.vercel.app
-<br />
 
 
 ### ⭐ 개발기간
 
-- 2022.12.30 ~ 진행중
+2022.12.30 ~ 진행중
 
-
----
 
 ### ⭐ 주요기능
 
@@ -28,14 +25,11 @@ https://moyeo.vercel.app
 4. 원하는 모임을 찾을 수 있는 검색 및 카테고리 기능
 5. 내가 원하는 사람의 모임이 생기면 알림을 받을 수 있는 팔로우 기능
  
- <br><br>
  
- ### ⭐ API 명세서 [LINK](https://descriptive-handbell-23e.notion.site/b53182796d1940959c2223cdf8792b44?v=2e290f73ddaf429eb21e9efffed7121d)
+### ⭐ API 명세서 [LINK](https://descriptive-handbell-23e.notion.site/b53182796d1940959c2223cdf8792b44?v=2e290f73ddaf429eb21e9efffed7121d)
 
 
-
- ---
- ###  ⭐ 트러블 슈팅
+###  ⭐ 트러블 슈팅
  
 #### 1. 
 1) 문제 상황
@@ -47,9 +41,10 @@ https://moyeo.vercel.app
 3) 해결 방법
 - 
 
-## 🧩swagger [LINK](https://sparta-hippo.shop/swagger-ui/index.html)
+### 🧩swagger [LINK](https://sparta-hippo.shop/swagger-ui/index.html)
 
-## ⭐ 기술스택
+
+### ⭐ 기술스택
 
 ![자바](https://user-images.githubusercontent.com/108880977/209101862-e833ffc2-7cab-4114-8b74-5766d25b226b.svg)
 ![스프링부트](https://user-images.githubusercontent.com/108880977/209099782-f0f6fbb6-8c55-4a0e-a7a2-53fd5a000493.svg)
@@ -76,7 +71,7 @@ https://moyeo.vercel.app
  ---
  
  
- ## ⭐ Member 
+ ### ⭐ Member 
  
  BE 😶장영주, 😶김지민, 😶윤덕현
  
