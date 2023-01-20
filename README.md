@@ -1,17 +1,16 @@
-<br />
-<br />
+
+
 # 모여 | Moyeo
 
 이불 밖은 위험해! <br />
 메타버스의 시대가 펼쳐지면서 방구석 모임이 늘어났습니다. <br />
 좋아하는 취미생활을 방구석에서 공유하고 싶은 사람들을 위한 모임 <br />
-<br />
+
 
 ### 🔗 배포 링크 Hosting URL
 
 https://moyeo.vercel.app
-<br />
-<br />
+
 
 ### ⭐ 개발기간
 
@@ -29,7 +28,6 @@ https://moyeo.vercel.app
  
 ### ⭐ API 명세서 [LINK](https://descriptive-handbell-23e.notion.site/b53182796d1940959c2223cdf8792b44?v=2e290f73ddaf429eb21e9efffed7121d)
 
-
 ###  ⭐ 트러블 슈팅
  
 #### 1. 
@@ -42,7 +40,9 @@ https://moyeo.vercel.app
 3) 해결 방법
 - 
 
-### 🧩swagger [LINK](https://sparta-hippo.shop/swagger-ui/index.html)
+
+### 🧩swagger 
+[LINK](https://sparta-hippo.shop/swagger-ui/index.html)
 
 
 ### ⭐ 기술스택
