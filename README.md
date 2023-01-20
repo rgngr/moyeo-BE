@@ -7,20 +7,18 @@
 https://moyeo.vercel.app
 <br />
 
-## ⭐ 개발기간
+### ⭐ 개발기간
 - 2022.12.30 ~ 진행중
 
 
 ---
 
-## ⭐ 주요기능
- -  회원가입, 로그인 기능 (security 적용)
- -  카카오 API 회원가입 및 로그인 기능 <br><br>
- -
- -
- -
- -
- -
+### ⭐ 주요기능
+1. 링크를 공유하고 함께할 사람들을 모을 수 있는 모임 생성 기능
+2. 원하는 모임을 골라서 참석예약 후 까먹지 않도록 모임시작전 알림 받기!
+3. 내가 참석하기로한 모임들을 한눈에 볼 수 있는 나의 모임 달력
+4. 원하는 모임을 찾을 수 있는 검색 및 카테고리 기능
+5. 내가 원하는 사람의 모임이 생기면 알림을 받을 수 있는 팔로우 기능
  
  <br><br>
  ### ⭐ API 명세서 [LINK](https://descriptive-handbell-23e.notion.site/b53182796d1940959c2223cdf8792b44?v=2e290f73ddaf429eb21e9efffed7121d)
@@ -56,7 +54,7 @@ https://moyeo.vercel.app
 ![아마존 AWS](https://user-images.githubusercontent.com/108880977/209103421-1cf57ef4-8620-4932-8704-60d0ec14ed1f.svg)
 ![EC22](https://user-images.githubusercontent.com/108880977/209104209-b04b40b7-a847-4263-aeb8-de19bc7fa8d9.svg)
 ![UBUNTU](https://camo.githubusercontent.com/51b0015a5bd40a05477f41af2f74c18d4b3d67388e3a0fed881a1243e0766f95/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5562756e74752d4539353432303f7374796c653d666f722d7468652d6261646765266c6f676f3d5562756e7475266c6f676f436f6c6f723d7768697465)
-![아마존S3](https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=AmazonS3&logoColor=white)
+<"https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=AmazonS3&logoColor=white">
 ![CODEDEPLOY](https://camo.githubusercontent.com/f0cede42e8391ba6bb70096f58bc63c8f5c846ea5cde8f27327e571a99e9a3e0/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64656465706c6f792d3644423333463f7374796c653d666f722d7468652d6261646765266c6f676f3d636f64656465706c6f79266c6f676f436f6c6f723d7768697465)
 ![REDIS](https://camo.githubusercontent.com/a069a550246061f739515a814dfcb2825db8fcce1017180544585ac1982b0426/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f52656469732d4443333832443f7374796c653d666f722d7468652d6261646765266c6f676f3d5265646973266c6f676f436f6c6f723d7768697465)
 ![GIT](https://camo.githubusercontent.com/fdb91eb7d32ba58701c8e564694cbe60e706378baefa180dbb96e2c1cfb9ec0f/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4769742d4630353033323f7374796c653d666f722d7468652d6261646765266c6f676f3d476974266c6f676f436f6c6f723d7768697465)
@@ -79,10 +77,10 @@ https://moyeo.vercel.app
  https://github.com/MoyeoProject/moyeo-FE
 
 
- ## ⭐ ERD
+ ### ⭐ ERD
  <img width="784" alt="스크린샷_20221229_051305" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcCtqz9%2FbtrWO2BiCvA%2FICUfcK9BXKbukblypkwOgK%2Fimg.png">
  
  
- ## ⭐ Service Architecture
+ ### ⭐ Service Architecture
 <img width="1078" alt="스크린샷 2023-01-20 오후 2 36 01" src="https://user-images.githubusercontent.com/89244209/213624847-94761ad2-59bb-4845-84ee-90dc923d72ce.png">
  
