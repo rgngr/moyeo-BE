@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
-     
 
+     @Query(value = "select f from Follow f join fetch f.user where f.user= :user")
      List<Follow> findByUser(User user);
      Optional<Follow> findByUserAndFollowId(User user, Long followId);
-     
+
+     @Query(value = "select f from Follow f join fetch f.user where f.followId= :followId")
+     List<Follow> findByFollowId(Long followId);
 }

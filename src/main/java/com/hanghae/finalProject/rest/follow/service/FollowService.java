@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FollowService {
-     
+
      private final UserRepository userRepository;
      private final FollowRepository followRepository;
      
@@ -47,45 +47,42 @@ public class FollowService {
           
      }
     //팔로잉 리스트 (내가 팔로우)
+    @Transactional
     public FollowListResponesDto followingList() {
          //userId를 가져와서 follow테이블의 userId에 해당하는 모든 팔로우 아이디를 가져옴
         //그 팔로우 아이디에 해당하는 user테이블의 정보 userId(기준), username,profileUrl,
+        //팔로워 리스트를 담을객체생성
         FollowListResponesDto followListResponseDto = new FollowListResponesDto();
+        //토큰값에의한 유저데이터 가져옴
         User user = SecurityUtil.getCurrentUser();
-        List<Follow> users = followRepository.findByUser(user);
-
-        for (Follow value : users) {
-            Long follow = value.getFollowId();
-            List<User> followList = userRepository.findAllById(Collections.singleton(follow));//findAllById라는
-            for (User followId : followList){
-                followListResponseDto.addFollowList(new FollowResponseDto(followId));
-            }
-
+        //followRepository에서 기준은 user를 기준으로 User 같은값을 통째로 다 가져옴
+        List<Follow> followList = followRepository.findByUser(user);
+        //followList(내가 팔로우한사람들의 user데이터)에 들어있는 같은값을
+        // 하나씩뺴서 addFollowList실행해 리스트로 많들어줌
+        for (Follow value : followList) {
+            System.out.println(value.getUser().getProfileUrl());
+            followListResponseDto.addFollowList(new FollowResponseDto(value.getUser()));
         }
 
-       ;//follow테이블에있는 모두가져온다 기준은 UserId를기준으로 (매개값을 기준으로)
-
-//        for (int i = 0; i < users.size(); i++) {
-//            Follow followId =users.get(i);
-//            System.out.println(followId);
-//        }
-//        for(Follow follow : users){
-//            FollowListResponesDto.addFollowList(new FollowResponseDto(follow));
-//        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
          return followListResponseDto;
+    }
+    //팔로잉 리스트 (쟤가 팔로우)
+    @Transactional
+    public FollowListResponesDto followerList() {
+        //userId를 가져와서 follow테이블의 userId에 해당하는 모든 팔로우 아이디를 가져옴
+        //그 팔로우 아이디에 해당하는 user테이블의 정보 userId(기준), username,profileUrl,
+        //팔로워 리스트를 담을객체생성
+        FollowListResponesDto followListResponseDto = new FollowListResponesDto();
+        //토큰값에의한 유저데이터 가져옴
+        User user = SecurityUtil.getCurrentUser();
+        //followRepository에서 기준은 user의 id값을 기준으로 followId와 같은값을 다 가져옴
+        List<Follow> followList = followRepository.findByFollowId(user.getId());
+        //followList(팔로우한사람들의 user데이터)에 들어있는 같은값을
+        // 하나씩뺴서 addFollowList실행해 리스트로 많들어줌
+        for (Follow value : followList) {
+            followListResponseDto.addFollowList(new FollowResponseDto(value.getUser()));
+        }
+
+        return followListResponseDto;
     }
 }
