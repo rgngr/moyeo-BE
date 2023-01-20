@@ -12,12 +12,12 @@
 https://moyeo.vercel.app
 
 
-### ⭐ 개발기간
+### 개발기간
 
 2022.12.30 ~ 진행중
 
 
-### ⭐ 주요기능
+### 주요기능
 
 1. 링크를 공유하고 함께할 사람들을 모을 수 있는 모임 생성 기능
 2. 원하는 모임을 골라서 참석예약 후 까먹지 않도록 모임시작전 알림 받기!
@@ -25,10 +25,8 @@ https://moyeo.vercel.app
 4. 원하는 모임을 찾을 수 있는 검색 및 카테고리 기능
 5. 내가 원하는 사람의 모임이 생기면 알림을 받을 수 있는 팔로우 기능
  
- 
-### ⭐ API 명세서 [LINK](https://descriptive-handbell-23e.notion.site/b53182796d1940959c2223cdf8792b44?v=2e290f73ddaf429eb21e9efffed7121d)
 
-###  ⭐ 트러블 슈팅
+### 트러블 슈팅
  
 #### 1. 
 1) 문제 상황
@@ -44,7 +42,10 @@ https://moyeo.vercel.app
 ### 🧩swagger [LINK](https://sparta-hippo.shop/swagger-ui/index.html)
 
 
-### ⭐ 기술스택
+### API 명세서 [LINK](https://descriptive-handbell-23e.notion.site/b53182796d1940959c2223cdf8792b44?v=2e290f73ddaf429eb21e9efffed7121d)
+
+
+### 기술스택
 
 ![자바](https://user-images.githubusercontent.com/108880977/209101862-e833ffc2-7cab-4114-8b74-5766d25b226b.svg)
 ![스프링부트](https://user-images.githubusercontent.com/108880977/209099782-f0f6fbb6-8c55-4a0e-a7a2-53fd5a000493.svg)
@@ -81,12 +82,12 @@ https://moyeo.vercel.app
  https://github.com/MoyeoProject/moyeo-FE
 
 
- ### ⭐ ERD
+ ### ERD
  
  <img width="784" alt="스크린샷_20221229_051305" src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcCtqz9%2FbtrWO2BiCvA%2FICUfcK9BXKbukblypkwOgK%2Fimg.png">
  
  
- ### ⭐ Service Architecture
+ ### Service Architecture
  
 <img width="1078" alt="스크린샷 2023-01-20 오후 2 36 01" src="https://user-images.githubusercontent.com/89244209/213624847-94761ad2-59bb-4845-84ee-90dc923d72ce.png">
  
