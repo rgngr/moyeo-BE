@@ -28,6 +28,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Slf4j
@@ -146,6 +147,7 @@ public class KakaoService {
                // email: kakao email
                String email = kakaoUserInfo.getEmail();
                String profileUrl = kakaoUserInfo.getProfile_image();
+               profileUrl = (profileUrl.split("/")[4]).equals("dpk9l1")? null : profileUrl;
                
                kakaoUser = new User(kakaoUserInfo.getNickname(), kakaoId, encodedPassword, email, profileUrl);
                userRepository.save(kakaoUser);
