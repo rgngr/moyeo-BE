@@ -1,6 +1,6 @@
 ### 5조 최종 프로젝트(SA)
 
-# <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" width="35px"> Moyeo (BE) 
+# Moyeo (BE) 
 
 비대면 모임 일정생성 도우미 <br><br>
 
