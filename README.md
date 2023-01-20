@@ -1,8 +1,15 @@
-### 5조 최종 프로젝트(SA)
+# 모여 | Moyeo
+이불 밖은 위험해! <br />
+메타버스의 시대가 펼쳐지면서 방구석 모임이 늘어났습니다. <br />
+좋아하는 취미생활을 방구석에서 공유하고 싶은 사람들을 위한 모임 <br />
 
-# Moyeo (BE) 
+## 🔗 배포 링크 Hosting URL
+https://moyeo.vercel.app
+<br />
 
-비대면 모임 일정생성 도우미 <br><br>
+## ✨ 개발기간
+- 2022.12.30 ~ 진행중
+
 
 ---
 
@@ -51,8 +58,6 @@
 ![아마존 AWS](https://user-images.githubusercontent.com/108880977/209103421-1cf57ef4-8620-4932-8704-60d0ec14ed1f.svg)
 ![EC22](https://user-images.githubusercontent.com/108880977/209104209-b04b40b7-a847-4263-aeb8-de19bc7fa8d9.svg)
 <img src="https://img.shields.io/badge/Amazon S3-569A31?style=for-the-badge&logo=AmazonS3&logoColor=white">
-
- - 🔑프론트엔드 https://github.com/clone-instagram/clone-instagram-fe3
  ---
  ### Member 
  BE 😶장영주, 😶김지민, 😶윤덕현
@@ -62,4 +67,7 @@
  
  - FE 프론트엔드 깃허브로 이동
  https://github.com/MoyeoProject/moyeo-FE
+ 
+ ## ⚙️ 서비스 아키텍처 Service Architecture
+<img width="1078" alt="스크린샷 2023-01-20 오후 2 36 01" src="https://user-images.githubusercontent.com/89244209/213624847-94761ad2-59bb-4845-84ee-90dc923d72ce.png">
  
