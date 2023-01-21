@@ -1,14 +1,11 @@
 package com.hanghae.finalProject.config.model;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.cache.CacheKeyPrefix;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -22,6 +19,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+
 
 //@EnableRedisRepositories //  Redis Repository 활성화
 @Configuration
@@ -46,9 +44,9 @@ public class RedisConfig {
           redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
           return redisTemplate;
      }
-     
+
      @Bean
-     public CacheManager redisCacheManager(){
+     public CacheManager redisCacheManager(ResourceLoader resourceLoader){
           // defaultCacheConfig : default 캐시 전략
           RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
                .disableCachingNullValues() // null value의 경우 캐시 X
@@ -61,15 +59,14 @@ public class RedisConfig {
                          .fromSerializer(new StringRedisSerializer()))
                // 캐시 Value를 직렬화-역직렬화 하는데 사용하는 Pair를 지정
                //  Value는 다양한 자료구조가 올 수 있으므로 JsonSerializer 사용
-               .serializeValuesWith(RedisSerializationContext
-                    .SerializationPair
+               .serializeValuesWith(RedisSerializationContext.SerializationPair
                     .fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
           // 캐시키 별 default 유효시간 설정
           Map<String, RedisCacheConfiguration> cacheConfiguration = new HashMap<>();
           //(키를 조합할 때 사용하는 Value값, TTL) 형태의 key-value 구조로 캐시 키별 유효시간 설정 가능, put으로 추가 가능
-          cacheConfiguration.put(CacheKey.ZONE,RedisCacheConfiguration.defaultCacheConfig()
-               .entryTtl(Duration.ofSeconds(CacheKey.ZONE_EXPIRE_SEC)));
+          cacheConfiguration.put(CacheKey.CALENDAR,RedisCacheConfiguration.defaultCacheConfig()
+               .entryTtl(Duration.ofSeconds(CacheKey.CALENDAR_EXPIRE_SEC)));
 
           return RedisCacheManager.RedisCacheManagerBuilder
                .fromConnectionFactory(redisConnectionFactory())
@@ -78,3 +75,4 @@ public class RedisConfig {
                .build();
      }
 }
+

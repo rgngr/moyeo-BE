@@ -1,7 +1,6 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
-import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
@@ -36,7 +35,6 @@ import static com.querydsl.jpa.JPAExpressions.select;
 public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      
      private final JPAQueryFactory jpaQueryFactory;
-     private final AttendantRepository attendantRepository;
      
      @Override
      public MeetingDetailResponseDto findByIdAndAttendAndAlarmAndLike(Long meetingId, User user) {
@@ -48,6 +46,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.user.id.as("masterId"),
                     meeting.title,
                     meeting.category,
+                    meeting.startDate,
                     meeting.startTime,
                     meeting.duration,
                     meeting.platform,
@@ -93,12 +92,12 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .select(meeting.id)
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
-                    meeting.startTime.goe(LocalDateTime.now()),
+                    meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     meeting.title.contains(search), // 검색어 필터링
                     meeting.deleted.eq(false),
                     ltMeetingId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
-               .limit(5)
+               .limit(5L)
                .fetch();
           // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
           if (CollectionUtils.isEmpty(ids)) {
@@ -124,7 +123,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .on(meeting.id.eq(attendant.meeting.id))
                .groupBy(meeting.id)
                .where(eqCategory(category),
-                    meeting.startTime.goe(LocalDateTime.now()),
+                    meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     meeting.deleted.eq(false)
                )
                .orderBy(attendant.id.count().desc(), meeting.id.desc())
@@ -147,18 +146,32 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      
      @Override
      public List<MeetingListResponseDto.ResponseDto> findAllSortByNewAndCategory(CategoryCode category, Long meetingIdx) {
-          return jpaQueryFactory
+          // 1) 커버링 인덱스로 대상 조회
+          List<Long> ids = jpaQueryFactory
+               .select(meeting.id)
                .from(meeting)
-               .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
-               .leftJoin(user).on(attendant.user.id.eq(user.id))
-               .where(
-                    meeting.startTime.goe(LocalDateTime.now()),
+               .where(eqCategory(category),
+                    meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     ltMeetingId(meetingIdx),
                     eqCategory(category),
                     meeting.deleted.eq(false)
                )
                .orderBy(meeting.id.desc())
                .limit(5)
+               .fetch();
+     
+          // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
+          if (CollectionUtils.isEmpty(ids)) {
+               return new ArrayList<>();
+          }
+          return jpaQueryFactory
+               .from(meeting)
+               .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
+               .leftJoin(user).on(attendant.user.id.eq(user.id))
+               .where(
+                    meeting.id.in(ids)
+               )
+               .orderBy(meeting.id.desc())
                .transform(getList());
      }
      
@@ -170,6 +183,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.user.id.as("masterId"),
                     meeting.title,
                     meeting.category,
+                    meeting.startDate,
                     meeting.startTime,
                     meeting.duration,
                     meeting.platform,

@@ -6,7 +6,6 @@ import lombok.Getter;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -28,12 +27,13 @@ public class MeetingRequestDto {
     @NotNull(message = "예상 소요시간 입력해주세요.")
     private int duration;
 
-    @NotNull(message = "성새 설명을 입력해주세요.")
+    @NotNull(message = "상세 설명을 입력해주세요.")
     private String content;
 
     @NotNull(message = "최대 정원을 입력해주세요.")
     private int maxNum;
-
+    
+    @NotNull(message = "플랫폼을 입력해주세요.")
     private PlatformCode platform;
 
     private String link;

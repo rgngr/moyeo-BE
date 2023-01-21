@@ -23,6 +23,7 @@ public class AlarmService {
 
     public void alarmComment(Meeting meeting) {
 
+        // 모임 글 작성자 userId
         Long masterId = meeting.getUser().getId();
 
         if (sseEmitters.containsKey(masterId)) {

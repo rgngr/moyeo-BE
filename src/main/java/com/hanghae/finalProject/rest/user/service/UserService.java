@@ -30,7 +30,8 @@ public class UserService {
      private final PasswordEncoder passwordEncoder;
 
      private final S3Uploader s3Uploader;
-
+     
+     // 회원가입
      @Transactional
      public void signUp(SignupRequestDto requestDto) {
           String username = requestDto.getUsername();
@@ -46,6 +47,7 @@ public class UserService {
           userRepository.save(new User(username, password, email));
      }
 
+     // 로그인
      @Transactional(readOnly = true)
      public LoginResponseDto login(LoginRequestDto RequestDto, HttpServletResponse response){
           String email = RequestDto.getEmail();
@@ -64,34 +66,81 @@ public class UserService {
           return new LoginResponseDto(user);
      }
 
-     @Transactional
-     public ProfileResponseDto updateProfile(MultipartFile file) throws IOException {
+     
+     // 마이페이지 첫화면 불러오기
+     public MypageResponseDto getMypage() {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
-          String currentProfileUrl = user.getProfileUrl();
-
-          if(!file.isEmpty()) {
-               String profileUrl = s3Uploader.upload(file,"file");
-               user.updateProfile(profileUrl);
-               userRepository.saveAndFlush(user);
-
-               return new ProfileResponseDto(user);
-
-          } else {
-               if(currentProfileUrl != null) {
-                    s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
-
-                    user.deleteProfileUrl();
-                    return new ProfileResponseDto(user);
-               } else {
-                    throw new RestApiException(Code.NO_IMAGE);
-               }
-
-          }
+     
+          //참여모임수, 팔로워(나를 팔로우 추가한사람) 수 , 팔로잉(내가 팔로우) 수
+          return userRepository.findByUserAndAttendantAndFollow(user);
 
      }
 
+     // 프로필 수정
+     @Transactional
+     public ProfileResponseDto updateProfile(ProfileRequestDto requestDto, MultipartFile file,
+                                             HttpServletResponse response) throws IOException {
+          // 로그인 확인 및 현재 유저 정보 들고 오기
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          // 현재 username
+          String currentUsername = user.getUsername();
+          //username update >> username은 NOT_NULL
+          user.updateUsername(requestDto.getUsername());
+          //토큰 재발급
+          if (!requestDto.getUsername().equals(currentUsername)) {
+               response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
+          }
+
+          //profileMsg update
+          if (requestDto.getProfileMsg() == null) {
+               user.updateProfileMsg("");
+          } else {
+               user.updateProfileMsg(requestDto.getProfileMsg());
+          }
+
+          // 현재 profileUrl
+          String currentProfileUrl = user.getProfileUrl();
+          //profileUrl update
+          if(file.isEmpty()) {
+               user.updateProfileUrl(currentProfileUrl);
+          } else {
+               String profileUrl = s3Uploader.upload(file,"file");
+               user.updateProfileUrl(profileUrl);
+          }
+
+          userRepository.saveAndFlush(user);
+
+          return new ProfileResponseDto(user);
+
+     }
+
+     // 프로필 수정 페이지 불러오기
+     @Transactional
+     public ProfileResponseDto updateProfilePage() {
+          // 로그인 확인 및 현재 유저 정보 들고 오기
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          // username, profileUrl, profileMsg
+          return new ProfileResponseDto(user);
+     }
+
+
+     // 프로필 이미지 삭제
+     @Transactional
+     public void deleteProfileUrl() {
+          // 로그인 확인 및 현재 유저 정보 들고 오기
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          //prufileUrl = null
+          user.deleteProfileUrl();
+     }
+
+    
 
 
 }

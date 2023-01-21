@@ -2,6 +2,7 @@ package com.hanghae.finalProject.rest.review.service;
 
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
+import com.hanghae.finalProject.config.util.RedisUtil;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
@@ -13,6 +14,8 @@ import com.hanghae.finalProject.rest.review.model.Review;
 import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +25,8 @@ public class ReviewService {
      private final MeetingRepository meetingRepository;
      private final ReviewRepository reviewRepository;
      private final AttendantRepository attendantRepository;
-     
+     @Autowired
+     private ApplicationContext applicationContext;
      // 후기작성
      @Transactional
      public ReviewResponseDto createReview(Long meetingId, ReviewRequestDto requestDto) {
@@ -47,7 +51,12 @@ public class ReviewService {
           Review review = reviewRepository.save(new Review(meeting, user, requestDto.isLike()));
           // 참석자테이블에 review true 업데이트
           attendant.makeReview(true);
-          
+          // 로그인 유저의 해당 월 캐시데이터 삭제
+          getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
           return new ReviewResponseDto(review.getId(), user.getUsername(), review.isReview());
+     }
+     
+     private RedisUtil getSpringProxy () {
+          return applicationContext.getBean(RedisUtil.class);
      }
 }

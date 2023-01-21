@@ -34,11 +34,11 @@ public class SwaggerConfig {
      }
      private ApiInfo apiInfo() {
           return new ApiInfoBuilder()
-               .title("항해 파이널 프로젝트 REST API")
-               .description("항해 프로젝트 swagger")
+               .title("Moyeo 프로젝트 REST API")
+               .description("항해 파이널 프로젝트 swagger")
                .version("1.0.0")
                .termsOfServiceUrl("")
-               .contact(new Contact("방만츄", "https://github.com/clone-instagram/clone-instagram-BE", "joj1043@kakao.com"))
+               .contact(new Contact("Moyeo", "https://github.com/MoyeoProject/moyeo-BE.git", "joj1043@kakao.com"))
                .license("")
                .licenseUrl("")
                .build()

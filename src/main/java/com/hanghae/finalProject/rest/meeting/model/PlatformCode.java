@@ -12,7 +12,8 @@ public enum PlatformCode {
      DISCORD,
      ZOOM,
      GOOGLE_MEET,
-     ZEP;
+     ZEP,
+     ETC;
      
      
      public static PlatformCode of(String platformStr){

@@ -9,11 +9,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(indexes = @Index(name = "idx__meeting_start_date", columnList = "startDate"))
 public class Meeting extends Timestamped {
 
      @Id
@@ -29,14 +33,17 @@ public class Meeting extends Timestamped {
 
      @Column(nullable = false)
      private CategoryCode category;
+     
+     @Column(nullable = false)
+     private LocalDate startDate;
 
      @Column(nullable = false)
-     private LocalDateTime startTime;
+     private LocalTime startTime;
 
      @Column(nullable = false)
      private int duration;
 
-     @Column(nullable = false)
+     @Column(nullable = false, length = 300)
      private String content;
 
      @Column(nullable = false)
@@ -60,7 +67,8 @@ public class Meeting extends Timestamped {
      public Meeting(MeetingRequestDto requestDto, User user) {
           this.title = requestDto.getTitle();
           this.category = requestDto.getCategory();
-          this.startTime = LocalDateTime.of(requestDto.getStartDate(), requestDto.getStartTime());
+          this.startDate = requestDto.getStartDate();
+          this.startTime =  requestDto.getStartTime();
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
           this.maxNum = requestDto.getMaxNum();
@@ -73,7 +81,8 @@ public class Meeting extends Timestamped {
 
      public void updateAll(MeetingUpdateRequestDto requestDto) {
           this.title = requestDto.getTitle();
-          this.startTime = LocalDateTime.of(requestDto.getStartDate(), requestDto.getStartTime());
+          this.startDate = requestDto.getStartDate();
+          this.startTime =  requestDto.getStartTime();
           this.duration = requestDto.getDuration();
           this.content = requestDto.getContent();
           this.platform = requestDto.getPlatform();

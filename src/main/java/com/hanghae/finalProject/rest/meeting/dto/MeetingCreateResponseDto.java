@@ -5,7 +5,9 @@ import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.model.PlatformCode;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 public class MeetingCreateResponseDto {
@@ -15,7 +17,8 @@ public class MeetingCreateResponseDto {
     private boolean master;
     private String title;
     private CategoryCode category;
-    private LocalDateTime startTime;
+    private LocalDate startDate;
+    private LocalTime startTime;
     private int duration;
     private String content;
     private int maxNum;
@@ -33,6 +36,7 @@ public class MeetingCreateResponseDto {
         this.master = true;
         this.title = meeting.getTitle();
         this.category = meeting.getCategory();
+        this.startDate = meeting.getStartDate();
         this.startTime = meeting.getStartTime();
         this.duration = meeting.getDuration();
         this.content = meeting.getContent();

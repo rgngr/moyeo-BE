@@ -18,7 +18,7 @@ public class AttendantController {
     @Operation(summary = "모임 참석/취소")
     @PatchMapping("/attendance")
     public ResponseDto addAttendant(@PathVariable Long meetingId) {
-        return DataResponseDto.of(attendantService.addAttendant(meetingId));
+        return DataResponseDto.of(attendantService.syncAddAttendant(meetingId));
     }
 
     @Operation(summary = "모임 참석자 리스트")
@@ -30,7 +30,6 @@ public class AttendantController {
     @Operation(summary = "모임 입장")
     @PatchMapping("/entrance")
     public ResponseDto enter(@PathVariable Long meetingId) {
-        attendantService.enter(meetingId);
-        return ResponseDto.of(true, Code.CREATE_ENTER);
+        return ResponseDto.of(true, attendantService.enter(meetingId));
     }
 }

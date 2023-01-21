@@ -28,6 +28,9 @@ public class User implements Supplier<User> {
      
      @Column
      private String profileUrl;
+
+     @Column
+     private String profileMsg;
      
      @Column
      private Boolean deleted = false;
@@ -61,8 +64,16 @@ public class User implements Supplier<User> {
           return null;
      }
 
-     public void updateProfile(String profileUrl) {
+     public void updateUsername(String username) {
+          this.username = username;
+     }
+
+     public void updateProfileUrl(String profileUrl) {
           this.profileUrl = profileUrl;
+     }
+
+     public void updateProfileMsg(String profileMsg) {
+          this.profileMsg = profileMsg;
      }
 
      public void deleteProfileUrl() {
