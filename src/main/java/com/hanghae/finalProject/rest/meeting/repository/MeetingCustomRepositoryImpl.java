@@ -146,11 +146,11 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      
      @Override
      public List<MeetingListResponseDto.ResponseDto> findAllSortByNewAndCategory(CategoryCode category, Long meetingIdx) {
-          return jpaQueryFactory
+          // 1) 커버링 인덱스로 대상 조회
+          List<Long> ids = jpaQueryFactory
+               .select(meeting.id)
                .from(meeting)
-               .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
-               .leftJoin(user).on(attendant.user.id.eq(user.id))
-               .where(
+               .where(eqCategory(category),
                     meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     ltMeetingId(meetingIdx),
                     eqCategory(category),
@@ -158,6 +158,20 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                )
                .orderBy(meeting.id.desc())
                .limit(5)
+               .fetch();
+     
+          // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
+          if (CollectionUtils.isEmpty(ids)) {
+               return new ArrayList<>();
+          }
+          return jpaQueryFactory
+               .from(meeting)
+               .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
+               .leftJoin(user).on(attendant.user.id.eq(user.id))
+               .where(
+                    meeting.id.in(ids)
+               )
+               .orderBy(meeting.id.desc())
                .transform(getList());
      }
      
