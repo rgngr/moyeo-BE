@@ -2,7 +2,6 @@ package com.hanghae.finalProject.rest.alarm.service;
 
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
-import com.hanghae.finalProject.config.jwt.JwtUtil;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmDataResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
@@ -17,6 +16,7 @@ import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
@@ -85,6 +85,7 @@ public class AlarmService {
 
 
     // 모음 글 작성자 : 글에 댓글 달렸을 때 알람
+    @Transactional
     public void alarmComment(Meeting meeting) {
 
         User receiver = meeting.getUser();
@@ -92,6 +93,7 @@ public class AlarmService {
 
         AlarmList alarmList = createAlarmList(meeting, receiver, content);
         String receiverId = String.valueOf(receiver.getId());
+        alarmListRepository.saveAndFlush(alarmList);
 
         // 로그인 한 유저의 SseEmitter 모두 가져오기
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
@@ -107,6 +109,7 @@ public class AlarmService {
     }
 
     // 모임 글 작성자 : 글에 누군가 참석 버튼을 눌렀을 때 알람
+    @Transactional
     public void alarmAttend(Meeting meeting, User user) {
 
         User receiver = meeting.getUser();
@@ -116,6 +119,7 @@ public class AlarmService {
 
         AlarmList alarmList = createAlarmList(meeting, receiver, content1);
         String receiverId = String.valueOf(receiver.getId());
+        alarmListRepository.saveAndFlush(alarmList);
 
         // 로그인 한 유저의 SseEmitter 모두 가져오기
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
@@ -131,6 +135,7 @@ public class AlarmService {
         List<Attendant> attendants = attendantRepository.findAllByMeeting(meeting);
         if (meeting.getMaxNum() <= attendants.size()) {
             AlarmList alarmList2 = createAlarmList(meeting, receiver, content2);
+            alarmListRepository.saveAndFlush(alarmList2);
 
             // 로그인 한 유저의 SseEmitter 모두 가져오기
             Map<String, SseEmitter> sseEmitters2 = emitterRepository.findAllStartWithById(receiverId);
@@ -146,6 +151,7 @@ public class AlarmService {
     }
 
     // 모임 글 작성자 : 글에 누군가 (참석)취소 버튼을 눌렀을 때 알람
+    @Transactional
     public void alarmCancelAttend(Meeting meeting, User user) {
 
         User receiver = meeting.getUser();
@@ -154,6 +160,7 @@ public class AlarmService {
 
         AlarmList alarmList = createAlarmList(meeting, receiver, content);
         String receiverId = String.valueOf(receiver.getId());
+        alarmListRepository.saveAndFlush(alarmList);
 
         // 로그인 한 유저의 SseEmitter 모두 가져오기
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
@@ -168,6 +175,7 @@ public class AlarmService {
     }
 
     // 모임 참석자 : 참석하는 모임 글이 수정되었을 때 알람
+    @Transactional
     public void alarmUpdateMeeting(Meeting meeting) {
 
         String content = meeting.getTitle()+"의 내용이 수정되었습니다. 확인해주세요!";
@@ -177,6 +185,7 @@ public class AlarmService {
             User receiver = alarmReceiver.getUser();
             AlarmList alarmList = createAlarmList(meeting, receiver, content);
             String receiverId = String.valueOf(receiver.getId());
+            alarmListRepository.saveAndFlush(alarmList);
 
             // 로그인 한 유저의 SseEmitter 모두 가져오기
             Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
@@ -193,6 +202,7 @@ public class AlarmService {
     }
 
     // 모임 참석자 : 참석하는 모임 글에 링크가 생성/수정되었을 때 알람
+    @Transactional
     public void alarmUpdateLink(Meeting meeting) {
 
         String content = meeting.getTitle()+"의 모임 링크가 생성/수정되었습니다. 확인해주세요!";
@@ -202,6 +212,7 @@ public class AlarmService {
             User receiver = alarmReceiver.getUser();
             AlarmList alarmList = createAlarmList(meeting, receiver, content);
             String receiverId = String.valueOf(receiver.getId());
+            alarmListRepository.saveAndFlush(alarmList);
 
             // 로그인 한 유저의 SseEmitter 모두 가져오기
             Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
@@ -218,6 +229,7 @@ public class AlarmService {
     }
 
     // 모임 참석자 : 참석하는 모임 글이 삭제되었을 때 알람
+    @Transactional
     public void alarmDeleteMeeting(Meeting meeting) {
 
         String content = meeting.getTitle()+"이/가 삭제되었습니다. 다른 모임에 참가해보세요!";
@@ -227,6 +239,7 @@ public class AlarmService {
             User receiver = alarmReceiver.getUser();
             AlarmList alarmList = createAlarmList(meeting, receiver, content);
             String receiverId = String.valueOf(receiver.getId());
+            alarmListRepository.saveAndFlush(alarmList);
 
             // 로그인 한 유저의 SseEmitter 모두 가져오기
             Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
