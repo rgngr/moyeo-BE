@@ -39,17 +39,17 @@ public class AlarmService {
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         Long userId = user.getId();
-        String id = userId + "_" + System.currentTimeMillis();
+        String receiverId = userId + "_" + System.currentTimeMillis();
 
         // 2
-        SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
+        SseEmitter emitter = emitterRepository.save(receiverId, new SseEmitter(DEFAULT_TIMEOUT));
 
-        emitter.onCompletion(() -> emitterRepository.deleteById(id));
-        emitter.onTimeout(() -> emitterRepository.deleteById(id));
+        emitter.onCompletion(() -> emitterRepository.deleteById(receiverId));
+        emitter.onTimeout(() -> emitterRepository.deleteById(receiverId));
 
         // 3
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        sendToClient(emitter, id, "EventStream Created. [userId=" + userId + "]");
+        sendToClient(emitter, receiverId, "EventStream Created. [userId=" + userId + "]");
 
         // 4
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
@@ -63,14 +63,14 @@ public class AlarmService {
         return emitter;
     }
 
-    private void sendToClient(SseEmitter emitter, String id, Object data) {
+    private void sendToClient(SseEmitter emitter, String receiverId, Object data) {
         try {
             emitter.send(SseEmitter.event()
-                    .id(id)
+                    .id(receiverId)
                     .name("sse")
                     .data(data));
         } catch (IOException exception) {
-            emitterRepository.deleteById(id);
+            emitterRepository.deleteById(receiverId);
             throw new RuntimeException("연결 오류!");
         }
     }
@@ -83,16 +83,29 @@ public class AlarmService {
                 .build();
     }
 
+    private void alarmProcess(String receiverId, AlarmList alarmList) {
+        // 로그인 한 유저의 SseEmitter 모두 가져오기
+        Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
+        sseEmitters.forEach(
+                (key, emitter) -> {
+                    // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
+                    emitterRepository.saveEventCache(key, alarmList);
+                    // 데이터 전송
+                    sendToClient(emitter, key, AlarmDataResponseDto.from(alarmList));
+                }
+        );
+    }
+
 
     // 모음 글 작성자 : 글에 댓글 달렸을 때 알람
     @Transactional
     public void alarmComment(Meeting meeting) {
 
         User receiver = meeting.getUser();
+        String receiverId = String.valueOf(receiver.getId());
         String content = meeting.getTitle()+"에 댓글이 달렸습니다!";
 
         AlarmList alarmList = createAlarmList(meeting, receiver, content);
-        String receiverId = String.valueOf(receiver.getId());
         alarmListRepository.saveAndFlush(alarmList);
 
         // 로그인 한 유저의 SseEmitter 모두 가져오기
@@ -113,22 +126,22 @@ public class AlarmService {
     public void alarmAttend(Meeting meeting, User user) {
 
         User receiver = meeting.getUser();
+        String receiverId = String.valueOf(receiver.getId());
         String attendant = user.getUsername();
         String content1 = attendant+"이/가 "+meeting.getTitle()+"에 참석 예정입니다!";
         String content2 = meeting.getTitle()+"의 정원이 다 찼습니다!";
 
-        AlarmList alarmList = createAlarmList(meeting, receiver, content1);
-        String receiverId = String.valueOf(receiver.getId());
-        alarmListRepository.saveAndFlush(alarmList);
+        AlarmList alarmList1 = createAlarmList(meeting, receiver, content1);
+        alarmListRepository.saveAndFlush(alarmList1);
 
         // 로그인 한 유저의 SseEmitter 모두 가져오기
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
         sseEmitters.forEach(
                 (key, emitter) -> {
                     // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
-                    emitterRepository.saveEventCache(key, alarmList);
+                    emitterRepository.saveEventCache(key, alarmList1);
                     // 데이터 전송
-                    sendToClient(emitter, key, AlarmDataResponseDto.from(alarmList));
+                    sendToClient(emitter, key, AlarmDataResponseDto.from(alarmList1));
                 }
         );
 
