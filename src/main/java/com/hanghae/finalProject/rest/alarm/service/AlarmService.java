@@ -3,7 +3,8 @@ package com.hanghae.finalProject.rest.alarm.service;
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
-import com.hanghae.finalProject.rest.alarm.dto.AlarmDataResponseDto;
+import com.hanghae.finalProject.rest.alarm.dto.AlarmListResponseDto;
+import com.hanghae.finalProject.rest.alarm.dto.AlarmListsResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.model.AlarmList;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmListRepository;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
@@ -75,14 +77,6 @@ public class AlarmService {
         }
     }
 
-    private AlarmList createAlarmList(Meeting meeting, User receiver, String content) {
-        return AlarmList.builder()
-                .meeting(meeting)
-                .user(receiver)
-                .content(content)
-                .build();
-    }
-
     private void alarmProcess(String receiverId, AlarmList alarmList) {
         // 로그인 한 유저의 SseEmitter 모두 가져오기
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
@@ -91,7 +85,9 @@ public class AlarmService {
                     // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
                     emitterRepository.saveEventCache(key, alarmList);
                     // 데이터 전송
-                    sendToClient(emitter, key, AlarmDataResponseDto.from(alarmList));
+//                  sendToClient(emitter, key, AlarmListResponseDto.from(alarmList));
+                    AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
+                    sendToClient(emitter, key, alarmListResponseDto);
                 }
         );
     }
@@ -105,7 +101,7 @@ public class AlarmService {
         String receiverId = String.valueOf(receiver.getId());
         String content = meeting.getTitle()+"에 댓글이 달렸습니다!";
 
-        AlarmList alarmList = createAlarmList(meeting, receiver, content);
+        AlarmList alarmList = new AlarmList(meeting, receiver, content);
         alarmListRepository.saveAndFlush(alarmList);
 
         alarmProcess(receiverId, alarmList);
@@ -121,14 +117,14 @@ public class AlarmService {
         String content1 = attendant+"이/가 "+meeting.getTitle()+"에 참석 예정입니다!";
         String content2 = meeting.getTitle()+"의 정원이 다 찼습니다!";
 
-        AlarmList alarmList1 = createAlarmList(meeting, receiver, content1);
+        AlarmList alarmList1 = new AlarmList(meeting, receiver, content1);
         alarmListRepository.saveAndFlush(alarmList1);
 
         alarmProcess(receiverId, alarmList1);
 
         List<Attendant> attendants = attendantRepository.findAllByMeeting(meeting);
         if (meeting.getMaxNum() <= attendants.size()) {
-            AlarmList alarmList2 = createAlarmList(meeting, receiver, content2);
+            AlarmList alarmList2 = new AlarmList(meeting, receiver, content2);
             alarmListRepository.saveAndFlush(alarmList2);
 
             alarmProcess(receiverId, alarmList2);
@@ -144,7 +140,7 @@ public class AlarmService {
         String attendant = user.getUsername();
         String content = attendant+"이/가 "+meeting.getTitle()+"참석을 취소했습니다!";
 
-        AlarmList alarmList = createAlarmList(meeting, receiver, content);
+        AlarmList alarmList = new AlarmList(meeting, receiver, content);
         alarmListRepository.saveAndFlush(alarmList);
 
         alarmProcess(receiverId, alarmList);
@@ -162,7 +158,7 @@ public class AlarmService {
             User receiver = alarmReceiver.getUser();
             String receiverId = String.valueOf(receiver.getId());
 
-            AlarmList alarmList = createAlarmList(meeting, receiver, content);
+            AlarmList alarmList = new AlarmList(meeting, receiver, content);
             alarmListRepository.saveAndFlush(alarmList);
 
             alarmProcess(receiverId, alarmList);
@@ -182,7 +178,7 @@ public class AlarmService {
             User receiver = alarmReceiver.getUser();
             String receiverId = String.valueOf(receiver.getId());
 
-            AlarmList alarmList = createAlarmList(meeting, receiver, content);
+            AlarmList alarmList = new AlarmList(meeting, receiver, content);
             alarmListRepository.saveAndFlush(alarmList);
 
             alarmProcess(receiverId, alarmList);
@@ -202,13 +198,40 @@ public class AlarmService {
             User receiver = alarmReceiver.getUser();
             String receiverId = String.valueOf(receiver.getId());
 
-            AlarmList alarmList = createAlarmList(meeting, receiver, content);
+            AlarmList alarmList = new AlarmList(meeting, receiver, content);
             alarmListRepository.saveAndFlush(alarmList);
 
             alarmProcess(receiverId, alarmList);
 
         }
 
+    }
+
+    @Transactional (readOnly = true)
+    public AlarmListsResponseDto getAlarms() {
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        AlarmListsResponseDto alarmListsResponseDto = new AlarmListsResponseDto();
+        List<AlarmList> alarmLists = alarmListRepository.findAllByUserOrderByCreatedAtDesc(user);
+        for(AlarmList alarmList : alarmLists) {
+            alarmListsResponseDto.addAlarmList(new AlarmListResponseDto(alarmList));
+        }
+
+        return alarmListsResponseDto;
+    }
+
+    @Transactional
+    public void alarmIsRead(Long id) {
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
+        if (alarmList.isRead()) {
+            throw new RestApiException(Code.IS_READ_TRUE);
+        } else {
+            alarmList.readAlarm();
+        }
     }
 
 }
