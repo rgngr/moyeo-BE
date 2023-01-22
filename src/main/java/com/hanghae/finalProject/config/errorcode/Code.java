@@ -27,9 +27,11 @@ public enum Code {
      UPDATE_LINK( "모임 링크 추가 성공", HttpStatus.OK),
      DELETE_MEETING( "모임 글 삭제 성공", HttpStatus.OK),
      CREATE_ENTER("모임 입장 성공", HttpStatus.OK),
-     UPDATE_PROFILE( "프로필 수정 성공", HttpStatus.OK),
-     UPDATE_PROFILE_PAGE( "프로필 수정 페이지 불러오기 성공", HttpStatus.OK),
+     UPDATE_PROFILE( "프로필 내용 수정 성공", HttpStatus.OK),
+     UPDATE_PROFILE_URL( "프로필 이미지 변경 성공", HttpStatus.OK),
+     GET_PROFILE_UPDATE_PAGE( "프로필 수정 페이지 불러오기 성공", HttpStatus.OK),
      DELETE_PROFILE_URL( "프로필 이미지 삭제 성공", HttpStatus.OK),
+     NO_IMAGE("프로필 이미지 파일을 선택해주세요.",HttpStatus.BAD_REQUEST),
      INVALID_PARAMETER("Invalid parameter included",HttpStatus.BAD_REQUEST),
      INTERNAL_SERVER_ERROR("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
      BAD_REQUEST("Bad request",HttpStatus.BAD_REQUEST),
@@ -71,6 +73,11 @@ public enum Code {
      NO_AUTH_REVIEW("후기를 작성할 수 없습니다.", HttpStatus.BAD_REQUEST),
      NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),
      INVALID_MEETING("강퇴당한 모임입니다.", HttpStatus.BAD_REQUEST),
+     ALARM_CONNECT_ERROR("alarm connect error", HttpStatus.INTERNAL_SERVER_ERROR),
+     GET_ALARMS("모든 알람 조회 성공",HttpStatus.OK),
+     ALARM_IS_READ("알람 읽기 처리 성공",HttpStatus.OK),
+     NO_ALARM("존재하지 않는 알람입니다.", HttpStatus.BAD_REQUEST),
+     IS_READ_TRUE("이미 읽은 알람입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
 
      private final String StatusMsg;
