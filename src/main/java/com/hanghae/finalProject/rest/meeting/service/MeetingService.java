@@ -43,7 +43,7 @@ public class MeetingService {
      private ApplicationContext applicationContext;
      
      // 모임 상세조회
-     @Transactional
+     @Transactional(readOnly = true)
      public MeetingDetailResponseDto getMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();
           // 비회원도 공유를 통해서 페이지를 볼 수 있어야 되니까 null 예외 처리 XX

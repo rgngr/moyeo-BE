@@ -51,8 +51,8 @@ public enum Code {
      WRONG_EMAIL_PATTERN("올바른 이메일 형식이 아닙니다.", HttpStatus.BAD_REQUEST),
      WRONG_USERNAME_PATTERN("닉네임은 최소 5자 이상, 10자이하 이어야 합니다.", HttpStatus.BAD_REQUEST),
      WRONG_PASSWORD_PATTERN("비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다.", HttpStatus.BAD_REQUEST),
-
-
+     FOLLOWING_LIST_LOED("",HttpStatus.OK),
+     FOLLOWERS_LIST_LOED("",HttpStatus.OK),
      EMAIL_CODE("이메일인증코드 발송완료", HttpStatus.OK),
      EMAIL_CONFIRM_BAD("이메일을 확인해주세요",HttpStatus.BAD_REQUEST),
      EMAIL_CONFIRM_CODE_BAD("인증코드를 확인해주세요",HttpStatus.BAD_REQUEST),
@@ -60,17 +60,15 @@ public enum Code {
 
      WRONG_SECRET_PASSWORD("비밀번호는 4글자여야 합니다.", HttpStatus.BAD_REQUEST),
 
-     WRONG_PASSWORD("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+     WRONG_PASSWORD("비밀번호를 다시 입력해주세요", HttpStatus.BAD_REQUEST),
      TOO_LONG_TITLE("제목은 최대 20글자입니다.", HttpStatus.BAD_REQUEST),
      NO_USER("회원을 찾을 수 없습니다.",HttpStatus.BAD_REQUEST),
      WRONG_ADMIN_TOKEN("관리자 암호가 틀려 등록이 불가능합니다.", HttpStatus.BAD_REQUEST),
      OVERLAPPED_USERNAME("중복된 username 입니다.", HttpStatus.BAD_REQUEST),
-     OVERLAPPED_NICKNAME("중복된 닉네임 입니다.", HttpStatus.BAD_REQUEST),
      OVERLAPPED_EMAIL("중복된 email 입니다",HttpStatus.BAD_REQUEST),
-     PASSWORD_CHECK("입력된 비밀번호가 다릅니다.", HttpStatus.BAD_REQUEST),
      NO_SUCH_CATEGORY("존재하지 않는 카테고리입니다.", HttpStatus.BAD_REQUEST),
      NO_SUCH_PLATFORM("존재하지 않는 플랫폼입니다.", HttpStatus.BAD_REQUEST),
-     NO_MORE_SEAT("정원이 가득 찼습니다.", HttpStatus.BAD_REQUEST),
+     NO_MORE_SEAT("정원 초과되었습니다.", HttpStatus.BAD_REQUEST),
      NO_MORE_REVIEW("이미 후기를 작성하였습니다.", HttpStatus.BAD_REQUEST),
      NO_AUTH_REVIEW("후기를 작성할 수 없습니다.", HttpStatus.BAD_REQUEST),
      NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),

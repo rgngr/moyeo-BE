@@ -40,6 +40,11 @@ public class AttendantService {
      @Autowired
      private ApplicationContext applicationContext;
      
+     // 모임참석 스레드안전하게 동기화
+     public synchronized AttendantResponseDto syncAddAttendant(Long meetingId){
+          return addAttendant(meetingId);
+     }
+     
      // 모임 참석/취소
      @Transactional
      public AttendantResponseDto addAttendant(Long meetingId) {
@@ -99,22 +104,21 @@ public class AttendantService {
           // 방장이 첫번째, 로그인유저가 있을경우 로그인유저가 두번째로 오게하기
           if (user != null) {
                for(int i=0; i<attendants.size(); i++){
-                    // 로그인유저가 방장이 아니고, 참석자중에 있을 경우
-                    if (Objects.equals(attendants.get(i).getUserId(), user.getId()) && i!=0){
+                    // 로그인유저가 참석자중에 있을 경우
+                    if (Objects.equals(attendants.get(i).getUserId(), user.getId())){
                          loggedUserDto = attendants.remove(i);
                          break;
                     };
                }
                // 로그인 유저를 방장 다음번째로 넣어야 함 (방장일경우 패스)
                if(loggedUserDto!=null){
-                    attendants.add(1, loggedUserDto);
+                    attendants.add(0, loggedUserDto);
                }
           }
           return attendants;
      }
      
      // 모임 입장
-//     @CacheEvict (value = "Calendar", allEntries = true)
      @Transactional
      public Code enter(Long meetingId) {
           User user = SecurityUtil.getCurrentUser();
@@ -142,6 +146,7 @@ public class AttendantService {
           attendantRepository.save(attendant);
           return Code.CREATE_ENTER;
      }
+     
      
      // 모임의 알림 활성화/음소거
      @Transactional

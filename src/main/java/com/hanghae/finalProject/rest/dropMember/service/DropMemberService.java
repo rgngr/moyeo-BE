@@ -5,7 +5,7 @@ import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
-import com.hanghae.finalProject.rest.dropMember.dto.DropMember;
+import com.hanghae.finalProject.rest.dropMember.model.DropMember;
 import com.hanghae.finalProject.rest.dropMember.repository.DropMemberRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;

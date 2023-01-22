@@ -22,7 +22,6 @@ public class Follow implements Supplier<Follow> {
      //팔로우아이디
      @Column(nullable = false)
      private Long followId;
-     
      public Follow(User user, Long followId) {
           this.user = user;
           this.followId = followId;

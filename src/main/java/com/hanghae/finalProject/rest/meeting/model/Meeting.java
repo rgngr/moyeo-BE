@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,6 +17,7 @@ import java.time.LocalTime;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(indexes = @Index(name = "idx__meeting_start_date", columnList = "startDate"))
 public class Meeting extends Timestamped {
 
      @Id
@@ -41,7 +43,7 @@ public class Meeting extends Timestamped {
      @Column(nullable = false)
      private int duration;
 
-     @Column(nullable = false)
+     @Column(nullable = false, length = 300)
      private String content;
 
      @Column(nullable = false)
