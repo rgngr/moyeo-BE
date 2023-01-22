@@ -36,7 +36,7 @@ public class AlarmController {
           return DataResponseDto.of(alarmService.getAlarms(), Code.GET_ALARMS.getStatusMsg());
      }
 
-     @ApiOperation(value = "알람 읽음 상태 변경")
+     @ApiOperation(value = "알람 읽음 처리")
      @PatchMapping(value = "/alarms/{id}")
      public ResponseDto alarmIsRead(@PathVariable Long id) {
           alarmService.alarmIsRead(id);
