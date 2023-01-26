@@ -83,7 +83,6 @@ public class AttendantService {
                return new AttendantResponseDto(attendant);
           } else {
                // 기존에 참석했던 유저의 경우
-//               oriAttendant.cancelAttendant(meeting);
                // 알람받기 리스트에 있을경우 알람 삭제필요
                Alarm alarm = alarmRepository.findByMeetingAndUser(meeting, user).orElseGet(new Alarm());
                if (alarm != null) {
