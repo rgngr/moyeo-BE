@@ -7,9 +7,12 @@ import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.user.model.User;
 import com.querydsl.core.ResultTransformer;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.jsonwebtoken.lang.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -93,11 +96,12 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
                     meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
-                    meeting.title.contains(search), // 검색어 필터링
+//                    meeting.title.contains(search), // 검색어 필터링
+                    match(search), // full text search
                     meeting.deleted.eq(false),
                     ltMeetingId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
-               .limit(5L)
+               .limit(5)
                .fetch();
           // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
           if (CollectionUtils.isEmpty(ids)) {
@@ -110,8 +114,10 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
                .orderBy(meeting.id.desc())
-               .transform(getList());
+               .transform(getList(category));
      }
+     
+     
      
      @Override
      public List<MeetingListResponseDto.ResponseDto> findAllSortByPopularAndCategory(CategoryCode category, Long pageNum) {
@@ -138,7 +144,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
-               .transform(getList());
+               .transform(getList(category));
      }
      
      @Override
@@ -169,10 +175,10 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.id.in(ids)
                )
                .orderBy(meeting.id.desc())
-               .transform(getList());
+               .transform(getList(category));
      }
      
-     private static ResultTransformer<List<MeetingListResponseDto.ResponseDto>> getList() {
+     private static ResultTransformer<List<MeetingListResponseDto.ResponseDto>> getList(CategoryCode category) {
           return groupBy(meeting.id).list(
                Projections.fields(
                     MeetingListResponseDto.ResponseDto.class,
@@ -184,6 +190,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.startTime,
                     meeting.duration,
                     meeting.platform,
+                    ObjectUtils.isEmpty(category)? meeting.category : Expressions.asEnum(category).as("category"),
                     meeting.content,
                     meeting.maxNum,
                     meeting.secret,
@@ -196,6 +203,13 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                          )
                     ).as("attendantsList")
                ));
+     }
+     // full text search용
+     private BooleanExpression match(String search) {
+          if( search == null){
+               return null;
+          }
+          return Expressions.numberTemplate(Double.class, "function('match',{0},{1})", meeting.title, search).gt(0);
      }
      
      // 무한스크롤용. 해당 idx 보다 작은것들 불러오기 (sortBy new 일때만 이거)
