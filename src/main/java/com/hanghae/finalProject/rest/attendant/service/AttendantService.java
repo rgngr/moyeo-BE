@@ -67,8 +67,7 @@ public class AttendantService {
           
           if (oriAttendant == null) {
                // 최대정원 도달시 참석불가
-               List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting);
-               if (meeting.getMaxNum() <= attendantList.size()) {
+               if (meeting.getMaxNum() <= meeting.getAttendantsNum()) {
                     throw new RestApiException(Code.NO_MORE_SEAT);
                }
                // 참석하지 않은 유저인 경우 참석으로
