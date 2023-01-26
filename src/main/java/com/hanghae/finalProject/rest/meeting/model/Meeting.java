@@ -17,7 +17,9 @@ import java.time.LocalTime;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(indexes = @Index(name = "idx__meeting_start_date", columnList = "startDate"))
+@Table(indexes = {
+     @Index(name = "idx__meeting_start_date_and_deleted", columnList = "startDate, deleted")
+})
 public class Meeting extends Timestamped {
 
      @Id
@@ -63,7 +65,17 @@ public class Meeting extends Timestamped {
 
      @Column
      private boolean deleted;
+     
+     @Column
+     private int attendantsNum;
+     
+     public void addAttend(){
+          attendantsNum++;
+     }
 
+     public void cancelAttend(){
+          attendantsNum--;
+     }
      public Meeting(MeetingRequestDto requestDto, User user) {
           this.title = requestDto.getTitle();
           this.category = requestDto.getCategory();
@@ -77,6 +89,7 @@ public class Meeting extends Timestamped {
           this.secret = requestDto.isSecret();
           this.password = requestDto.getPassword();
           this.user = user;
+          this.attendantsNum = 1;
      }
 
      public void updateAll(MeetingUpdateRequestDto requestDto) {

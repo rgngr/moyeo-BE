@@ -58,16 +58,21 @@ public class AttendantService {
           if (dropMemberRepository.existsByMeetingAndUser(meeting, user)) {
                throw new RestApiException(Code.INVALID_MEETING);
           }
+          // 참석취소자가 방장일경우 참석취소 불가
+          if(meeting.getUser().equals(user)){
+               throw new RestApiException(Code.ONLY_FOR_USER);
+          }
           // 참석자테이블에 존재하는가
           Attendant oriAttendant = attendantRepository.findByMeetingAndUser(meeting, user).orElseGet(new Attendant());
+          
           if (oriAttendant == null) {
                // 최대정원 도달시 참석불가
-               List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting);
-               if (meeting.getMaxNum() <= attendantList.size()) {
+               if (meeting.getMaxNum() <= meeting.getAttendantsNum()) {
                     throw new RestApiException(Code.NO_MORE_SEAT);
                }
                // 참석하지 않은 유저인 경우 참석으로
                Attendant attendant = attendantRepository.save(new Attendant(meeting, user));
+               meeting.addAttend();
                // 참석시 알람받기가 기본임
                alarmRepository.save(new Alarm(user, meeting));
                // 해당 월 캐시 삭제
@@ -77,7 +82,6 @@ public class AttendantService {
                return new AttendantResponseDto(attendant);
           } else {
                // 기존에 참석했던 유저의 경우
-               oriAttendant.cancelAttendant(meeting);
                // 알람받기 리스트에 있을경우 알람 삭제필요
                Alarm alarm = alarmRepository.findByMeetingAndUser(meeting, user).orElseGet(new Alarm());
                if (alarm != null) {
@@ -85,6 +89,7 @@ public class AttendantService {
                }
                // 참석자 명단에서 삭제
                attendantRepository.delete(oriAttendant);
+               meeting.cancelAttend();
                // 해당 월 캐시 삭제
                getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
                // 참석 취소 알람

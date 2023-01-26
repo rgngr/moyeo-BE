@@ -48,6 +48,7 @@ public enum Code {
      USER_FOLLOW_SUCCESS("유저 팔로우 성공", HttpStatus.OK),
      USER_UNFOLLOW_SUCCESS("유저 언팔로우 성공", HttpStatus.OK),
      ONLY_FOR_ADMIN("관리자만 가능합니다.", HttpStatus.BAD_REQUEST),
+     ONLY_FOR_USER("관리자는 불가능합니다.", HttpStatus.BAD_REQUEST),
      WRONG_EMAIL_PATTERN("올바른 이메일 형식이 아닙니다.", HttpStatus.BAD_REQUEST),
      WRONG_USERNAME_PATTERN("닉네임은 최소 5자 이상, 10자이하 이어야 합니다.", HttpStatus.BAD_REQUEST),
      WRONG_PASSWORD_PATTERN("비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다.", HttpStatus.BAD_REQUEST),

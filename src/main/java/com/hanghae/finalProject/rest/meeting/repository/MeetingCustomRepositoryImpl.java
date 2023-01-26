@@ -119,14 +119,11 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           List<Long> ids = jpaQueryFactory
                .select(meeting.id) // 참석자명단의 미팅id
                .from(meeting)
-               .leftJoin(attendant)
-               .on(meeting.id.eq(attendant.meeting.id))
-               .groupBy(meeting.id)
                .where(eqCategory(category),
                     meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     meeting.deleted.eq(false)
                )
-               .orderBy(attendant.id.count().desc(), meeting.id.desc())
+               .orderBy(meeting.attendantsNum.desc(), meeting.id.desc())
                .offset((pageNum == null) ? 0 : pageNum * 5)
                .limit(5)
                .fetch();
