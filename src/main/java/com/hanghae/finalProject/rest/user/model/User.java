@@ -72,6 +72,9 @@ public class User implements Supplier<User> {
           this.username = username;
           this.profileMsg = profileMsg;
      }
+     public void updatePassword(String password){
+          this.password = password;
+     }
 
      public void deleteProfileUrl() {
           this.profileUrl = null;

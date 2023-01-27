@@ -5,6 +5,7 @@ import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.rest.user.dto.LoginRequestDto;
+import com.hanghae.finalProject.rest.user.dto.PasswordChangeRequestDto;
 import com.hanghae.finalProject.rest.user.dto.ProfileRequestDto;
 import com.hanghae.finalProject.rest.user.dto.SignupRequestDto;
 import com.hanghae.finalProject.rest.user.repository.UserRepository;
@@ -93,4 +94,10 @@ public class UserController {
         return DataResponseDto.of(userService.getMypage());
     }
 
+    @ApiOperation(value = "비밀번호 변경")
+    @PatchMapping(value = "/passwordChange")
+    public ResponseDto passwordChange(@RequestBody PasswordChangeRequestDto requestDto){
+        userService.updatePassword(requestDto);
+        return ResponseDto.of(true,Code.UPDATE_PASSWORD);
+    }
 }
