@@ -45,7 +45,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           return jpaQueryFactory
                .select(Projections.fields(
                     MeetingDetailResponseDto.class,
-                    meeting.id.as("id"),
+                    Expressions.asNumber(meetingId).as("id"),
+//                    meeting.id.as("id"),
                     meeting.user.id.as("masterId"),
                     meeting.title,
                     meeting.category,
@@ -59,7 +60,6 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.secret,
                     meeting.password,
                     // 로그인 유저의 해당 모임 참석유무
-                    
                     ExpressionUtils.as(
                          select(attendant.user.id.isNotNull())
                               .from(attendant)
