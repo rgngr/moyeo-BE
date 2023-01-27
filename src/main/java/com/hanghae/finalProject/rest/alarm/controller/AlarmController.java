@@ -46,8 +46,7 @@ public class AlarmController {
      @ApiOperation(value = "알림 읽음 처리")
      @PatchMapping(value = "/alarms/{id}")
      public ResponseDto alarmIsRead(@PathVariable Long id) {
-          alarmService.alarmIsRead(id);
-          return ResponseDto.of(true, Code.ALARM_IS_READ);
+          return DataResponseDto.of(alarmService.alarmIsRead(id), Code.ALARM_IS_READ.getStatusMsg());
      }
 
 }
