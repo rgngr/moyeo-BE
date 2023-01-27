@@ -60,8 +60,7 @@ public class FollowService {
         //followList(내가 팔로우한사람들의 user데이터)에 들어있는 같은값을
         // 하나씩뺴서 addFollowList실행해 리스트로 많들어줌
         for (Follow value : followList) {
-            User FollowId = userRepository.findAllById(value.getFollowId());
-            followListResponseDto.addFollowList(new FollowResponseDto(FollowId));
+            followListResponseDto.addFollowList(new FollowResponseDto(value.getFollowing()));
         }
 
          return followListResponseDto;
