@@ -80,7 +80,8 @@ public enum Code {
      ALARM_IS_READ("알람 읽기 처리 성공",HttpStatus.OK),
      NO_ALARM("존재하지 않는 알람입니다.", HttpStatus.BAD_REQUEST),
      IS_READ_TRUE("이미 읽은 알람입니다.", HttpStatus.BAD_REQUEST),
-     INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
+     INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED),
+     UPDATE_PASSWORD("비밀번호 변경완료",HttpStatus.OK );
 
      private final String StatusMsg;
      private final HttpStatus statusCode;

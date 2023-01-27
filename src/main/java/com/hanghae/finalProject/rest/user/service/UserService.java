@@ -145,8 +145,15 @@ public class UserService {
           return new ProfileResponseDto(user);
 
      }
-
-
+     //비밀번호 찾기 대신 비밀번호변경
+     @Transactional
+     public void updatePassword(PasswordChangeRequestDto requestDto) {
+          User user = userRepository.findByEmail(requestDto.getEmail());
+          if(user == null) throw new RestApiException(Code.NO_USER);
+          String password = passwordEncoder.encode(requestDto.getPassword());
+          user.updatePassword(password);
+          userRepository.saveAndFlush(user);
+     }
 }
      
      // jwt token 에서 user정보뽑기 set
