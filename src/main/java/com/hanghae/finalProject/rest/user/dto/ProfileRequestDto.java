@@ -14,7 +14,5 @@ public class ProfileRequestDto {
     @NotNull(message = "username을 선택해주세요.")
     private String username;
 
-    private MultipartFile file;
-
     private String profileMsg;
 }

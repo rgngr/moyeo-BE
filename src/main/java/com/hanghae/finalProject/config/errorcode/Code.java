@@ -27,9 +27,11 @@ public enum Code {
      UPDATE_LINK( "모임 링크 추가 성공", HttpStatus.OK),
      DELETE_MEETING( "모임 글 삭제 성공", HttpStatus.OK),
      CREATE_ENTER("모임 입장 성공", HttpStatus.OK),
-     UPDATE_PROFILE( "프로필 수정 성공", HttpStatus.OK),
-     UPDATE_PROFILE_PAGE( "프로필 수정 페이지 불러오기 성공", HttpStatus.OK),
+     UPDATE_PROFILE( "프로필 내용 수정 성공", HttpStatus.OK),
+     UPDATE_PROFILE_URL( "프로필 이미지 변경 성공", HttpStatus.OK),
+     GET_PROFILE_UPDATE_PAGE( "프로필 수정 페이지 불러오기 성공", HttpStatus.OK),
      DELETE_PROFILE_URL( "프로필 이미지 삭제 성공", HttpStatus.OK),
+     NO_IMAGE("프로필 이미지 파일을 선택해주세요.",HttpStatus.BAD_REQUEST),
      INVALID_PARAMETER("Invalid parameter included",HttpStatus.BAD_REQUEST),
      INTERNAL_SERVER_ERROR("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
      BAD_REQUEST("Bad request",HttpStatus.BAD_REQUEST),
@@ -46,6 +48,7 @@ public enum Code {
      USER_FOLLOW_SUCCESS("유저 팔로우 성공", HttpStatus.OK),
      USER_UNFOLLOW_SUCCESS("유저 언팔로우 성공", HttpStatus.OK),
      ONLY_FOR_ADMIN("관리자만 가능합니다.", HttpStatus.BAD_REQUEST),
+     ONLY_FOR_USER("관리자는 불가능합니다.", HttpStatus.BAD_REQUEST),
      WRONG_EMAIL_PATTERN("올바른 이메일 형식이 아닙니다.", HttpStatus.BAD_REQUEST),
      WRONG_USERNAME_PATTERN("닉네임은 최소 5자 이상, 10자이하 이어야 합니다.", HttpStatus.BAD_REQUEST),
      WRONG_PASSWORD_PATTERN("비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 구성되어야 합니다.", HttpStatus.BAD_REQUEST),
@@ -71,6 +74,11 @@ public enum Code {
      NO_AUTH_REVIEW("후기를 작성할 수 없습니다.", HttpStatus.BAD_REQUEST),
      NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),
      INVALID_MEETING("강퇴당한 모임입니다.", HttpStatus.BAD_REQUEST),
+     ALARM_CONNECT_ERROR("alarm connect error", HttpStatus.INTERNAL_SERVER_ERROR),
+     GET_ALARMS("모든 알람 조회 성공",HttpStatus.OK),
+     ALARM_IS_READ("알람 읽기 처리 성공",HttpStatus.OK),
+     NO_ALARM("존재하지 않는 알람입니다.", HttpStatus.BAD_REQUEST),
+     IS_READ_TRUE("이미 읽은 알람입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
 
      private final String StatusMsg;

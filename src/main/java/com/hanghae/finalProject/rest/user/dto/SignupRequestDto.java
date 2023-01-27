@@ -18,7 +18,7 @@ public class SignupRequestDto {
 
     @Schema (description = "패스워드")
     @Size(min = 8, max = 15)
-    @Pattern (regexp="^.(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$")
+    @Pattern (regexp="^.(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+()_*=]).*$")
     private String password;
 
     @Schema (description = "이메일")
