@@ -18,7 +18,4 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
      Optional<User> findByKakaoIdIsNullAndEmail(String email);
      
      Optional<User> findByKakaoId(Long kakaoId);
-
-
-//    List<User> findAllById(Long id);
 }
