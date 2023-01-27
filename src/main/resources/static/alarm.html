@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alarm Test Page</title>
+</head>
+<body>
+<input type="text" id="id"/>
+<button type="button" onclick="login()">로그인</button>
+</body>
+</html>
+<script type="text/javaScript">
+    function login() {
+        const id = document.getElementById('id').value;
+
+        const eventSource = new EventSource(`/api/alarm/subscribe/` + id);
+
+        eventSource.addEventListener("sse", function (event) {
+            console.log(event.data);
+
+            let message = event.data;
+            alert(message);
+        })
+    }
+
+</script>

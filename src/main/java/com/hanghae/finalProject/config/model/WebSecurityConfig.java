@@ -45,6 +45,8 @@ public class WebSecurityConfig {
                .antMatchers(HttpMethod.GET, "/api/users/mail-code/**").permitAll()
                .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}").permitAll() // 모임 상세 조회
                .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}/attendants").permitAll() // 모임 참석자 리스트
+               .antMatchers( "/alarm.html").permitAll()
+               .antMatchers(HttpMethod.GET, "/api/alarm/subscribe/{\\d+}").permitAll()
                .antMatchers("/api/doc").permitAll()
                .antMatchers("/swagger-ui/**").permitAll() //스웨거 권한설정 X
                .antMatchers("/swagger-resources/**").permitAll() //스웨거 권한설정 X

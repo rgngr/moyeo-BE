@@ -20,11 +20,13 @@ public class Follow implements Supplier<Follow> {
      private User user; // 모임생성자
      
      //팔로우아이디
-     @Column(nullable = false)
-     private Long followId;
-     public Follow(User user, Long followId) {
+     @ManyToOne (fetch = FetchType.LAZY)
+     @JoinColumn(name ="following_id")
+     private User following;
+     
+     public Follow(User user, User following) {
           this.user = user;
-          this.followId = followId;
+          this.following = following;
      }
      
      @Override

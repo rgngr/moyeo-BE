@@ -17,6 +17,7 @@ import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MeetingService {
@@ -63,6 +65,9 @@ public class MeetingService {
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+          
+          log.info("image: {}", requestDto.getImage());
+          
           // 비밀방일경우 비번4글자 확인
           if (requestDto.isSecret()) {
                if (requestDto.getPassword().length() != 4) {
@@ -103,7 +108,7 @@ public class MeetingService {
                          a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
                     ).collect(Collectors.toList());
                // 알림보내기
-               alarmService.alarmUpdateMeeting(meeting);
+//               alarmService.alarmUpdateMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -142,7 +147,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateLink(requestDto);
-               alarmService.alarmUpdateLink(meeting);
+//               alarmService.alarmUpdateLink(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -162,7 +167,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.deleteMeeting();
-               alarmService.alarmDeleteMeeting(meeting);
+//               alarmService.alarmDeleteMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
