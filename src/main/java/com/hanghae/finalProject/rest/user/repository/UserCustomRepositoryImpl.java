@@ -41,7 +41,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                     ExpressionUtils.as(
                          select(follow.count().intValue())
                               .from(follow)
-                              .where(follow.followId.eq(loggedUser.getId()))
+                              .where(follow.following.id.eq(loggedUser.getId()))
                          , "followersNum"),
                     // 로그인유저의 팔로잉수 (내가 팔로우한 사람들)
                     ExpressionUtils.as(select(follow.count().intValue())
