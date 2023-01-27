@@ -24,26 +24,26 @@ public class AlarmController {
           return DataResponseDto.of(attendantService.getAlarm(meetingId));
      }
 
-     @ApiOperation(value = "알람 구독")
+     @ApiOperation(value = "알림 구독")
      @GetMapping(value = "/alarm/subscribe/{id}", produces = "text/event-stream")
      public SseEmitter subscribe(@PathVariable Long id,
                                  @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
           return alarmService.subscribe(id, lastEventId);
      }
 
-//     @ApiOperation(value = "알람 구독")
+//     @ApiOperation(value = "알림 구독")
 //     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
 //     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
 //          return alarmService.subscribe(lastEventId);
 //     }
 
-     @ApiOperation(value = "모든 알람 목록")
+     @ApiOperation(value = "모든 알림 목록")
      @GetMapping(value = "/alarms")
      public ResponseDto getAlarms() {
           return DataResponseDto.of(alarmService.getAlarms(), Code.GET_ALARMS.getStatusMsg());
      }
 
-     @ApiOperation(value = "알람 읽음 처리")
+     @ApiOperation(value = "알림 읽음 처리")
      @PatchMapping(value = "/alarms/{id}")
      public ResponseDto alarmIsRead(@PathVariable Long id) {
           alarmService.alarmIsRead(id);
