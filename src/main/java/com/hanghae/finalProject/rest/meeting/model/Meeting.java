@@ -69,6 +69,9 @@ public class Meeting extends Timestamped {
      @Column
      private int attendantsNum;
      
+     @Column
+     private String image;
+     
      public void addAttend(){
           attendantsNum++;
      }
