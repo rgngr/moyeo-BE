@@ -55,7 +55,7 @@ public class CommentService {
           
           Comment comment = commentRepository.save(new Comment(commentRequestDto, meeting, user));
           
-          alarmService.alarmComment(meeting);
+//          alarmService.alarmComment(meeting);
           
           return new CommentResponseDto(comment);
      }

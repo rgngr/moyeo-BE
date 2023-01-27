@@ -103,7 +103,7 @@ public class MeetingService {
                          a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
                     ).collect(Collectors.toList());
                // 알림보내기
-               alarmService.alarmUpdateMeeting(meeting);
+//               alarmService.alarmUpdateMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -142,7 +142,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateLink(requestDto);
-               alarmService.alarmUpdateLink(meeting);
+//               alarmService.alarmUpdateLink(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -162,7 +162,7 @@ public class MeetingService {
           
           if (user.getId() == meeting.getUser().getId()) {
                meeting.deleteMeeting();
-               alarmService.alarmDeleteMeeting(meeting);
+//               alarmService.alarmDeleteMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }

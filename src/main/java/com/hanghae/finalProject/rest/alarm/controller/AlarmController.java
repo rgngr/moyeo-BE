@@ -25,10 +25,17 @@ public class AlarmController {
      }
 
      @ApiOperation(value = "알람 구독")
-     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
-     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-          return alarmService.subscribe(lastEventId);
+     @GetMapping(value = "/alarm/subscribe/{id}", produces = "text/event-stream")
+     public SseEmitter subscribe(@PathVariable Long id,
+                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+          return alarmService.subscribe(id, lastEventId);
      }
+
+//     @ApiOperation(value = "알람 구독")
+//     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
+//     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+//          return alarmService.subscribe(lastEventId);
+//     }
 
      @ApiOperation(value = "모든 알람 목록")
      @GetMapping(value = "/alarms")
