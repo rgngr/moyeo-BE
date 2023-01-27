@@ -19,6 +19,5 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
      
      Optional<User> findByKakaoId(Long kakaoId);
 
-
-//    List<User> findAllById(Long id);
+     User findAllById(Long id);
 }

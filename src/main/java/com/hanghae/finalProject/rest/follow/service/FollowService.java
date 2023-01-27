@@ -55,13 +55,14 @@ public class FollowService {
         FollowListResponesDto followListResponseDto = new FollowListResponesDto();
         //토큰값에의한 유저데이터 가져옴
         User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
         //followRepository에서 기준은 user를 기준으로 User 같은값을 통째로 다 가져옴
         List<Follow> followList = followRepository.findByUser(user);
         //followList(내가 팔로우한사람들의 user데이터)에 들어있는 같은값을
         // 하나씩뺴서 addFollowList실행해 리스트로 많들어줌
         for (Follow value : followList) {
-            System.out.println(value.getUser().getProfileUrl());
-            followListResponseDto.addFollowList(new FollowResponseDto(value.getUser()));
+            User FollowId = userRepository.findAllById(value.getFollowId());
+            followListResponseDto.addFollowList(new FollowResponseDto(FollowId));
         }
 
          return followListResponseDto;
@@ -75,6 +76,7 @@ public class FollowService {
         FollowListResponesDto followListResponseDto = new FollowListResponesDto();
         //토큰값에의한 유저데이터 가져옴
         User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
         //followRepository에서 기준은 user의 id값을 기준으로 followId와 같은값을 다 가져옴
         List<Follow> followList = followRepository.findByFollowId(user.getId());
         //followList(팔로우한사람들의 user데이터)에 들어있는 같은값을
