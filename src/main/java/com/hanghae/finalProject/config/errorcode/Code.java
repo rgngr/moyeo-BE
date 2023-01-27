@@ -46,6 +46,7 @@ public enum Code {
      USER_SIGNUP_FAIL("회원가입 실패", HttpStatus.BAD_REQUEST),
      USER_LOGIN_SUCCESS("로그인 성공", HttpStatus.OK),
      USER_FOLLOW_SUCCESS("유저 팔로우 성공", HttpStatus.OK),
+     USER_FOLLOW_FAIL("유저 팔로우 실패", HttpStatus.OK),
      USER_UNFOLLOW_SUCCESS("유저 언팔로우 성공", HttpStatus.OK),
      ONLY_FOR_ADMIN("관리자만 가능합니다.", HttpStatus.BAD_REQUEST),
      ONLY_FOR_USER("관리자는 불가능합니다.", HttpStatus.BAD_REQUEST),

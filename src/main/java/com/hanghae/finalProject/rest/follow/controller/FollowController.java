@@ -21,7 +21,7 @@ public class FollowController {
           return ResponseDto.of(true, followService.follow(followId));
      }
      @Operation (summary = "내 팔로잉 리스트 불러오기")
-     @GetMapping ("followsingList")
+     @GetMapping ("followingList")
      public ResponseDto followingList() {
           return DataResponseDto.of(followService.followingList(),Code.USER_LOGIN_SUCCESS.getStatusMsg());
      }

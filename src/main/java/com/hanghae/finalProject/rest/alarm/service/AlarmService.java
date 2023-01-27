@@ -13,6 +13,7 @@ import com.hanghae.finalProject.rest.alarm.repository.EmitterRepository;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
+import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
+    private final ReviewRepository reviewRepository;
 
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
     private final EmitterRepository emitterRepository;
@@ -244,7 +246,7 @@ public class AlarmService {
 
     // 알람 읽음 처리
     @Transactional
-    public void alarmIsRead(Long id) {
+    public AlarmListResponseDto alarmIsRead(Long id) {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
@@ -256,6 +258,8 @@ public class AlarmService {
             throw new RestApiException(Code.IS_READ_TRUE);
         } else {
             alarmList.readAlarm();
+            AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
+            return alarmListResponseDto;
         }
     }
 
