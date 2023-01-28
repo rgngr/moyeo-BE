@@ -42,6 +42,7 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
                     meeting.content,
                     meeting.secret,
                     meeting.password,
+                    meeting.image,
                     attendant.entrance.as("attend"),
                     attendant.review.as("review")
                ))
