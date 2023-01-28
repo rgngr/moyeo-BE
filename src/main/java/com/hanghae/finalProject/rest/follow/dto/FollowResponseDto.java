@@ -7,14 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FollowResponseDto {
-    private Long id;
+    private Long userId;
 
     private String username;
 
     private String profileUrl;
 
     public FollowResponseDto(User user){
-        this.id = user.getId();
+        this.userId = user.getId();
         this.username = user.getUsername();
         this.profileUrl = user.getProfileUrl();
 
