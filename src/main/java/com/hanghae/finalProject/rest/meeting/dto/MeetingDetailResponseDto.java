@@ -36,6 +36,7 @@ public class MeetingDetailResponseDto {
     private boolean alarm;
     private Long likeNum;
     private Long hateNum;
+    private String image;
 
     public void isMaster(boolean master){
          this.master = master;

@@ -21,6 +21,7 @@ public class MeetingUpdatePageResponseDto {
     private String link;
     private boolean secret;
     private String password;
+    private String image;
 
     public MeetingUpdatePageResponseDto(Meeting meeting) {
         this.title = meeting.getTitle();
@@ -34,6 +35,7 @@ public class MeetingUpdatePageResponseDto {
         this.link = meeting.getLink();
         this.secret = meeting.isSecret();
         this.password = meeting.getPassword();
+        this.image = meeting.getImage();
     }
 
 }

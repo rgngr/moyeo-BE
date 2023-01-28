@@ -59,6 +59,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.maxNum,
                     meeting.secret,
                     meeting.password,
+                    meeting.image,
                     // 로그인 유저의 해당 모임 참석유무
                     ExpressionUtils.as(
                          select(attendant.user.id.isNotNull())
@@ -195,6 +196,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.maxNum,
                     meeting.secret,
                     meeting.password,
+                    meeting.image,
                     list(
                          Projections.fields(
                               AttendantResponseDto.simpleResponseDto.class,
