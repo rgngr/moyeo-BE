@@ -24,17 +24,18 @@ public class AlarmController {
           return DataResponseDto.of(attendantService.getAlarm(meetingId));
      }
 
+     // userId로 받기
      @ApiOperation(value = "알림 구독")
      @GetMapping(value = "/alarm/subscribe/{id}", produces = "text/event-stream")
-     public SseEmitter subscribe(@PathVariable Long id,
-                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-          return alarmService.subscribe(id, lastEventId);
+     public SseEmitter subscribe(@PathVariable Long id) {
+          return alarmService.subscribe(id);
      }
 
+     // 토큰으로 받기
 //     @ApiOperation(value = "알림 구독")
 //     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
-//     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-//          return alarmService.subscribe(lastEventId);
+//     public SseEmitter subscribe() {
+//          return alarmService.subscribe();
 //     }
 
      @ApiOperation(value = "모든 알림 목록")
@@ -43,10 +44,11 @@ public class AlarmController {
           return DataResponseDto.of(alarmService.getAlarms(), Code.GET_ALARMS.getStatusMsg());
      }
 
-     @ApiOperation(value = "알림 읽음 처리")
-     @PatchMapping(value = "/alarms/{id}")
-     public ResponseDto alarmIsRead(@PathVariable Long id) {
-          return DataResponseDto.of(alarmService.alarmIsRead(id), Code.ALARM_IS_READ.getStatusMsg());
+     @ApiOperation(value = "알림 삭제(읽음) 처리")
+     @DeleteMapping(value = "/alarms/{id}")
+     public ResponseDto deleteAlarm(@PathVariable Long id) {
+          alarmService.deleteAlarm(id);
+          return ResponseDto.of(true, Code.DELETE_ALARM);
      }
 
 }
