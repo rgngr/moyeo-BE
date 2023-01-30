@@ -237,9 +237,9 @@ public class AlarmService {
         return alarmListsResponseDto;
     }
 
-    // 알람 읽음 처리
+    // 알람 삭제(읽음) 처리
     @Transactional
-    public AlarmListResponseDto alarmIsRead(Long id) {
+    public void deleteAlarm(Long id) {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
@@ -247,13 +247,7 @@ public class AlarmService {
         // 알람 존재 여부 확인
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
         // 알람 읽음 여부에 따른 처리
-        if (alarmList.isRead()) {
-            throw new RestApiException(Code.IS_READ_TRUE);
-        } else {
-            alarmList.readAlarm();
-            AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
-            return alarmListResponseDto;
-        }
+        alarmListRepository.delete(alarmList);
     }
 
 //    @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 60* 1000)
