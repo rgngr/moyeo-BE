@@ -49,7 +49,8 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
                .from(meeting)
                .join(attendant)
                .on(meeting.id.eq(attendant.meeting.id), attendant.user.id.eq(loggedId))
-               .where(meeting.startDate.between(startDate, endDate))
+               .where(meeting.startDate.between(startDate, endDate),
+                    meeting.deleted.isFalse())
                .orderBy(meeting.startTime.asc())
                .fetch();
      }
