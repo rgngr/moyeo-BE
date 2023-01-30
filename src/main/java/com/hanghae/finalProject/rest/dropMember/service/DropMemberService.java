@@ -51,5 +51,6 @@ public class DropMemberService {
           }
           // 참석자리스트에서 삭제
           attendantRepository.delete(attendant);
+          meeting.cancelAttend();
      }
 }
