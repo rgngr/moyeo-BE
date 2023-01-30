@@ -119,9 +119,10 @@ public class UserService {
           // 현재 profileUrl
           String currentProfileUrl = user.getProfileUrl();
           //s3에서 파일 삭제
-          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
-          //prufileUrl = null
+//          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
+          //prufileUrl = null 처리
           user.deleteProfileUrl();
+          userRepository.saveAndFlush(user);
      }
 
      // 프로필 username/자기소개 수정
