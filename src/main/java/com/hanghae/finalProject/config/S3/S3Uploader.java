@@ -3,6 +3,7 @@ package com.hanghae.finalProject.config.S3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,13 +35,26 @@ public class S3Uploader {
 
      // MultipartFile을 전달받아 File로 전환한 후 S3에 업로드
      public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-          File uploadFile = convert(multipartFile)
-                  .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
-          return upload(uploadFile, dirName);
+          String fileName = createFileName(multipartFile.getOriginalFilename());
+          ObjectMetadata objectMetadata = new ObjectMetadata();
+          objectMetadata.setContentLength(multipartFile.getSize());
+          objectMetadata.setContentType(multipartFile.getContentType());
+     
+          try(InputStream inputStream = multipartFile.getInputStream()) {
+               amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+          
+               return amazonS3Client.getUrl(bucket, fileName).toString();
+          } catch(IOException e) {
+               throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+          }
+//          File uploadFile = convert(multipartFile)
+//                  .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+//          return upload(uploadFile, dirName);
      }
 
      private String upload(File uploadFile, String dirName) {
-          String fileName = dirName + "/" + createFileName(uploadFile.getName());
+          String fileName = dirName + "/" + uploadFile.getName();
           String uploadImageUrl = putS3(uploadFile, fileName);
 
           removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
