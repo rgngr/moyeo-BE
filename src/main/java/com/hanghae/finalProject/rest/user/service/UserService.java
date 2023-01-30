@@ -117,11 +117,13 @@ public class UserService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
           // 현재 profileUrl
-          String currentProfileUrl = user.getProfileUrl();
+//          String currentProfileUrl = user.getProfileUrl();
           //s3에서 파일 삭제
-          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
+//          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
           //prufileUrl = null
           user.deleteProfileUrl();
+          userRepository.saveAndFlush(user);
+
      }
 
      // 프로필 username/자기소개 수정
