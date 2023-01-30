@@ -148,7 +148,6 @@ public class AttendantService {
                getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
           }
           attendant.enter(meeting);
-          attendantRepository.save(attendant);
           return Code.CREATE_ENTER;
      }
      
