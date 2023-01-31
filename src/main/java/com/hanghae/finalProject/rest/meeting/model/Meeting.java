@@ -79,7 +79,7 @@ public class Meeting extends Timestamped {
      public void cancelAttend(){
           attendantsNum--;
      }
-     public Meeting(MeetingRequestDto requestDto, User user) {
+     public Meeting(MeetingRequestDto requestDto, User user,String imgUrl) {
           this.title = requestDto.getTitle();
           this.category = requestDto.getCategory();
           this.startDate = requestDto.getStartDate();
@@ -93,6 +93,7 @@ public class Meeting extends Timestamped {
           this.password = requestDto.getPassword();
           this.user = user;
           this.attendantsNum = 1;
+          this.image = imgUrl;
      }
 
      public void updateAll(MeetingUpdateRequestDto requestDto) {

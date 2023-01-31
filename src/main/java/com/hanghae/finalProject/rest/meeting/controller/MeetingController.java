@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -54,7 +55,7 @@ public class MeetingController {
     
     @ApiOperation (value = "모임 생성")
     @PostMapping("")
-    public ResponseDto createMeeting(@ModelAttribute @Valid MeetingRequestDto requestDto) {
+    public ResponseDto createMeeting(@ModelAttribute @Valid MeetingRequestDto requestDto) throws IOException {
         return DataResponseDto.of(meetingService.createMeeting(requestDto), Code.CREATE_MEETING.getStatusMsg());
     }
     
