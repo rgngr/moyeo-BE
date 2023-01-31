@@ -33,8 +33,4 @@ public class AlarmList extends Timestamped {
         this.content = content;
     }
 
-    public void readAlarm() {
-        this.isRead = true;
-    }
-
 }

@@ -75,11 +75,9 @@ public enum Code {
      NO_AUTH_REVIEW("후기를 작성할 수 없습니다.", HttpStatus.BAD_REQUEST),
      NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),
      INVALID_MEETING("강퇴당한 모임입니다.", HttpStatus.BAD_REQUEST),
-     ALARM_CONNECT_ERROR("alarm connect error", HttpStatus.INTERNAL_SERVER_ERROR),
-     GET_ALARMS("모든 알람 조회 성공",HttpStatus.OK),
-     ALARM_IS_READ("알람 읽기 처리 성공",HttpStatus.OK),
-     NO_ALARM("존재하지 않는 알람입니다.", HttpStatus.BAD_REQUEST),
-     IS_READ_TRUE("이미 읽은 알람입니다.", HttpStatus.BAD_REQUEST),
+     GET_ALARMS("알림 목록 조회 성공",HttpStatus.OK),
+     DELETE_ALARM("알림 삭제 성공",HttpStatus.OK),
+     NO_ALARM("존재하지 않는 알림입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED),
      UPDATE_PASSWORD("비밀번호 변경완료",HttpStatus.OK );
 
