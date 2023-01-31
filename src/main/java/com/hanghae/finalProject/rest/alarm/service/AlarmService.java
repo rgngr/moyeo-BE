@@ -61,7 +61,7 @@ public class AlarmService {
 
         // sse 연결 뒤 데이터가 하나도 전송되지 않고 유효시간이 끝나면 503에러 발생
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        sendToClient(emitter, receiverId, "Alarm Connected!! [receiverId=" + id + "]");
+        sendToClient(emitter, receiverId, "Alarm Connected [receiverId=" + id + "]");
 
         return emitter;
     }
@@ -102,7 +102,7 @@ public class AlarmService {
 
         User receiver = meeting.getUser();
         String receiverId = String.valueOf(receiver.getId());
-        String content = "'"+meeting.getTitle()+"' 모임에 댓글이 달렸습니다!";
+        String content = "["+meeting.getTitle()+"] 모임에 댓글이 달렸습니다.";
 
         //알람 리스트 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
@@ -118,8 +118,8 @@ public class AlarmService {
         User receiver = meeting.getUser();
         String receiverId = String.valueOf(receiver.getId());
         String attendant = user.getUsername();
-        String content1 = "'"+attendant+"'이/가 '"+meeting.getTitle()+"' 모임에 참석 예정입니다!";
-        String content2 = "'"+meeting.getTitle()+"' 모임의 정원이 다 찼습니다!";
+        String content1 = attendant+" 님이 ["+meeting.getTitle()+"] 모임에 참석 예정입니다.";
+        String content2 = "["+meeting.getTitle()+"] 모임의 정원이 다 찼습니다.";
 
         //알람 리스트 생성
         AlarmList alarmList1 = new AlarmList(meeting, receiver, content1);
@@ -145,7 +145,7 @@ public class AlarmService {
         User receiver = meeting.getUser();
         String receiverId = String.valueOf(receiver.getId());
         String attendant = user.getUsername();
-        String content = "'"+attendant+"'이/가 '"+meeting.getTitle()+"' 모임 참석을 취소했습니다!";
+        String content = attendant+" 님이 ["+meeting.getTitle()+"] 모임 참석을 취소했습니다.";
 
         //알람 리스트 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
@@ -158,7 +158,7 @@ public class AlarmService {
     @Transactional
     public void alarmUpdateMeeting(Meeting meeting) {
 
-        String content = "'"+meeting.getTitle()+"' 모임의 내용이 수정되었습니다. 확인해주세요!";
+        String content = "["+meeting.getTitle()+"] 모임의 내용이 수정되었습니다.";
 
         //알람 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
@@ -185,7 +185,7 @@ public class AlarmService {
     @Transactional
     public void alarmUpdateLink(Meeting meeting) {
 
-        String content = "'"+meeting.getTitle()+"' 모임의 링크가 생성/수정되었습니다. 확인해주세요!";
+        String content = "["+meeting.getTitle()+"] 모임의 링크가 생성/수정 되었습니다.";
 
         //알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
@@ -212,7 +212,7 @@ public class AlarmService {
     @Transactional
     public void alarmDeleteMeeting(Meeting meeting) {
 
-        String content = "'"+meeting.getTitle()+"' 모임이 삭제되었습니다. 다른 모임에 참가해보세요!";
+        String content = "["+meeting.getTitle()+"] 모임이 삭제되었습니다.";
 
         //알람 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
@@ -267,8 +267,8 @@ public class AlarmService {
     }
     @Transactional
     public void alarmBefore30(Meeting meeting) {
-        String content1 = "'"+meeting.getTitle()+"' 모임 시작 30분 전입니다! 모임 링크를 올려주세요!";
-        String content2 = "'"+meeting.getTitle()+"' 모임 시작 30분 전입니다! 모임 링크를 확인해주세요!";
+        String content1 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
+        String content2 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
 
 
         // 모임 글 작성자
