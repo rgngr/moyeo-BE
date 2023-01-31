@@ -29,6 +29,8 @@ public class MeetingCreateResponseDto {
     private int likeNum;
     private int hateNum;
 
+    private String image;
+
     // 모임생성시 사용
     public MeetingCreateResponseDto(Meeting meeting) {
         this.id = meeting.getId();
@@ -45,6 +47,7 @@ public class MeetingCreateResponseDto {
         this.link = meeting.getLink();
         this.secret = meeting.isSecret();
         this.password = meeting.getPassword();
+        this.image = meeting.getImage();
     }
 
 }
