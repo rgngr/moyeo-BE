@@ -289,7 +289,7 @@ public class AlarmService {
     }
 
 
-    @Scheduled(fixedRate = 60 * 1000)
+//    @Scheduled(fixedRate = 60 * 1000)
     public void searchTodayMeetings() {
 
         LocalDate today = LocalDate.now();
