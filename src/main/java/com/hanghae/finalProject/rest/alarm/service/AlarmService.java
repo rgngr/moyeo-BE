@@ -224,6 +224,35 @@ public class AlarmService {
 
     }
 
+//    @Scheduled(fixedRate = 60 * 1000)
+    public void searchTodayMeetings() {
+
+        LocalDate today = LocalDate.now();
+
+        List<Meeting> todayMeetings = meetingRepository.findAllByStartDate(today);
+
+        if (todayMeetings.isEmpty()) {
+            return;
+        }
+
+        for (Meeting todayMeeting : todayMeetings) {
+
+            LocalTime meetingStartTime = todayMeeting.getStartTime();
+            LocalTime now = LocalTime.now();
+
+            LocalTime nowAfter29 = now.plusMinutes(29);
+            LocalTime nowAfter31 = now.plusMinutes(31);
+
+            boolean isAfter29 = meetingStartTime.isAfter(nowAfter29);
+            boolean isBefore31 = meetingStartTime.isBefore(nowAfter31);
+
+            if (isAfter29 && isBefore31) {
+                alarmBefore30(todayMeeting);
+            }
+
+        }
+
+    }
     @Transactional
     public void alarmBefore30(Meeting meeting) {
         String content1 = "'"+meeting.getTitle()+"' 모임 시작 30분 전입니다! 모임 링크를 올려주세요!";
@@ -286,37 +315,6 @@ public class AlarmService {
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
         // 알람 읽음 여부에 따른 처리
         alarmListRepository.delete(alarmList);
-    }
-
-
-//    @Scheduled(fixedRate = 60 * 1000)
-    public void searchTodayMeetings() {
-
-        LocalDate today = LocalDate.now();
-
-        List<Meeting> todayMeetings = meetingRepository.findAllByStartDate(today);
-
-        if (todayMeetings.isEmpty()) {
-            return;
-        }
-
-        for (Meeting todayMeeting : todayMeetings) {
-
-            LocalTime meetingStartTime = todayMeeting.getStartTime();
-            LocalTime now = LocalTime.now();
-
-            LocalTime nowAfter29 = now.plusMinutes(29);
-            LocalTime nowAfter31 = now.plusMinutes(31);
-
-            boolean isAfter29 = meetingStartTime.isAfter(nowAfter29);
-            boolean isBefore31 = meetingStartTime.isBefore(nowAfter31);
-
-            if (isAfter29 && isBefore31) {
-                alarmBefore30(todayMeeting);
-            }
-
-        }
-
     }
 
 }
