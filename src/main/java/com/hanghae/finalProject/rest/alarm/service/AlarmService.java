@@ -163,6 +163,10 @@ public class AlarmService {
         //알람 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
 
+        if (alarmReceivers.isEmpty()) {
+            return;
+        }
+
         //해당 모임 글 참석자 중 알람 수신한 사람 모두에게 알람
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
@@ -186,6 +190,10 @@ public class AlarmService {
         //알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
 
+        if (alarmReceivers.isEmpty()) {
+            return;
+        }
+
         //해당 모임 글 참석자 중 알람 수신한 사람 모두에게 알람
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
@@ -208,6 +216,10 @@ public class AlarmService {
 
         //알람 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
+
+        if (alarmReceivers.isEmpty()) {
+            return;
+        }
 
         //해당 모임 글 참석자 중 알람 수신한 사람 모두에게 알람
         for (Alarm alarmReceiver : alarmReceivers) {
