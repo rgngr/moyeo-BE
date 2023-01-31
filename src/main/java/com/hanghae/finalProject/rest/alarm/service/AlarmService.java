@@ -17,6 +17,7 @@ import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -37,14 +38,14 @@ public class AlarmService {
     private final AlarmListRepository alarmListRepository;
 
     // 알람 연결
-    public SseEmitter subscribe(Long id, String lastEventId) {
+    public SseEmitter subscribe(Long id) {
 //        // 유저 정보 들고오기
 //        User user = SecurityUtil.getCurrentUser();
 //        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
 //        Long userId = user.getId();
         //userId + 현재시간 >> 마지막 받은 알람 이후의 새로운 알람을 전달하기 위해 필요
-        String receiverId = id + "_" + System.currentTimeMillis();
+        String receiverId = String.valueOf(id);
 
         // 유효시간 포함한 SseEmitter 객체 생성
         // receiverId를 key로, SseEmitter를 value로 저장
@@ -56,15 +57,7 @@ public class AlarmService {
 
         // sse 연결 뒤 데이터가 하나도 전송되지 않고 유효시간이 끝나면 503에러 발생
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        sendToClient(emitter, receiverId, "EventStream Created. [receiverId=" + id + "]");
-
-        // 헤더에 Last-Event-ID 값이 있는 경우, 저장된 데이터 캐시에서 id값과 유실된 데이터들만 다시 보냄
-        if (!lastEventId.isEmpty()) {
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
-            events.entrySet().stream()
-                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-                    .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
-        }
+        sendToClient(emitter, receiverId, "Alarm Connected!! [receiverId=" + id + "]");
 
         return emitter;
     }
@@ -244,9 +237,9 @@ public class AlarmService {
         return alarmListsResponseDto;
     }
 
-    // 알람 읽음 처리
+    // 알람 삭제(읽음) 처리
     @Transactional
-    public AlarmListResponseDto alarmIsRead(Long id) {
+    public void deleteAlarm(Long id) {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
@@ -254,13 +247,12 @@ public class AlarmService {
         // 알람 존재 여부 확인
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
         // 알람 읽음 여부에 따른 처리
-        if (alarmList.isRead()) {
-            throw new RestApiException(Code.IS_READ_TRUE);
-        } else {
-            alarmList.readAlarm();
-            AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
-            return alarmListResponseDto;
-        }
+        alarmListRepository.delete(alarmList);
     }
+
+//    @Scheduled(fixedRate = 60 * 1000, initialDelay = 60 * 60* 1000)
+//    public void searchStartTime() {
+//
+//    }
 
 }

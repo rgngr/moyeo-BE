@@ -79,6 +79,7 @@ public class AttendantService {
                getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
                // 참석 알람
 //               alarmService.alarmAttend(meeting, user);
+               meetingRepository.saveAndFlush(meeting);
                return new AttendantResponseDto(attendant);
           } else {
                // 기존에 참석했던 유저의 경우
@@ -94,6 +95,7 @@ public class AttendantService {
                getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
                // 참석 취소 알람
 //               alarmService.alarmCancelAttend(meeting, user);
+               meetingRepository.saveAndFlush(meeting);
                return null;
           }
      }
@@ -148,7 +150,6 @@ public class AttendantService {
                getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
           }
           attendant.enter(meeting);
-          attendantRepository.save(attendant);
           return Code.CREATE_ENTER;
      }
      
