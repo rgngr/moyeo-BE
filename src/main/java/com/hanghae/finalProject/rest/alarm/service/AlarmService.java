@@ -311,8 +311,14 @@ public class AlarmService {
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         // 알람 리스트 생성
-        AlarmListsResponseDto alarmListsResponseDto = new AlarmListsResponseDto();
         List<AlarmList> alarmLists = alarmListRepository.findAllByUserOrderByCreatedAtDesc(user);
+
+        if (alarmLists.isEmpty()) {
+            return null;
+        }
+
+        AlarmListsResponseDto alarmListsResponseDto = new AlarmListsResponseDto();
+
         for(AlarmList alarmList : alarmLists) {
             alarmListsResponseDto.addAlarmList(new AlarmListResponseDto(alarmList));
         }
