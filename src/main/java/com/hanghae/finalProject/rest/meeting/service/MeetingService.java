@@ -69,10 +69,11 @@ public class MeetingService {
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) throws IOException {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          String imgUrl = null;
-          log.info("image: {}", requestDto.getImage());
-          if(requestDto.getImage().isEmpty()){
-               imgUrl = s3Uploader.upload(requestDto.getImage(), "imgUrl");
+          //이미지 데이터 넣기
+          String image = null;
+          //이미지가 있으면 넣어주고 없으면 넘어가는 if문
+          if(!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()){
+               image = s3Uploader.upload(requestDto.getImage(), "image");
           }
           // 비밀방일경우 비번4글자 확인
           if (requestDto.isSecret()) {
@@ -80,7 +81,7 @@ public class MeetingService {
                     throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
                }
           }
-          Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user, imgUrl));
+          Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user, image));
           
           // 참석자리스트에 방장 추가
           Attendant attendant = new Attendant(meeting, user);
@@ -91,7 +92,7 @@ public class MeetingService {
      
      // 모임수정
      @Transactional
-     public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) {
+     public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) throws IOException{
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           // 비밀방일경우 비번4글자 확인
@@ -105,9 +106,14 @@ public class MeetingService {
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
-          
+          //이미지 데이터 넣기
+          String image = null;
+          //이미지가 있으면 넣어주고 없으면 넘어가는 if문
+          if(!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()){
+               image = s3Uploader.upload(requestDto.getImage(), "image");
+          }
           if (user.getId() == meeting.getUser().getId()) {
-               meeting.updateAll(requestDto);
+               meeting.updateAll(requestDto,image);
                List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting).stream()
                     // 캘린더 캐시데이터 삭제
                     .peek(

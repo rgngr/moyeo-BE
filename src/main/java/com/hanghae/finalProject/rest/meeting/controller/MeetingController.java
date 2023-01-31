@@ -61,7 +61,7 @@ public class MeetingController {
     
     @ApiOperation (value = "모임 수정")
     @PatchMapping("/{id}")
-    public ResponseDto updateAllMeeting(@PathVariable Long id, @ModelAttribute @Valid MeetingUpdateRequestDto requestDto) {
+    public ResponseDto updateAllMeeting(@PathVariable Long id, @ModelAttribute @Valid MeetingUpdateRequestDto requestDto) throws IOException{
         meetingService.updateAllMeeting(id,requestDto);
         return ResponseDto.of(true, Code.UPDATE_MEETING);
     }
