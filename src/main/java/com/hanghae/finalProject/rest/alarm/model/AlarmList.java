@@ -27,8 +27,6 @@ public class AlarmList extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    private boolean isRead;
-
     public AlarmList(Meeting meeting, User user, String content) {
         this.meeting = meeting;
         this.user = user;
