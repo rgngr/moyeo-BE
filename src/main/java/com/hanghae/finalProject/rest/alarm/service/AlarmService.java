@@ -107,7 +107,7 @@ public class AlarmService {
 
         //알람 리스트 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
-        alarmListRepository.saveAndFlush(alarmList);
+        alarmListRepository.save(alarmList);
 
         alarmProcess(receiverId, alarmList);
     }
@@ -133,7 +133,7 @@ public class AlarmService {
         if (meeting.getMaxNum() <= attendants.size()) {
             //알람 리스트 생성
             AlarmList alarmList2 = new AlarmList(meeting, receiver, content2);
-            alarmListRepository.saveAndFlush(alarmList2);
+            alarmListRepository.save(alarmList2);
 
             alarmProcess(receiverId, alarmList2);
         }
