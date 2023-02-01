@@ -108,6 +108,10 @@ public class Meeting extends Timestamped {
           this.password = requestDto.getPassword();
           this.image = image;
      }
+     
+     public void updateImage(String image){
+          this.image = image;
+     }
 
      public void updateLink(MeetingLinkRequestDto requestDto) {
           this.platform = requestDto.getPlatform();
