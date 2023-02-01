@@ -1,5 +1,6 @@
 package com.hanghae.finalProject.rest.alarm.service;
 
+import com.hanghae.finalProject.config.dto.ResponseDto;
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
@@ -301,6 +302,17 @@ public class AlarmService {
 
         }
 
+    }
+
+    @Transactional
+    public ResponseDto isExistAlarms() {
+        // 유저 정보
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        boolean isExistAlarms = alarmListRepository.existsByUser(user);
+
+        return ResponseDto.of(isExistAlarms, Code.IS_EXIST_ALARMS);
     }
 
     // GET 알람 리스트
