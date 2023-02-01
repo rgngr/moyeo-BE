@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -74,6 +75,32 @@ public class MeetingService {
           //이미지가 있으면 넣어주고 없으면 넘어가는 if문
           if (!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
                image = s3Uploader.upload(requestDto.getImage(), "image");
+          }
+          // 비밀방일경우 비번4글자 확인
+          if (requestDto.isSecret()) {
+               if (requestDto.getPassword().length() != 4) {
+                    throw new RestApiException(Code.WRONG_SECRET_PASSWORD);
+               }
+          }
+          Meeting meeting = meetingRepository.saveAndFlush(new Meeting(requestDto, user, image));
+          
+          // 참석자리스트에 방장 추가
+          Attendant attendant = new Attendant(meeting, user);
+          attendantRepository.save(attendant);
+          
+          return new MeetingCreateResponseDto(meeting);
+     }
+     
+     // 모임생성 temp
+     @Transactional
+     public MeetingCreateResponseDto createMeetingTemp(MeetingRequestDto requestDto, MultipartFile file) throws IOException {
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+          //이미지 데이터 넣기
+          String image = null;
+          //이미지가 있으면 넣어주고 없으면 넘어가는 if문
+          if (!file.isEmpty() && !file.getContentType().isEmpty()) {
+               image = s3Uploader.upload(file, "image");
           }
           // 비밀방일경우 비번4글자 확인
           if (requestDto.isSecret()) {

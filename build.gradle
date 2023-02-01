@@ -70,8 +70,9 @@ dependencies {
 	implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
 	implementation 'redis.clients:jedis:3.3.0'
 
-    // rabbitMq
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    // SQS
+//    implementation 'org.springframework.cloud:spring-cloud-aws-messaging:2.2.3.RELEASE'
+//    implementation 'org.springframework.cloud:spring-cloud-aws-autoconfigure:2.2.3.RELEASE'
 
 //    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
