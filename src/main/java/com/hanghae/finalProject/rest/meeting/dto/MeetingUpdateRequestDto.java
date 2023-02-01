@@ -43,4 +43,10 @@ public class MeetingUpdateRequestDto {
     private String password;
     
     private MultipartFile image;
+    
+    @Setter
+    @Getter
+    public static class Image{
+        private MultipartFile image;
+    }
 }

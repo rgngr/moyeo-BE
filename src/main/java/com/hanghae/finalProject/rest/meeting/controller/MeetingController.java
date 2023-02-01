@@ -65,6 +65,13 @@ public class MeetingController {
         meetingService.updateAllMeeting(id,requestDto);
         return ResponseDto.of(true, Code.UPDATE_MEETING);
     }
+    
+    @ApiOperation (value = "모임 이미지 수정")
+    @PatchMapping("/{id}/image")
+    public ResponseDto updateMeetingImage(@PathVariable Long id, @ModelAttribute @Valid MeetingUpdateRequestDto.Image requestDto) throws IOException{
+        meetingService.updateMeetingImage(id,requestDto);
+        return ResponseDto.of(true, Code.UPDATE_MEETING_IMAGE);
+    }
 
     @ApiOperation (value = "모임 수정 페이지")
     @GetMapping("/{id}/update")

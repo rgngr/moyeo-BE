@@ -45,11 +45,11 @@ public class MeetingService {
      private final AlarmService alarmService;
      @Autowired
      private ApplicationContext applicationContext;
-
+     
      private final S3Uploader s3Uploader;
      
      // 모임 상세조회
-     @Transactional(readOnly = true)
+     @Transactional (readOnly = true)
      public MeetingDetailResponseDto getMeeting(Long id) {
           User user = SecurityUtil.getCurrentUser();
           // 비회원도 공유를 통해서 페이지를 볼 수 있어야 되니까 null 예외 처리 XX
@@ -72,7 +72,7 @@ public class MeetingService {
           //이미지 데이터 넣기
           String image = null;
           //이미지가 있으면 넣어주고 없으면 넘어가는 if문
-          if(!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()){
+          if (!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
                image = s3Uploader.upload(requestDto.getImage(), "image");
           }
           // 비밀방일경우 비번4글자 확인
@@ -92,7 +92,7 @@ public class MeetingService {
      
      // 모임수정
      @Transactional
-     public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) throws IOException{
+     public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) throws IOException {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           // 비밀방일경우 비번4글자 확인
@@ -109,11 +109,11 @@ public class MeetingService {
           //이미지 데이터 넣기
           String image = null;
           //이미지가 있으면 넣어주고 없으면 넘어가는 if문
-          if(!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()){
+          if (!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
                image = s3Uploader.upload(requestDto.getImage(), "image");
           }
           if (user.getId() == meeting.getUser().getId()) {
-               meeting.updateAll(requestDto,image);
+               meeting.updateAll(requestDto, image);
                List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting).stream()
                     // 캘린더 캐시데이터 삭제
                     .peek(
@@ -125,6 +125,37 @@ public class MeetingService {
                throw new RestApiException(Code.INVALID_USER);
           }
      }
+     
+     // 모임이미지만 수정
+     @Transactional
+     public void updateMeetingImage(Long id, MeetingUpdateRequestDto.Image requestDto) throws IOException {
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+          
+          Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
+          LocalDate dateOrigin = meeting.getStartDate();
+          if (meeting.isDeleted()) {
+               throw new RestApiException(Code.NO_MEETING);
+          }
+          //이미지 데이터 넣기
+          String image = null;
+          //이미지가 있으면 넣어주고 없으면 넘어가는 if문
+          if (!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
+               image = s3Uploader.upload(requestDto.getImage(), "image");
+          }
+          // 방장일경우만 가능
+          if (user.getId() == meeting.getUser().getId()) {
+               meeting.updateImage(image);
+               // 캘린더 캐시데이터 삭제
+               List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting).stream()
+                    .peek(
+                         a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
+                    ).collect(Collectors.toList());
+          } else {
+               throw new RestApiException(Code.INVALID_USER);
+          }
+     }
+     
      
      // GET 모임수정페이지
      @Transactional (readOnly = true)
