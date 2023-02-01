@@ -51,7 +51,7 @@ public class AlarmController {
           return ResponseDto.of(true, Code.DELETE_ALARM);
      }
 
-     @ApiOperation(value = "알림 리스트 존재 여부 표시(빨간불)")
+     @ApiOperation(value = "알림 존재 여부 표시(빨간불)")
      @GetMapping(value = "/alarms/existence")
      public ResponseDto isExistAlarms() {
           return alarmService.isExistAlarms();
