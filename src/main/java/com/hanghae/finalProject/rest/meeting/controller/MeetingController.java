@@ -9,6 +9,7 @@ import com.hanghae.finalProject.rest.meeting.dto.MeetingUpdateRequestDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.service.MeetingService;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,12 @@ public class MeetingController {
     @GetMapping("/{id}")
     public ResponseDto getMeeting(@PathVariable Long id) {
         return DataResponseDto.of(meetingService.getMeeting(id));
+    }
+    
+    @ApiOperation(value = "GET 배너이미지")
+    @GetMapping("/banner")
+    public ResponseDto getBanners(){
+        return DataResponseDto.of(meetingService.getBanner());
     }
     
     @ApiOperation (value = "모임 전체 조회")
@@ -63,7 +70,8 @@ public class MeetingController {
     
     @ApiOperation (value = "모임 생성temp")
     @PostMapping("/temp")
-    public ResponseDto createMeetingTemp(@RequestPart @Valid MeetingRequestDto requestDto, @RequestPart MultipartFile image) throws IOException {
+    public ResponseDto createMeetingTemp(@RequestPart @Valid MeetingRequestDto requestDto,
+                                         @RequestPart(required = false) MultipartFile image) throws IOException {
         return DataResponseDto.of(meetingService.createMeetingTemp(requestDto, image), Code.CREATE_MEETING.getStatusMsg());
     }
     

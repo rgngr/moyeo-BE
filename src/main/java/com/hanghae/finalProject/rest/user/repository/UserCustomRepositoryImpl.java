@@ -27,10 +27,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
           return jpaQueryFactory
                .select(Projections.fields(
                     MypageResponseDto.class,
-                    user.id.as("userId"),
-                    user.username,
-                    user.profileUrl,
-                    user.profileMsg,
                     // 로그인유저의 참석모임 수
                     ExpressionUtils.as(
                          select(attendant.count().intValue())
