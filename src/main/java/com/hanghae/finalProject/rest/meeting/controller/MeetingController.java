@@ -12,6 +12,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,6 +59,12 @@ public class MeetingController {
     @PostMapping("")
     public ResponseDto createMeeting(@ModelAttribute @Valid MeetingRequestDto requestDto) throws IOException {
         return DataResponseDto.of(meetingService.createMeeting(requestDto), Code.CREATE_MEETING.getStatusMsg());
+    }
+    
+    @ApiOperation (value = "모임 생성temp")
+    @PostMapping("/temp")
+    public ResponseDto createMeetingTemp(@RequestPart @Valid MeetingRequestDto requestDto, @RequestPart MultipartFile image) throws IOException {
+        return DataResponseDto.of(meetingService.createMeetingTemp(requestDto, image), Code.CREATE_MEETING.getStatusMsg());
     }
     
     @ApiOperation (value = "모임 수정")

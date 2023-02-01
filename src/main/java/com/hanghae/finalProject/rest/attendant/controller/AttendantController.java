@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/meetings/{meetingId}")
 public class AttendantController {
     private final AttendantService attendantService;
-//    private final AttendantMessageConsumers attendantMessageConsumers;
+//    private final SqsMessageSender sqsMessageSender;
 
     @Operation(summary = "모임 참석/취소")
     @PatchMapping("/attendance")
     public ResponseDto addAttendant(@PathVariable Long meetingId) {
-        
+//        sqsMessageSender.send(meetingId + " 모임 참석/취소");
         return DataResponseDto.of(attendantService.syncAddAttendant(meetingId));
     }
 
