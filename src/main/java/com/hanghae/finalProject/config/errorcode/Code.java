@@ -75,6 +75,7 @@ public enum Code {
      NO_AUTH_REVIEW("후기를 작성할 수 없습니다.", HttpStatus.BAD_REQUEST),
      NOT_ATTENDANCE_YET("아직 참석하지 않은 모임입니다.", HttpStatus.BAD_REQUEST),
      INVALID_MEETING("강퇴당한 모임입니다.", HttpStatus.BAD_REQUEST),
+     IS_EXIST_ALARMS("알림 존재 여부 확인 성공",HttpStatus.OK),
      GET_ALARMS("알림 목록 조회 성공",HttpStatus.OK),
      DELETE_ALARM("알림 삭제 성공",HttpStatus.OK),
      NO_ALARM("존재하지 않는 알림입니다.", HttpStatus.BAD_REQUEST),
