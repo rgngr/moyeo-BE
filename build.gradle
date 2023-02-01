@@ -70,10 +70,10 @@ dependencies {
 	implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
 	implementation 'redis.clients:jedis:3.3.0'
 
-//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // rabbitMq
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
-    //LocalDateTime 직렬화 역직렬화 오류 해결용
-//    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
+//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 //빌드 시 plain jar 파일은 만들어지지 않도록
 jar {

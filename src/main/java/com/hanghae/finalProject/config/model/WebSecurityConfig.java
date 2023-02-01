@@ -42,7 +42,7 @@ public class WebSecurityConfig {
                // 토큰검증 필요없는 페이지 설정
                .antMatchers(HttpMethod.POST, "/api/users/**").permitAll()
                .antMatchers(HttpMethod.GET, "/api/users/kakao/callback").permitAll()
-               .antMatchers(HttpMethod.GET, "/api/users/mail-code/**").permitAll()
+               .antMatchers( "/api/users/mail-code/**").permitAll()
                .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}").permitAll() // 모임 상세 조회
                .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}/attendants").permitAll() // 모임 참석자 리스트
                .antMatchers( "/alarm.html").permitAll()
