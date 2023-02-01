@@ -63,7 +63,8 @@ public class MeetingController {
     
     @ApiOperation (value = "모임 생성temp")
     @PostMapping("/temp")
-    public ResponseDto createMeetingTemp(@RequestPart @Valid MeetingRequestDto requestDto, @RequestPart MultipartFile image) throws IOException {
+    public ResponseDto createMeetingTemp(@RequestPart @Valid MeetingRequestDto requestDto,
+                                         @RequestPart(required = false) MultipartFile image) throws IOException {
         return DataResponseDto.of(meetingService.createMeetingTemp(requestDto, image), Code.CREATE_MEETING.getStatusMsg());
     }
     
