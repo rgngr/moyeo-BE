@@ -104,7 +104,7 @@ public class UserService {
                user.updateProfileUrl(profileUrl);
           }
 
-          userRepository.saveAndFlush(user);
+          userRepository.save(user);
 
           return new ProfileUrlResponseDto(user);
      }
@@ -122,7 +122,7 @@ public class UserService {
 //          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
           //prufileUrl = null
           user.deleteProfileUrl();
-          userRepository.saveAndFlush(user);
+          userRepository.save(user);
 
      }
 
@@ -142,7 +142,7 @@ public class UserService {
                response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
           }
 
-          userRepository.saveAndFlush(user);
+          userRepository.save(user);
 
           return new ProfileResponseDto(user);
 
@@ -154,7 +154,7 @@ public class UserService {
           if(user == null) throw new RestApiException(Code.NO_USER);
           String password = passwordEncoder.encode(requestDto.getPassword());
           user.updatePassword(password);
-          userRepository.saveAndFlush(user);
+          userRepository.save(user);
      }
 }
      
