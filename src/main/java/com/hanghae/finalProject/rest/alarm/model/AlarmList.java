@@ -32,5 +32,4 @@ public class AlarmList extends Timestamped {
         this.user = user;
         this.content = content;
     }
-
 }
