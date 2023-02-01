@@ -45,6 +45,7 @@ public class WebSecurityConfig {
                .antMatchers( "/api/users/mail-code/**").permitAll()
                .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}").permitAll() // 모임 상세 조회
                .antMatchers(HttpMethod.GET, "/api/meetings/{\\d+}/attendants").permitAll() // 모임 참석자 리스트
+               .antMatchers(HttpMethod.GET, "/api/meetings/banner").permitAll() // 메인창 배너이미지
                .antMatchers( "/alarm.html").permitAll()
                .antMatchers(HttpMethod.GET, "/api/alarm/subscribe/{\\d+}").permitAll()
                .antMatchers(HttpMethod.GET, "/api/users/passwordChange").permitAll()
