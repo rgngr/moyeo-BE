@@ -12,6 +12,7 @@ import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.calendar.repository.CalendarRepository;
 import com.hanghae.finalProject.rest.follow.repository.FollowRepository;
 import com.hanghae.finalProject.rest.meeting.dto.*;
+import com.hanghae.finalProject.rest.meeting.model.Banner;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
@@ -311,5 +312,9 @@ public class MeetingService {
      
      private RedisUtil getSpringProxy() {
           return applicationContext.getBean(RedisUtil.class);
+     }
+     
+     public List<String> getBanner() {
+          return Banner.getImgList();
      }
 }
