@@ -87,7 +87,7 @@ public class AlarmService {
         sseEmitters.forEach(
                 (key, emitter) -> {
                     // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
-                    emitterRepository.saveEventCache(key, alarmList);
+//                    emitterRepository.saveEventCache(key, alarmList);
                     // 데이터 전송
 //                  sendToClient(emitter, key, AlarmListResponseDto.from(alarmList));
                     AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
@@ -107,7 +107,7 @@ public class AlarmService {
 
         //알람 리스트 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
-        alarmListRepository.saveAndFlush(alarmList);
+        alarmListRepository.save(alarmList);
 
         alarmProcess(receiverId, alarmList);
     }
@@ -133,7 +133,7 @@ public class AlarmService {
         if (meeting.getMaxNum() <= attendants.size()) {
             //알람 리스트 생성
             AlarmList alarmList2 = new AlarmList(meeting, receiver, content2);
-            alarmListRepository.saveAndFlush(alarmList2);
+            alarmListRepository.save(alarmList2);
 
             alarmProcess(receiverId, alarmList2);
         }

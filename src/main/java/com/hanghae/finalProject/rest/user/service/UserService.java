@@ -133,6 +133,11 @@ public class UserService {
 
           // 현재 username
           String currentUsername = user.getUsername();
+          // username 중복 확인
+          boolean isExistUsername = userRepository.existsByUsername(requestDto.getUsername());
+          if (!requestDto.getUsername().equals(currentUsername) && isExistUsername) {
+               throw new RestApiException(Code.OVERLAPPED_USERNAME);
+          }
           //username/자기소개 update
           user.updateProfileContent(requestDto.getUsername(), requestDto.getProfileMsg());
           //토큰 재발급
