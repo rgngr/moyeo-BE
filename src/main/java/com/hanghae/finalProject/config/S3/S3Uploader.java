@@ -56,6 +56,7 @@ public class S3Uploader {
 
      private String upload(File uploadFile, String dirName) {
           String fileName = dirName + "/" + uploadFile.getName();
+//          String fileName = dirName + "/" + createFileName(uploadFile.getName());
           String uploadImageUrl = putS3(uploadFile, fileName);
 
           removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
