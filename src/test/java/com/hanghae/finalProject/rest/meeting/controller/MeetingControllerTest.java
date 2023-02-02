@@ -58,25 +58,65 @@ class MeetingControllerTest extends AcceptanceTest {
           assertThat(response.body().jsonPath().getList("data")).isNotNull();
      }
      
+     @DisplayName("모임 전체 조회")
      @Test
      void getMeetings() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .param("sortyby", "popular")
+                    .param("category","밥모여")
+                    .param("meetingId",0)
+                    .when()
+                    .get("/api/meetings")
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+          assertThat(response.body().jsonPath().getList("data.meetingList")).isNotNull();
+     }
+     
+     @DisplayName("모임명 검색")
+     @Test
+     void getMeetingsBySearch() {
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          // Given
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .param("searchBy", "비번")
+                    .param("category","밥모여")
+                    .param("meetingId")
+                    .when()
+                    .get("/api/meetings/search")
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+          assertThat(response.body().jsonPath().getList("data.meetingList")).isNotNull();
+     }
+     @DisplayName("모임 생성")
+     @Test
+     void createMeeting() {
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          // Given
+          Map<String, Object> params = new HashMap<>();
           
           // When
           
           // Then
-     }
-     
-     @Test
-     void getMeetingsBySearch() {
-     }
-     
-     @Test
-     void createMeeting() {
           // .multiPart("data",body,"application/json")
           // .multiPart("file[0]", new File(file1),"multipart/form-data")
+          
      }
      
      @Test
