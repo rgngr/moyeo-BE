@@ -87,7 +87,7 @@ public class AlarmService {
         sseEmitters.forEach(
                 (key, emitter) -> {
                     // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
-                    emitterRepository.saveEventCache(key, alarmList);
+//                    emitterRepository.saveEventCache(key, alarmList);
                     // 데이터 전송
 //                  sendToClient(emitter, key, AlarmListResponseDto.from(alarmList));
                     AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
