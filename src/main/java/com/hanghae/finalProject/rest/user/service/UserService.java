@@ -89,7 +89,7 @@ public class UserService {
 
      //프로필 이미지 변경
      @Transactional
-     public ProfileUrlResponseDto updateProfileUrl(MultipartFile file) throws IOException {
+     public ProfileResponseDto.Url updateProfileUrl(MultipartFile file) throws IOException {
           // 로그인 확인 및 현재 유저 정보 들고 오기
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
@@ -105,7 +105,7 @@ public class UserService {
 
           userRepository.save(user);
 
-          return new ProfileUrlResponseDto(user);
+          return new ProfileResponseDto.Url(user);
      }
 
      // 프로필 이미지 삭제
