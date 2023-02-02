@@ -40,15 +40,16 @@ public class S3Uploader {
           ObjectMetadata objectMetadata = new ObjectMetadata();
           objectMetadata.setContentLength(multipartFile.getSize());
           objectMetadata.setContentType(multipartFile.getContentType());
-     
+
           try(InputStream inputStream = multipartFile.getInputStream()) {
                amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
-          
+
                return amazonS3Client.getUrl(bucket, fileName).toString();
           } catch(IOException e) {
                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
           }
+
 //          File uploadFile = convert(multipartFile)
 //                  .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
 //          return upload(uploadFile, dirName);
@@ -56,6 +57,7 @@ public class S3Uploader {
 
      private String upload(File uploadFile, String dirName) {
           String fileName = dirName + "/" + uploadFile.getName();
+//          String fileName = dirName + "/" + createFileName(uploadFile.getName());
           String uploadImageUrl = putS3(uploadFile, fileName);
 
           removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
