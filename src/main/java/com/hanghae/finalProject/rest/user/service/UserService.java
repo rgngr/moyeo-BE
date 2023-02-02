@@ -77,7 +77,6 @@ public class UserService {
      }
 
      // 프로필 수정 페이지 불러오기
-     @Transactional
      public ProfileResponseDto getProfileUpdatePage() {
           // 로그인 확인 및 현재 유저 정보 들고 오기
           User user = SecurityUtil.getCurrentUser();
@@ -140,12 +139,12 @@ public class UserService {
           }
           //username/자기소개 update
           user.updateProfileContent(requestDto.getUsername(), requestDto.getProfileMsg());
+          userRepository.saveAndFlush(user);
+
           //토큰 재발급
           if (!requestDto.getUsername().equals(currentUsername)) {
                response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
           }
-
-          userRepository.save(user);
 
           return new ProfileResponseDto(user);
 
