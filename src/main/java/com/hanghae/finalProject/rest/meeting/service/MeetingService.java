@@ -89,6 +89,9 @@ public class MeetingService {
           // 참석자리스트에 방장 추가
           Attendant attendant = new Attendant(meeting, user);
           attendantRepository.save(attendant);
+
+          //알림
+//          alarmService.alarmFollowers(meeting, user);
           
           return new MeetingCreateResponseDto(meeting);
      }

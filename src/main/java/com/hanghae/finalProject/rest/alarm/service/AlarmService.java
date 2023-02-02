@@ -13,6 +13,9 @@ import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
 import com.hanghae.finalProject.rest.alarm.repository.EmitterRepository;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
+import com.hanghae.finalProject.rest.follow.dto.FollowResponseDto;
+import com.hanghae.finalProject.rest.follow.model.Follow;
+import com.hanghae.finalProject.rest.follow.repository.FollowRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
@@ -37,6 +40,7 @@ public class AlarmService {
     private final AttendantRepository attendantRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmListRepository alarmListRepository;
+    private final FollowRepository followRepository;
 
     // 알림 구독 (연결)
     public SseEmitter subscribe(Long id) {
@@ -151,7 +155,31 @@ public class AlarmService {
         alarmProcess(receiverId, alarmList);
     }
 
-    // 모임 참석자 : 참석하는 모임 글이 수정되었을 때 알람
+    // 팔로잉하는 사람이 모임 글 작성했을 때 알림
+    @Transactional
+    public void alarmFollowers(Meeting meeting, User user) {
+        List<Follow> followers = followRepository.findByFollow(user);
+        if (followers.isEmpty()) {
+            return;
+        }
+
+        String meetingMaster = user.getUsername();
+        String content = meetingMaster+" 님이 ["+meeting.getTitle()+"] 모임을 생성했습니다.";
+
+        for (Follow follower : followers) {
+            User receiver = follower.getUser();
+            String receiverId = String.valueOf(receiver.getId());
+
+            //알람 리스트 생성
+            AlarmList alarmList = new AlarmList(meeting, receiver, content);
+            alarmListRepository.saveAndFlush(alarmList);
+
+            alarmProcess(receiverId, alarmList);
+
+        }
+    }
+
+    // 모임 참석자 : 참석하는 모임 글이 수정되었을 때 알림
     @Transactional
     public void alarmUpdateMeeting(Meeting meeting) {
 
