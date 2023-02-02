@@ -5,7 +5,6 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmListResponseDto;
-import com.hanghae.finalProject.rest.alarm.dto.AlarmListsResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.model.AlarmList;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmListRepository;
@@ -15,11 +14,9 @@ import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
-import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -34,8 +31,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AlarmService {
     private final MeetingRepository meetingRepository;
-    private final ReviewRepository reviewRepository;
-
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
     private final EmitterRepository emitterRepository;
     private final AttendantRepository attendantRepository;
@@ -90,8 +85,8 @@ public class AlarmService {
 //                    emitterRepository.saveEventCache(key, alarmList);
                     // 데이터 전송
 //                  sendToClient(emitter, key, AlarmListResponseDto.from(alarmList));
-                    AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
-                    sendToClient(emitter, key, alarmListResponseDto);
+                    AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+                    sendToClient(emitter, key, alarmData);
                 }
         );
     }
@@ -150,7 +145,7 @@ public class AlarmService {
 
         //알람 리스트 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
-        alarmListRepository.saveAndFlush(alarmList);
+        alarmListRepository.save(alarmList);
 
         alarmProcess(receiverId, alarmList);
     }
@@ -304,7 +299,7 @@ public class AlarmService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ResponseDto isExistAlarms() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
@@ -317,25 +312,25 @@ public class AlarmService {
 
     // GET 알람 리스트
     @Transactional (readOnly = true)
-    public AlarmListsResponseDto getAlarms() {
+    public AlarmListResponseDto getAlarms() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         // 알람 리스트 생성
-        List<AlarmList> alarmLists = alarmListRepository.findAllByUserOrderByCreatedAtDesc(user);
+        List<AlarmList> alarms = alarmListRepository.findAllByUserOrderByCreatedAtDesc(user);
 
-        if (alarmLists.isEmpty()) {
+        if (alarms.isEmpty()) {
             return null;
         }
 
-        AlarmListsResponseDto alarmListsResponseDto = new AlarmListsResponseDto();
+        AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto();
 
-        for(AlarmList alarmList : alarmLists) {
-            alarmListsResponseDto.addAlarmList(new AlarmListResponseDto(alarmList));
+        for(AlarmList alarm : alarms) {
+            alarmListResponseDto.addAlarm(new AlarmListResponseDto.Alarm1(alarm));
         }
 
-        return alarmListsResponseDto;
+        return alarmListResponseDto;
     }
 
     // 알람 삭제(읽음) 처리
@@ -347,7 +342,7 @@ public class AlarmService {
 
         // 알람 존재 여부 확인
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
-        // 알람 읽음 여부에 따른 처리
+        // 알람 삭제 (읽음)
         alarmListRepository.delete(alarmList);
     }
 
