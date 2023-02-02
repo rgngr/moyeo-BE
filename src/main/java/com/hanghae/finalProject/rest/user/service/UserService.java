@@ -101,9 +101,8 @@ public class UserService {
           } else {
                String profileUrl = s3Uploader.upload(file,"file");
                user.updateProfileUrl(profileUrl);
+               userRepository.save(user);
           }
-
-          userRepository.save(user);
 
           return new ProfileResponseDto.Url(user);
      }
@@ -117,8 +116,9 @@ public class UserService {
 
           // 현재 profileUrl
 //          String currentProfileUrl = user.getProfileUrl();
-          //s3에서 파일 삭제
+          //s3에서 파일 삭제 >> 이 부분 s3에 문제있는듯, 그래서 주석 처리
 //          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
+
           //prufileUrl = null
           user.deleteProfileUrl();
           userRepository.save(user);
@@ -150,6 +150,7 @@ public class UserService {
           return new ProfileResponseDto(user);
 
      }
+
      //비밀번호 찾기 대신 비밀번호변경
      @Transactional
      public void updatePassword(PasswordChangeRequestDto requestDto) {
