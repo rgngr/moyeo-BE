@@ -8,8 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,7 +96,24 @@ class UserControllerTest extends AcceptanceTest {
      @DisplayName ("프로필 이미지 변경")
      @Test
      void updateProfileUrlTest(){
-     
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          // Given
+          System.out.println("check : " + System.getProperty("user.dir"));
+          File file = new File("./src/main/resources/image/rian1.jpg");
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .multiPart("file", file, "application/json")
+//                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when()
+                    .patch("/api/users/profile-url")
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.body().jsonPath().getString("statusMsg")).isEqualTo("프로필 이미지 변경 성공");
      }
      
      @DisplayName("프로필 이미지 삭제")
