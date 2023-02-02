@@ -78,7 +78,9 @@ public enum Code {
      INVALID_MEETING("강퇴당한 모임입니다.", HttpStatus.BAD_REQUEST),
      IS_EXIST_ALARMS("알림 존재 여부 확인 성공",HttpStatus.OK),
      GET_ALARMS("알림 목록 조회 성공",HttpStatus.OK),
+     GET_ALARM_COUNT("알림 개수 조회 성공",HttpStatus.OK),
      DELETE_ALARM("알림 삭제 성공",HttpStatus.OK),
+     DELETE_ALL_ALARM("알림 전체 삭제 성공",HttpStatus.OK),
      NO_ALARM("존재하지 않는 알림입니다.", HttpStatus.BAD_REQUEST),
      INVALID_TOKEN("토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED),
      UPDATE_PASSWORD("비밀번호 변경완료",HttpStatus.OK );

@@ -2,6 +2,7 @@ package com.hanghae.finalProject.rest.alarm.dto;
 
 import com.hanghae.finalProject.rest.alarm.model.AlarmList;
 import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class AlarmListResponseDto {
     }
 
     @Getter
+    @Setter
     public static class Alarm1 {
 
         private Long id;

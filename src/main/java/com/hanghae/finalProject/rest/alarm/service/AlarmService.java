@@ -5,6 +5,7 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmListResponseDto;
+import com.hanghae.finalProject.rest.alarm.dto.AlarmsNumResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.model.AlarmList;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmListRepository;
@@ -81,8 +82,8 @@ public class AlarmService {
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
         sseEmitters.forEach(
                 (key, emitter) -> {
-                    // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
-//                    emitterRepository.saveEventCache(key, alarmList);
+                    // 이벤트 저 (유실 방지)
+                    emitterRepository.saveEventCache(key, alarmList);
                     // 데이터 전송
 //                  sendToClient(emitter, key, AlarmListResponseDto.from(alarmList));
                     AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
@@ -346,4 +347,20 @@ public class AlarmService {
         alarmListRepository.delete(alarmList);
     }
 
+    public AlarmsNumResponseDto alarmCount() {
+        // 유저 정보
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        List<AlarmList> alarmsNum = alarmListRepository.findAllByMeeting(user);
+
+        if (alarmsNum.isEmpty()) {
+            return new AlarmsNumResponseDto(0);
+        } else {
+            return new AlarmsNumResponseDto(alarmsNum.size());
+        }
+    }
+
+    public void deleteAllAlarms() {
+    }
 }
