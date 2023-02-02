@@ -122,7 +122,6 @@ public class UserService {
           //prufileUrl = null
           user.deleteProfileUrl();
           userRepository.save(user);
-
      }
 
      // 프로필 username/자기소개 수정

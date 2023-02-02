@@ -15,7 +15,6 @@ public enum PlatformCode {
      ZEP,
      ETC;
      
-     
      public static PlatformCode of(String platformStr){
           if(platformStr == null){
                throw new IllegalArgumentException();
