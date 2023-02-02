@@ -13,4 +13,6 @@ public interface AlarmListRepository extends JpaRepository<AlarmList, Long> {
     boolean existsByUser(User user);
 
     List<AlarmList> findAllByUser(User user);
+
+    void deleteAllByUser(User user);
 }

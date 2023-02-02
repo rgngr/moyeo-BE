@@ -65,9 +65,9 @@ public class AlarmController {
 
      @ApiOperation(value = "알림 전체 삭제")
      @DeleteMapping(value = "/alarms/all")
-     public ResponseDto deleteAllAlarms() {
-          alarmService.deleteAllAlarms();
-          return ResponseDto.of(true, Code.DELETE_ALL_ALARM);
+     public ResponseDto deleteAlarms() {
+          alarmService.deleteAlarms();
+          return ResponseDto.of(true, Code.DELETE_ALARMS);
      }
 
 }

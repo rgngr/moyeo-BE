@@ -301,6 +301,23 @@ public class AlarmService {
     }
 
     @Transactional(readOnly = true)
+    public AlarmCountResponseDto alarmCount() {
+        // 유저 정보
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        // 알림 전부 가져오기
+        List<AlarmList> alarmCount = alarmListRepository.findAllByUser(user);
+
+        // 알림 개수
+        if (alarmCount.isEmpty()) {
+            return new AlarmCountResponseDto(0);
+        } else {
+            return new AlarmCountResponseDto(alarmCount.size());
+        }
+    }
+
+    @Transactional(readOnly = true)
     public ResponseDto isExistAlarms() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
@@ -334,7 +351,7 @@ public class AlarmService {
         return alarmListResponseDto;
     }
 
-    // 알람 삭제(읽음) 처리
+    // 알림 삭제(읽음) 처리
     @Transactional
     public void deleteAlarm(Long id) {
         // 유저 정보
@@ -347,23 +364,13 @@ public class AlarmService {
         alarmListRepository.delete(alarmList);
     }
 
-    @Transactional(readOnly = true)
-    public AlarmCountResponseDto alarmCount() {
+    // 알림 전체 삭제
+    @Transactional
+    public void deleteAlarms() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
-        // 알림 전부 가져오기
-        List<AlarmList> alarmCount = alarmListRepository.findAllByUser(user);
-
-        // 알림 개수
-        if (alarmCount.isEmpty()) {
-            return new AlarmCountResponseDto(0);
-        } else {
-            return new AlarmCountResponseDto(alarmCount.size());
-        }
-    }
-
-    public void deleteAlarms() {
+        alarmListRepository.deleteAllByUser(user);
     }
 }
