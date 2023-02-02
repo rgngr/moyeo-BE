@@ -5,7 +5,7 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmListResponseDto;
-import com.hanghae.finalProject.rest.alarm.dto.AlarmsNumResponseDto;
+import com.hanghae.finalProject.rest.alarm.dto.AlarmCountResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.model.AlarmList;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmListRepository;
@@ -32,13 +32,13 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AlarmService {
     private final MeetingRepository meetingRepository;
-    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
+    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
     private final EmitterRepository emitterRepository;
     private final AttendantRepository attendantRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmListRepository alarmListRepository;
 
-    // 알람 연결
+    // 알림 구독 (연결)
     public SseEmitter subscribe(Long id) {
 //        // 유저 정보 들고오기
 //        User user = SecurityUtil.getCurrentUser();
@@ -347,20 +347,23 @@ public class AlarmService {
         alarmListRepository.delete(alarmList);
     }
 
-    public AlarmsNumResponseDto alarmCount() {
+    @Transactional(readOnly = true)
+    public AlarmCountResponseDto alarmCount() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
-        List<AlarmList> alarmsNum = alarmListRepository.findAllByMeeting(user);
+        // 알림 전부 가져오기
+        List<AlarmList> alarmCount = alarmListRepository.findAllByUser(user);
 
-        if (alarmsNum.isEmpty()) {
-            return new AlarmsNumResponseDto(0);
+        // 알림 개수
+        if (alarmCount.isEmpty()) {
+            return new AlarmCountResponseDto(0);
         } else {
-            return new AlarmsNumResponseDto(alarmsNum.size());
+            return new AlarmCountResponseDto(alarmCount.size());
         }
     }
 
-    public void deleteAllAlarms() {
+    public void deleteAlarms() {
     }
 }
