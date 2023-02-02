@@ -137,7 +137,7 @@ public class MeetingService {
           //이미지 데이터 넣기
           String image = null;
           //이미지가 있으면 넣어주고 없으면 넘어가는 if문
-          if (!requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
+          if (!Objects.isNull(requestDto.getImage()) && !requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
                image = s3Uploader.upload(requestDto.getImage(), "image");
           }
           if (user.getId() == meeting.getUser().getId()) {
