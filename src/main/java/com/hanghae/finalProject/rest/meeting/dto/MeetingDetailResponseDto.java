@@ -33,6 +33,7 @@ public class MeetingDetailResponseDto {
     private boolean secret;
     private String password;
     private boolean attend;
+    private boolean entrance;
     private boolean alarm;
     private Long likeNum;
     private Long hateNum;
@@ -41,26 +42,4 @@ public class MeetingDetailResponseDto {
     public void isMaster(boolean master){
          this.master = master;
     }
-    public MeetingDetailResponseDto(Meeting meeting, boolean master,
-        boolean isAttend, boolean isAlarm, int likeNum, int hateNum) {
-            this.id = meeting.getId();
-            this.masterId = meeting.getUser().getId();
-            this.master = master;
-            this.title = meeting.getTitle();
-            this.category = meeting.getCategory();
-            this.startDate = meeting.getStartDate();
-            this.startTime = meeting.getStartTime();
-            this.duration = meeting.getDuration();
-            this.content = meeting.getContent();
-            this.maxNum = meeting.getMaxNum();
-            this.platform = meeting.getPlatform();
-            this.link = meeting.getLink();
-            this.secret = meeting.isSecret();
-            this.password = meeting.getPassword();
-            this.attend =isAttend;
-            this.alarm = isAlarm;
-//            this.likeNum = likeNum;
-//            this.hateNum =hateNum;
-    }
-
 }
