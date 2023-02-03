@@ -75,6 +75,12 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                               attendant.entrance)
                               .from(attendant)
                               .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "entrance"),
+                    // 모임 리뷰 여부
+                    ExpressionUtils.as(
+                         select(
+                              attendant.review)
+                              .from(attendant)
+                              .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "review"),
                     // 로그인 유저의 해당모임 알림활성화 유무
                     ExpressionUtils.as(
                          select(alarm.user.id.isNotNull())
