@@ -34,70 +34,78 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
-    private final MeetingRepository meetingRepository;
+
     private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
     private final EmitterRepository emitterRepository;
+    private final MeetingRepository meetingRepository;
     private final AttendantRepository attendantRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmListRepository alarmListRepository;
     private final FollowRepository followRepository;
 
-    // 알림 구독 (연결)
-    public SseEmitter subscribe(Long id) {
+
+    // 알림 구독
+    public SseEmitter subscribe(Long id, String lastEventId) {
 //        // 유저 정보 들고오기
 //        User user = SecurityUtil.getCurrentUser();
 //        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
 //        Long userId = user.getId();
-        //userId + 현재시간 >> 마지막 받은 알람 이후의 새로운 알람을 전달하기 위해 필요
-        String receiverId = String.valueOf(id);
+
+        //userId + 현재시간 >> 마지막 받은 알림 이후의 새로운 알림을 전달하기 위해 필요
+        String eventId = id + "_" + System.currentTimeMillis();
 
         // 유효시간 포함한 SseEmitter 객체 생성
-        // receiverId를 key로, SseEmitter를 value로 저장
-        SseEmitter emitter = emitterRepository.save(receiverId, new SseEmitter(DEFAULT_TIMEOUT));
-
-        //비동기 요청이 정상 동작 되지 않는다면 저장한 SseEmitter를 삭제
-        emitter.onCompletion(() -> emitterRepository.deleteById(receiverId));
-        emitter.onTimeout(() -> emitterRepository.deleteById(receiverId));
+        // eventId를 key로, SseEmitter를 value로 저장
+        SseEmitter emitter = emitterRepository.save(eventId, new SseEmitter(DEFAULT_TIMEOUT));
 
         // sse 연결 뒤 데이터가 하나도 전송되지 않고 유효시간이 끝나면 503에러 발생
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        sendToClient(emitter, receiverId, "Alarm Connected [receiverId=" + id + "]");
+        sendToClient(emitter, eventId, "Alarm Connected [receiverId=" + id + "]");
+
+        // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송
+        if (!lastEventId.isEmpty()) {
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
+            events.entrySet().stream()
+                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+                    .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
+        }
+
+        //비동기 요청이 정상 동작 되지 않는다면 저장한 SseEmitter를 삭제
+        emitter.onCompletion(() -> emitterRepository.deleteById(eventId));
+        emitter.onTimeout(() -> emitterRepository.deleteById(eventId));
 
         return emitter;
     }
 
     // 클라리언트에게 이벤트 내용 전송
-    private void sendToClient(SseEmitter emitter, String receiverId, Object data) {
+    private void sendToClient(SseEmitter emitter, String eventId, Object data) {
         try {
             emitter.send(SseEmitter.event()
-                    .id(receiverId) //이벤트 아이디
-                    .name("sse") //이벤트 이름
-                    .data(data)); //이벤트 객체, content 포함
+                    .id(eventId) // event id
+                    .name("sse") // event 이름
+                    .data(data)); // event 객체, content 포함
         } catch (IOException exception) {
-            emitterRepository.deleteById(receiverId); //오류발생시 id값 삭제
-            throw new RuntimeException("연결 오류!");
+            emitterRepository.deleteById(eventId); // error 발생시 event 삭제
+            throw new RuntimeException("sse error!!");
         }
     }
 
-    // 공통된 이벤트 전송 과정 메소드로 추상
+    // 공통된 이벤트 전송 과정
     private void alarmProcess(String receiverId, AlarmList alarmList) {
         // 로그인 한 유저의 SseEmitter 모두 가져오기
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
         sseEmitters.forEach(
                 (key, emitter) -> {
-                    // 이벤트 저 (유실 방지)
+                    // event 저장
                     emitterRepository.saveEventCache(key, alarmList);
-                    // 데이터 전송
-//                  sendToClient(emitter, key, AlarmListResponseDto.from(alarmList));
+                    // data 전송
                     AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
                     sendToClient(emitter, key, alarmData);
                 }
         );
     }
 
-
-    // 모음 글 작성자 : 글에 댓글 달렸을 때 알람
+    // 댓글 달렸을 때 글 작성자에게 알림
     @Transactional
     public void alarmComment(Meeting meeting) {
 
@@ -105,14 +113,14 @@ public class AlarmService {
         String receiverId = String.valueOf(receiver.getId());
         String content = "["+meeting.getTitle()+"] 모임에 댓글이 달렸습니다.";
 
-        //알람 리스트 생성
+        //알림 내용 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
         alarmListRepository.save(alarmList);
 
         alarmProcess(receiverId, alarmList);
     }
 
-    // 모임 글 작성자 : 글에 누군가 참석 버튼을 눌렀을 때 알람
+    // 참석 버튼을 눌렀을 때 / 정원 다 찼을 때 글 작성자에게 알림
     @Transactional
     public void alarmAttend(Meeting meeting, User user) {
 
@@ -122,7 +130,7 @@ public class AlarmService {
         String content1 = attendant+" 님이 ["+meeting.getTitle()+"] 모임에 참석 예정입니다.";
         String content2 = "["+meeting.getTitle()+"] 모임의 정원이 다 찼습니다.";
 
-        //알람 리스트 생성
+        //알림 내용 생성
         AlarmList alarmList1 = new AlarmList(meeting, receiver, content1);
         alarmListRepository.saveAndFlush(alarmList1);
 
@@ -131,7 +139,7 @@ public class AlarmService {
         // 정원 초과 시
         List<Attendant> attendants = attendantRepository.findAllByMeeting(meeting);
         if (meeting.getMaxNum() <= attendants.size()) {
-            //알람 리스트 생성
+            //알림 내용 생성
             AlarmList alarmList2 = new AlarmList(meeting, receiver, content2);
             alarmListRepository.save(alarmList2);
 
@@ -139,7 +147,7 @@ public class AlarmService {
         }
     }
 
-    // 모임 글 작성자 : 글에 누군가 (참석)취소 버튼을 눌렀을 때 알람
+    // 취소 버튼을 눌렀을 때 글 작성자에게 알림
     @Transactional
     public void alarmCancelAttend(Meeting meeting, User user) {
 
@@ -148,7 +156,7 @@ public class AlarmService {
         String attendant = user.getUsername();
         String content = attendant+" 님이 ["+meeting.getTitle()+"] 모임 참석을 취소했습니다.";
 
-        //알람 리스트 생성
+        //알림 내용 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
         alarmListRepository.save(alarmList);
 
@@ -158,19 +166,21 @@ public class AlarmService {
     // 팔로잉하는 사람이 모임 글 작성했을 때 알림
     @Transactional
     public void alarmFollowers(Meeting meeting, User user) {
+        // 글 작성자의 팔로워 전체 가져오기
         List<Follow> followers = followRepository.findByFollow(user);
         if (followers.isEmpty()) {
             return;
         }
 
-        String meetingMaster = user.getUsername();
-        String content = meetingMaster+" 님이 ["+meeting.getTitle()+"] 모임을 생성했습니다.";
+        String master = user.getUsername();
+        String content = master+" 님이 ["+meeting.getTitle()+"] 모임을 생성했습니다.";
 
+        // 팔로워에게 알림 보내기
         for (Follow follower : followers) {
             User receiver = follower.getUser();
             String receiverId = String.valueOf(receiver.getId());
 
-            //알람 리스트 생성
+            //알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content);
             alarmListRepository.saveAndFlush(alarmList);
 
@@ -179,25 +189,24 @@ public class AlarmService {
         }
     }
 
-    // 모임 참석자 : 참석하는 모임 글이 수정되었을 때 알림
+    // 모임 글이 수정되었을 때 참서자에게 알림
     @Transactional
     public void alarmUpdateMeeting(Meeting meeting) {
 
         String content = "["+meeting.getTitle()+"] 모임의 내용이 수정되었습니다.";
 
-        //알람 수신 여부 확인
+        // 알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
-
         if (alarmReceivers.isEmpty()) {
             return;
         }
 
-        //해당 모임 글 참석자 중 알람 수신한 사람 모두에게 알람
+        // 알림 보내기
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
             String receiverId = String.valueOf(receiver.getId());
 
-            //알람 리스트 생성
+            //알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content);
             alarmListRepository.saveAndFlush(alarmList);
 
@@ -206,25 +215,24 @@ public class AlarmService {
         }
     }
 
-    // 모임 참석자 : 참석하는 모임 글에 링크가 생성/수정되었을 때 알람
+    // 링크가 생성/수정되었을 때 참석자에게 알림
     @Transactional
     public void alarmUpdateLink(Meeting meeting) {
 
         String content = "["+meeting.getTitle()+"] 모임의 링크가 생성/수정 되었습니다.";
 
-        //알림 수신 여부 확인
+        // 알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
-
         if (alarmReceivers.isEmpty()) {
             return;
         }
 
-        //해당 모임 글 참석자 중 알람 수신한 사람 모두에게 알람
+        // 알림 보내기
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
             String receiverId = String.valueOf(receiver.getId());
 
-            //알람 리스트 생성
+            //알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content);
             alarmListRepository.saveAndFlush(alarmList);
 
@@ -233,25 +241,24 @@ public class AlarmService {
         }
     }
 
-    // 모임 참석자 : 참석하는 모임 글이 삭제되었을 때 알람
+    // 모임 글이 삭제되었을 때 참석자에게 알림
     @Transactional
     public void alarmDeleteMeeting(Meeting meeting) {
 
         String content = "["+meeting.getTitle()+"] 모임이 삭제되었습니다.";
 
-        //알람 수신 여부 확인
+        // 알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
-
         if (alarmReceivers.isEmpty()) {
             return;
         }
 
-        //해당 모임 글 참석자 중 알람 수신한 사람 모두에게 알람
+        // 알림 보내기
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
             String receiverId = String.valueOf(receiver.getId());
 
-            //알람 리스트 생성
+            //알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content);
             alarmListRepository.saveAndFlush(alarmList);
 
@@ -263,22 +270,22 @@ public class AlarmService {
 
 //    @Scheduled(fixedRate = 60 * 1000)
     public void searchTodayMeetings() {
-
+        // 오늘 날짜
         LocalDate today = LocalDate.now();
-
+        // 오늘 시작하는 모든 모임 리스트
         List<Meeting> todayMeetings = meetingRepository.findAllByStartDate(today);
-
         if (todayMeetings.isEmpty()) {
             return;
         }
 
         for (Meeting todayMeeting : todayMeetings) {
-
+            // 모임 시작 시간
             LocalTime meetingStartTime = todayMeeting.getStartTime();
+            // 현재 시간
             LocalTime now = LocalTime.now();
 
-            LocalTime nowAfter29 = now.plusMinutes(29);
-            LocalTime nowAfter31 = now.plusMinutes(31);
+            LocalTime nowAfter29 = now.plusMinutes(29); // 현재 시간 +29분
+            LocalTime nowAfter31 = now.plusMinutes(31); // 현재 시간 +31분
 
             boolean isAfter29 = meetingStartTime.isAfter(nowAfter29);
             boolean isBefore31 = meetingStartTime.isBefore(nowAfter31);
@@ -290,17 +297,18 @@ public class AlarmService {
         }
 
     }
+
     @Transactional
     public void alarmBefore30(Meeting meeting) {
+
         String content1 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
         String content2 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
-
 
         // 모임 글 작성자
         User receiver1 = meeting.getUser();
         String receiver1Id = String.valueOf(receiver1.getId());
 
-        //알람 리스트 생성
+        //알림 내용 생성
         AlarmList alarmList1 = new AlarmList(meeting, receiver1, content1);
         alarmListRepository.saveAndFlush(alarmList1);
 
@@ -308,17 +316,16 @@ public class AlarmService {
 
         //알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
-
         if (alarmReceivers.isEmpty()) {
             return;
         }
 
-        //해당 모임 글 참석자 중 알람 수신한 사람 모두에게 알람
+        //알림 보내기
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver2 = alarmReceiver.getUser();
             String receiver2Id = String.valueOf(receiver2.getId());
 
-            //알람 리스트 생성
+            //알림 내용 생성
             AlarmList alarmList2 = new AlarmList(meeting, receiver2, content2);
             alarmListRepository.saveAndFlush(alarmList2);
 
@@ -356,22 +363,20 @@ public class AlarmService {
         return ResponseDto.of(isExistAlarms, Code.IS_EXIST_ALARMS);
     }
 
-    // GET 알람 리스트
+    // GET 알림 리스트
     @Transactional (readOnly = true)
     public AlarmListResponseDto getAlarms() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
-        // 알람 리스트 생성
+        // 알림 전부 가져오기
         List<AlarmList> alarms = alarmListRepository.findAllByUserOrderByCreatedAtDesc(user);
-
         if (alarms.isEmpty()) {
             return null;
         }
 
         AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto();
-
         for(AlarmList alarm : alarms) {
             alarmListResponseDto.addAlarm(new AlarmListResponseDto.Alarm1(alarm));
         }
@@ -386,9 +391,9 @@ public class AlarmService {
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
-        // 알람 존재 여부 확인
+        // 알림 존재 여부 확인
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
-        // 알람 삭제 (읽음)
+        // 알림 삭제 (읽음)
         alarmListRepository.delete(alarmList);
     }
 
