@@ -23,6 +23,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -190,12 +191,13 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
      }
      
      @Override
-     public List<MeetingAlarmListDto> findMeetingAlarmListDto() {
+     public List<MeetingAlarmListDto> findMeetingAlarmListDto(LocalTime nowAfter30) {
           return jpaQueryFactory
                .from(meeting)
                .leftJoin(alarm).on(meeting.id.eq(alarm.meeting.id))
                .leftJoin(user).on(alarm.user.id.eq(user.id))
-               .where(meeting.startDate.eq(LocalDate.now()))
+               .where(meeting.startDate.eq(LocalDate.now()),
+                    meeting.startTime.eq(nowAfter30))
                .transform(
                     groupBy(meeting.id).list(
                          Projections.fields(

@@ -6,6 +6,7 @@ import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.user.model.User;
 
+import java.time.LocalTime;
 import java.util.List;
 
 public interface MeetingCustomRepository {
@@ -21,5 +22,5 @@ public interface MeetingCustomRepository {
      
      MeetingDetailResponseDto findByIdAndAttendAndAlarmAndLike(Long id, User user);
      
-     List<MeetingAlarmListDto> findMeetingAlarmListDto();
+     List<MeetingAlarmListDto> findMeetingAlarmListDto(LocalTime nowAfter30);
 }

@@ -276,17 +276,23 @@ public class AlarmService {
     }
     
     public void testRepo(){
-        List<MeetingAlarmListDto> testDtos = meetingRepository.findMeetingAlarmListDto();
+        List<MeetingAlarmListDto> testDtos = meetingRepository.findMeetingAlarmListDto(LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute()+2));
         for(MeetingAlarmListDto dto : testDtos){
             log.info("dto : {}", dto);
             log.info("dto.meetingId : {}", dto.getMeetingId());
+        }
+        for(MeetingAlarmListDto dto : testDtos){
+            if(dto.getAlarmUserIdList().size()!= 0){
+                String content2 = "["+dto.getTitle()+"] testteststestsetsetstestst";
+                String url = "https://moyeo.vercel.app/detail/"+dto.getMeetingId();
+                AlarmList alarmList2 = new AlarmList(new Meeting(dto.getMeetingId()), new User(dto.getAlarmUserIdList().get(0)), content2, url);
+                alarmListRepository.saveAndFlush(alarmList2);
+            }
         }
     }
 
 //    @Scheduled(cron = "0 1/10 * * * *")
     public void searchMeetings() {
-
-        LocalDate today = LocalDate.now(); // 오늘 날짜
         LocalTime now = LocalTime.now(); // 지금 시간
 
         int min = (now.getMinute()/10)*10; // 10분 단위 맞추기 위해
@@ -294,54 +300,49 @@ public class AlarmService {
         LocalTime nowAfter30 =  LocalTime.of(now.getHour(), min,0).plusMinutes(30);
 
         // 30분 후 시작하는 모임 리스트
-        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTime(today, nowAfter30);
-        if (meetings.isEmpty()) {
+//        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTime(today, nowAfter30);
+        List<MeetingAlarmListDto> meetingAlarmListDtos = meetingRepository.findMeetingAlarmListDto(nowAfter30);
+        if (meetingAlarmListDtos.isEmpty()) {
             return;
         }
 
         // 각 모임 알림 보내기
-        for (Meeting meeting : meetings) {
-            alarmBefore30(meeting);
+        for (MeetingAlarmListDto meetingAlarmListDto : meetingAlarmListDtos) {
+            alarmBefore30(meetingAlarmListDto);
         }
 
     }
 
     @Transactional
-    public void alarmBefore30(Meeting meeting) {
+    public void alarmBefore30(MeetingAlarmListDto meetingAlarmListDto) {
 
-        String content1 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
-        String content2 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
-        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
+        String content1 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
+        String content2 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
+        String url = "https://moyeo.vercel.app/detail/"+meetingAlarmListDto.getMeetingId();
 
         // 모임 글 작성자
-        User receiver1 = meeting.getUser();
-        String receiver1Id = String.valueOf(receiver1.getId());
-
+        String receiver1Id = String.valueOf(meetingAlarmListDto.getMeetingUserId());
+        Meeting thisMeeting = new Meeting(meetingAlarmListDto.getMeetingId());
         //알림 내용 생성
-        AlarmList alarmList1 = new AlarmList(meeting, receiver1, content1, url);
+        AlarmList alarmList1 = new AlarmList(thisMeeting, new User(meetingAlarmListDto.getMeetingUserId()), content1, url);
         alarmListRepository.saveAndFlush(alarmList1);
 
         alarmProcess(receiver1Id, alarmList1);
 
         //알림 수신 여부 확인
-        List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
-        if (alarmReceivers.isEmpty()) {
-            return;
-        }
+//        List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
+//        if (alarmReceivers.isEmpty()) {
+//            return;
+//        }
 
         //알림 보내기
-        for (Alarm alarmReceiver : alarmReceivers) {
-            User receiver2 = alarmReceiver.getUser();
-            String receiver2Id = String.valueOf(receiver2.getId());
-
+        for (Long alarmUserId : meetingAlarmListDto.getAlarmUserIdList()) {
             //알림 내용 생성
-            AlarmList alarmList2 = new AlarmList(meeting, receiver2, content2, url);
+            AlarmList alarmList2 = new AlarmList(thisMeeting, new User(alarmUserId), content2, url);
             alarmListRepository.saveAndFlush(alarmList2);
 
-            alarmProcess(receiver2Id, alarmList2);
-
+            alarmProcess(String.valueOf(alarmUserId), alarmList2);
         }
-
     }
 
     @Transactional(readOnly = true)
