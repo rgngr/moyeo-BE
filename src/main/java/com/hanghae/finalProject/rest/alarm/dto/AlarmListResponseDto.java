@@ -22,11 +22,13 @@ public class AlarmListResponseDto {
 
         private Long id;
         private String content;
+        private String url;
         private LocalDateTime createdAt;
 
         public Alarm1(AlarmList alarm) {
             this.id = alarm.getId();
             this.content = alarm.getContent();
+            this.url = alarm.getUrl();
             this.createdAt = alarm.getCreatedAt();
         }
     }
