@@ -31,6 +31,12 @@ public class AlarmController {
                                  @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
           return alarmService.subscribe(id, lastEventId);
      }
+     
+     @ApiOperation(value = "test용")
+     @GetMapping(value = "/alarm/subscribe/test")
+     public void repoTest() {
+          alarmService.testRepo();
+     }
 
 //     // userId로 구독
 //     @ApiOperation(value = "알림 구독")

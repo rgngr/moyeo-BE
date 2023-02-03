@@ -1,5 +1,6 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
+import com.hanghae.finalProject.rest.alarm.dto.MeetingAlarmListDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
@@ -19,4 +20,6 @@ public interface MeetingCustomRepository {
      List<MeetingListResponseDto.ResponseDto> findAllBySearchAndCategory(String search, CategoryCode category, Long meetingId);
      
      MeetingDetailResponseDto findByIdAndAttendAndAlarmAndLike(Long id, User user);
+     
+     List<MeetingAlarmListDto> findMeetingAlarmListDto();
 }

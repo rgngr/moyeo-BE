@@ -6,6 +6,7 @@ import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmListResponseDto;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmCountResponseDto;
+import com.hanghae.finalProject.rest.alarm.dto.MeetingAlarmListDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.model.AlarmList;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmListRepository;
@@ -21,11 +22,13 @@ import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -272,6 +275,14 @@ public class AlarmService {
         }
 
     }
+    
+    public void testRepo(){
+        List<MeetingAlarmListDto> testDtos = meetingRepository.findMeetingAlarmListDto();
+        for(MeetingAlarmListDto dto : testDtos){
+            log.info("dto : {}", dto);
+            log.info("dto.meetingId : {}", dto.getMeetingId());
+        }
+    }
 
 //    @Scheduled(fixedRate = 60 * 1000)
     public void searchTodayMeetings() {
@@ -288,7 +299,6 @@ public class AlarmService {
             LocalTime meetingStartTime = todayMeeting.getStartTime();
             // 현재 시간
             LocalTime now = LocalTime.now();
-
             LocalTime nowAfter29 = now.plusMinutes(29); // 현재 시간 +29분
             LocalTime nowAfter31 = now.plusMinutes(31); // 현재 시간 +31분
 
