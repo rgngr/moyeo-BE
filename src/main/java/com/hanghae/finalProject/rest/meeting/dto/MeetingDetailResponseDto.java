@@ -34,6 +34,7 @@ public class MeetingDetailResponseDto {
     private String password;
     private boolean attend;
     private boolean entrance;
+    private boolean review;
     private boolean alarm;
     private Long likeNum;
     private Long hateNum;

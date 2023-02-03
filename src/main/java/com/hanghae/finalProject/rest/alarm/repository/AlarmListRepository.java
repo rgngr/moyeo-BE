@@ -11,4 +11,8 @@ public interface AlarmListRepository extends JpaRepository<AlarmList, Long> {
     List<AlarmList> findAllByUserOrderByCreatedAtDesc(User user);
 
     boolean existsByUser(User user);
+
+    List<AlarmList> findAllByUser(User user);
+
+    void deleteAllByUser(User user);
 }

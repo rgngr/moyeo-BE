@@ -72,6 +72,10 @@ public class Meeting extends Timestamped {
      @Column
      private String image;
      
+     public Meeting(Long meetingId) {
+          this.id = meetingId;
+     }
+     
      public void addAttend(){
           attendantsNum++;
      }

@@ -77,7 +77,6 @@ public class UserService {
      }
 
      // 프로필 수정 페이지 불러오기
-     @Transactional
      public ProfileResponseDto getProfileUpdatePage() {
           // 로그인 확인 및 현재 유저 정보 들고 오기
           User user = SecurityUtil.getCurrentUser();
@@ -89,7 +88,7 @@ public class UserService {
 
      //프로필 이미지 변경
      @Transactional
-     public ProfileUrlResponseDto updateProfileUrl(MultipartFile file) throws IOException {
+     public ProfileResponseDto.Url updateProfileUrl(MultipartFile file) throws IOException {
           // 로그인 확인 및 현재 유저 정보 들고 오기
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
@@ -101,11 +100,10 @@ public class UserService {
           } else {
                String profileUrl = s3Uploader.upload(file,"file");
                user.updateProfileUrl(profileUrl);
+               userRepository.save(user);
           }
 
-          userRepository.save(user);
-
-          return new ProfileUrlResponseDto(user);
+          return new ProfileResponseDto.Url(user);
      }
 
      // 프로필 이미지 삭제
@@ -117,8 +115,9 @@ public class UserService {
 
           // 현재 profileUrl
 //          String currentProfileUrl = user.getProfileUrl();
-          //s3에서 파일 삭제
+          //s3에서 파일 삭제 >> 이 부분 s3에 문제있는듯, 그래서 주석 처리
 //          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
+
           //prufileUrl = null
           user.deleteProfileUrl();
           userRepository.save(user);
@@ -140,16 +139,17 @@ public class UserService {
           }
           //username/자기소개 update
           user.updateProfileContent(requestDto.getUsername(), requestDto.getProfileMsg());
+          userRepository.saveAndFlush(user);
+
           //토큰 재발급
           if (!requestDto.getUsername().equals(currentUsername)) {
                response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
           }
 
-          userRepository.save(user);
-
           return new ProfileResponseDto(user);
 
      }
+
      //비밀번호 찾기 대신 비밀번호변경
      @Transactional
      public void updatePassword(PasswordChangeRequestDto requestDto) {

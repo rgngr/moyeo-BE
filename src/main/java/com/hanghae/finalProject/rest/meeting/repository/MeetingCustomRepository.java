@@ -1,10 +1,12 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
+import com.hanghae.finalProject.rest.alarm.dto.MeetingAlarmListDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.user.model.User;
 
+import java.time.LocalTime;
 import java.util.List;
 
 public interface MeetingCustomRepository {
@@ -19,4 +21,6 @@ public interface MeetingCustomRepository {
      List<MeetingListResponseDto.ResponseDto> findAllBySearchAndCategory(String search, CategoryCode category, Long meetingId);
      
      MeetingDetailResponseDto findByIdAndAttendAndAlarmAndLike(Long id, User user);
+     
+     List<MeetingAlarmListDto> findMeetingAlarmListDto(LocalTime nowAfter30);
 }
