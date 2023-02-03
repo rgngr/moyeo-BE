@@ -48,7 +48,7 @@ public class ReviewService {
                throw new RestApiException(Code.NO_MORE_REVIEW);
           };
           // 후기 저장
-          Review review = reviewRepository.save(new Review(meeting, user, requestDto.isLike()));
+          Review review = reviewRepository.save(new Review(meeting, user, requestDto.isReview()));
           // 참석자테이블에 review true 업데이트
           attendant.makeReview(true);
           // 로그인 유저의 해당 월 캐시데이터 삭제

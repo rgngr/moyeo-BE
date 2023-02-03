@@ -137,17 +137,15 @@ class MeetingControllerTest extends AcceptanceTest {
           assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
           assertThat(response.body().jsonPath().getString("data.title")).isEqualTo("테스트다아아");
           assertThat(response.body().jsonPath().getString("statusMsg")).isEqualTo("모임 글 작성 성공");
-          // .multiPart("data",body,"application/json")
-          // .multiPart("file[0]", new File(file1),"multipart/form-data")
-          
      }
      
-     @Test
-     void createMeetingTemp() {
-     }
-     
+     @DisplayName("모임 수정")
      @Test
      void updateAllMeeting() {
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          
+          
      }
      
      @Test
