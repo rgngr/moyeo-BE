@@ -20,11 +20,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class MeetingControllerTest extends AcceptanceTest {
      private static final String EMAIL = "jojtest123@nate.com";
      private static final String PASSWORD = "joung18@#$";
-     private static final Long MEETINGID = 10236L;
+     private static final Long MEETINGID = 10259L;
      
      @DisplayName ("모임 상세 조회")
      @Test
-     void getMeeting() {
+     void getMeetingTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -43,9 +43,7 @@ class MeetingControllerTest extends AcceptanceTest {
      }
      @DisplayName ("GET 배너이미지")
      @Test
-     void getBanners() {
-          // 로그인 토큰구하기
-          String accessToken = getToken();
+     void getBannersTest() {
           // Given
           // When
           ExtractableResponse<Response> response =
@@ -62,7 +60,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임 전체 조회")
      @Test
-     void getMeetings() {
+     void getMeetingsTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -85,7 +83,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임명 검색")
      @Test
-     void getMeetingsBySearch() {
+     void getMeetingsBySearchTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -107,7 +105,7 @@ class MeetingControllerTest extends AcceptanceTest {
      }
      @DisplayName("모임 생성")
      @Test
-     void createMeeting() {
+     void createMeetingTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -141,7 +139,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임 수정")
      @Test
-     void updateAllMeeting() {
+     void updateAllMeetingTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -162,7 +160,7 @@ class MeetingControllerTest extends AcceptanceTest {
                     .multiPart(new MultiPartSpecBuilder("").controlName("password").charset("utf-8").build())
                     .contentType("multipart/form-data")
                     .when()
-                    .patch("/api/meetings/10259")
+                    .patch("/api/meetings/"+MEETINGID)
                     .then().log().all()
                     .extract();
           // Then
@@ -172,7 +170,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임 이미지 수정")
      @Test
-     void updateMeetingImage() {
+     void updateMeetingImageTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -185,7 +183,7 @@ class MeetingControllerTest extends AcceptanceTest {
                     .multiPart(new MultiPartSpecBuilder(file).controlName("image").fileName("rian1.jpg").with().charset("utf-8").build())
                     .contentType("multipart/form-data")
                     .when()
-                    .patch("/api/meetings/10259/image")
+                    .patch("/api/meetings/"+MEETINGID+"/image")
                     .then().log().all()
                     .extract();
           // Then
@@ -195,7 +193,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("GET 모임 수정 페이지")
      @Test
-     void getUpdatePage() {
+     void getUpdatePageTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -205,7 +203,7 @@ class MeetingControllerTest extends AcceptanceTest {
                     .given().log().all()
                     .header("Authorization", accessToken)
                     .when()
-                    .get("/api/meetings/10259/update")
+                    .get("/api/meetings/"+MEETINGID+"/update")
                     .then().log().all()
                     .extract();
           // Then
@@ -216,7 +214,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임 링크 수정")
      @Test
-     void updateLink() {
+     void updateLinkTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -231,7 +229,7 @@ class MeetingControllerTest extends AcceptanceTest {
                     .body(params)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when()
-                    .patch("/api/meetings/10259/link")
+                    .patch("/api/meetings/"+MEETINGID+"/link")
                     .then().log().all()
                     .extract();
           // Then
@@ -241,7 +239,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임 삭제")
      @Test
-     void deleteMeeting() {
+     void deleteMeetingTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -273,6 +271,5 @@ class MeetingControllerTest extends AcceptanceTest {
           
           String accessToken = response1.header("Authorization");
           return accessToken;
-          
      }
 }
