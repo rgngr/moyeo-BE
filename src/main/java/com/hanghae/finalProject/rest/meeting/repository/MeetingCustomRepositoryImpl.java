@@ -65,6 +65,12 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                          select(attendant.user.id.isNotNull())
                               .from(attendant)
                               .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "attend"),
+                    // 모임 입장여부
+                    ExpressionUtils.as(
+                         select(
+                              attendant.entrance)
+                              .from(attendant)
+                              .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "entrance"),
                     // 로그인 유저의 해당모임 알림활성화 유무
                     ExpressionUtils.as(
                          select(alarm.user.id.isNotNull())
@@ -81,7 +87,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                          select(
                               review1.review.count())
                               .from(review1)
-                              .where(review1.meeting.id.eq(meetingId), review1.review.eq(false)), "hateNum"))
+                              .where(review1.meeting.id.eq(meetingId), review1.review.eq(false)), "hateNum")
+                    )
                )
                .from(meeting)
                .where(meeting.id.eq(meetingId), meeting.deleted.isFalse())
