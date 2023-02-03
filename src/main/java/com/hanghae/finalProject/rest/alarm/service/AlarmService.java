@@ -20,6 +20,7 @@ import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -272,32 +273,25 @@ public class AlarmService {
 
     }
 
-//    @Scheduled(fixedRate = 60 * 1000)
-    public void searchTodayMeetings() {
-        // 오늘 날짜
-        LocalDate today = LocalDate.now();
-        // 오늘 시작하는 모든 모임 리스트
-        List<Meeting> todayMeetings = meetingRepository.findAllByStartDate(today);
-        if (todayMeetings.isEmpty()) {
+//    @Scheduled(cron = "0 1/10 * * * *")
+    public void searchMeetings() {
+
+        LocalDate today = LocalDate.now(); // 오늘 날짜
+        LocalTime now = LocalTime.now(); // 지금 시간
+
+        int min = (now.getMinute()/10)*10; // 10분 단위 맞추기 위해
+        // 지금 시간에서 30분 뒤
+        LocalTime nowAfter30 =  LocalTime.of(now.getHour(), min,0).plusMinutes(30);
+
+        // 30분 후 시작하는 모임 리스트
+        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTime(today, nowAfter30);
+        if (meetings.isEmpty()) {
             return;
         }
 
-        for (Meeting todayMeeting : todayMeetings) {
-            // 모임 시작 시간
-            LocalTime meetingStartTime = todayMeeting.getStartTime();
-            // 현재 시간
-            LocalTime now = LocalTime.now();
-
-            LocalTime nowAfter29 = now.plusMinutes(29); // 현재 시간 +29분
-            LocalTime nowAfter31 = now.plusMinutes(31); // 현재 시간 +31분
-
-            boolean isAfter29 = meetingStartTime.isAfter(nowAfter29);
-            boolean isBefore31 = meetingStartTime.isBefore(nowAfter31);
-
-            if (isAfter29 && isBefore31) {
-                alarmBefore30(todayMeeting);
-            }
-
+        // 각 모임 알림 보내기
+        for (Meeting meeting : meetings) {
+            alarmBefore30(meeting);
         }
 
     }
