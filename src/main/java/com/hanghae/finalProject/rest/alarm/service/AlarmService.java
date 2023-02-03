@@ -112,9 +112,10 @@ public class AlarmService {
         User receiver = meeting.getUser();
         String receiverId = String.valueOf(receiver.getId());
         String content = "["+meeting.getTitle()+"] 모임에 댓글이 달렸습니다.";
+        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
 
         //알림 내용 생성
-        AlarmList alarmList = new AlarmList(meeting, receiver, content);
+        AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
         alarmListRepository.save(alarmList);
 
         alarmProcess(receiverId, alarmList);
@@ -129,9 +130,10 @@ public class AlarmService {
         String attendant = user.getUsername();
         String content1 = attendant+" 님이 ["+meeting.getTitle()+"] 모임에 참석 예정입니다.";
         String content2 = "["+meeting.getTitle()+"] 모임의 정원이 다 찼습니다.";
+        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
 
         //알림 내용 생성
-        AlarmList alarmList1 = new AlarmList(meeting, receiver, content1);
+        AlarmList alarmList1 = new AlarmList(meeting, receiver, content1, url);
         alarmListRepository.saveAndFlush(alarmList1);
 
         alarmProcess(receiverId, alarmList1);
@@ -140,7 +142,7 @@ public class AlarmService {
         List<Attendant> attendants = attendantRepository.findAllByMeeting(meeting);
         if (meeting.getMaxNum() <= attendants.size()) {
             //알림 내용 생성
-            AlarmList alarmList2 = new AlarmList(meeting, receiver, content2);
+            AlarmList alarmList2 = new AlarmList(meeting, receiver, content2, url);
             alarmListRepository.save(alarmList2);
 
             alarmProcess(receiverId, alarmList2);
@@ -157,7 +159,7 @@ public class AlarmService {
         String content = attendant+" 님이 ["+meeting.getTitle()+"] 모임 참석을 취소했습니다.";
 
         //알림 내용 생성
-        AlarmList alarmList = new AlarmList(meeting, receiver, content);
+        AlarmList alarmList = new AlarmList(meeting, receiver, content, null);
         alarmListRepository.save(alarmList);
 
         alarmProcess(receiverId, alarmList);
@@ -174,6 +176,7 @@ public class AlarmService {
 
         String master = user.getUsername();
         String content = master+" 님이 ["+meeting.getTitle()+"] 모임을 생성했습니다.";
+        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
 
         // 팔로워에게 알림 보내기
         for (Follow follower : followers) {
@@ -181,7 +184,7 @@ public class AlarmService {
             String receiverId = String.valueOf(receiver.getId());
 
             //알림 내용 생성
-            AlarmList alarmList = new AlarmList(meeting, receiver, content);
+            AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
             alarmListRepository.saveAndFlush(alarmList);
 
             alarmProcess(receiverId, alarmList);
@@ -194,6 +197,7 @@ public class AlarmService {
     public void alarmUpdateMeeting(Meeting meeting) {
 
         String content = "["+meeting.getTitle()+"] 모임의 내용이 수정되었습니다.";
+        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
 
         // 알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
@@ -207,7 +211,7 @@ public class AlarmService {
             String receiverId = String.valueOf(receiver.getId());
 
             //알림 내용 생성
-            AlarmList alarmList = new AlarmList(meeting, receiver, content);
+            AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
             alarmListRepository.saveAndFlush(alarmList);
 
             alarmProcess(receiverId, alarmList);
@@ -220,6 +224,7 @@ public class AlarmService {
     public void alarmUpdateLink(Meeting meeting) {
 
         String content = "["+meeting.getTitle()+"] 모임의 링크가 생성/수정 되었습니다.";
+        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
 
         // 알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
@@ -233,7 +238,7 @@ public class AlarmService {
             String receiverId = String.valueOf(receiver.getId());
 
             //알림 내용 생성
-            AlarmList alarmList = new AlarmList(meeting, receiver, content);
+            AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
             alarmListRepository.saveAndFlush(alarmList);
 
             alarmProcess(receiverId, alarmList);
@@ -259,7 +264,7 @@ public class AlarmService {
             String receiverId = String.valueOf(receiver.getId());
 
             //알림 내용 생성
-            AlarmList alarmList = new AlarmList(meeting, receiver, content);
+            AlarmList alarmList = new AlarmList(meeting, receiver, content, null);
             alarmListRepository.saveAndFlush(alarmList);
 
             alarmProcess(receiverId, alarmList);
@@ -303,13 +308,14 @@ public class AlarmService {
 
         String content1 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
         String content2 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
+        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
 
         // 모임 글 작성자
         User receiver1 = meeting.getUser();
         String receiver1Id = String.valueOf(receiver1.getId());
 
         //알림 내용 생성
-        AlarmList alarmList1 = new AlarmList(meeting, receiver1, content1);
+        AlarmList alarmList1 = new AlarmList(meeting, receiver1, content1, url);
         alarmListRepository.saveAndFlush(alarmList1);
 
         alarmProcess(receiver1Id, alarmList1);
@@ -326,7 +332,7 @@ public class AlarmService {
             String receiver2Id = String.valueOf(receiver2.getId());
 
             //알림 내용 생성
-            AlarmList alarmList2 = new AlarmList(meeting, receiver2, content2);
+            AlarmList alarmList2 = new AlarmList(meeting, receiver2, content2, url);
             alarmListRepository.saveAndFlush(alarmList2);
 
             alarmProcess(receiver2Id, alarmList2);

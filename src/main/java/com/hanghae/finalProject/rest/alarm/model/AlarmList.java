@@ -27,9 +27,13 @@ public class AlarmList extends Timestamped {
     @Column(nullable = false)
     private String content;
 
-    public AlarmList(Meeting meeting, User user, String content) {
+    @Column
+    private String url;
+
+    public AlarmList(Meeting meeting, User user, String content, String url) {
         this.meeting = meeting;
         this.user = user;
         this.content = content;
+        this.url = url;
     }
 }
