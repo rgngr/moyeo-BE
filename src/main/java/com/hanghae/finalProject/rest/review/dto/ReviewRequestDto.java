@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class ReviewRequestDto {
-     private boolean like;
+     private boolean review;
 }
