@@ -13,7 +13,6 @@ import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
 import com.hanghae.finalProject.rest.alarm.repository.EmitterRepository;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
-import com.hanghae.finalProject.rest.follow.dto.FollowResponseDto;
 import com.hanghae.finalProject.rest.follow.model.Follow;
 import com.hanghae.finalProject.rest.follow.repository.FollowRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
