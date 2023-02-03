@@ -1,9 +1,11 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
+import com.hanghae.finalProject.rest.alarm.dto.MeetingAlarmListDto;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
+import com.hanghae.finalProject.rest.user.model.QUser;
 import com.hanghae.finalProject.rest.user.model.User;
 import com.querydsl.core.ResultTransformer;
 import com.querydsl.core.types.ExpressionUtils;
@@ -19,7 +21,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,6 +188,28 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                )
                .orderBy(meeting.id.desc())
                .transform(getList(category));
+     }
+     
+     @Override
+     public List<MeetingAlarmListDto> findMeetingAlarmListDto(LocalTime nowAfter30) {
+          return jpaQueryFactory
+               .from(meeting)
+               .leftJoin(alarm).on(meeting.id.eq(alarm.meeting.id))
+               .leftJoin(user).on(alarm.user.id.eq(user.id))
+               .where(meeting.startDate.eq(LocalDate.now()),
+                    meeting.startTime.eq(nowAfter30))
+               .transform(
+                    groupBy(meeting.id).list(
+                         Projections.fields(
+                              MeetingAlarmListDto.class,
+                              meeting.id.as("meetingId"),
+                              meeting.startDate,
+                              meeting.title,
+                              meeting.user.id.as("meetingUserId"),
+                              list(alarm.user.id).as("alarmUserIdList")
+                              )
+                         )
+               );
      }
      
      private static ResultTransformer<List<MeetingListResponseDto.ResponseDto>> getList(CategoryCode category) {

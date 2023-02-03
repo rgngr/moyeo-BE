@@ -1,7 +1,9 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
+import com.hanghae.finalProject.rest.alarm.dto.MeetingAlarmListDto;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -14,6 +16,5 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long>, Meeting
      
      
      Optional<Meeting> findByIdAndDeletedIsFalse(Long meetingId);
-
     List<Meeting> findAllByStartDateAndStartTime(LocalDate today, LocalTime nowAfter30);
 }

@@ -20,11 +20,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class MeetingControllerTest extends AcceptanceTest {
      private static final String EMAIL = "jojtest123@nate.com";
      private static final String PASSWORD = "joung18@#$";
-     private static final Long MEETINGID = 10236L;
+     private static final Long MEETINGID = 10259L;
      
      @DisplayName ("모임 상세 조회")
      @Test
-     void getMeeting() {
+     void getMeetingTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -43,9 +43,7 @@ class MeetingControllerTest extends AcceptanceTest {
      }
      @DisplayName ("GET 배너이미지")
      @Test
-     void getBanners() {
-          // 로그인 토큰구하기
-          String accessToken = getToken();
+     void getBannersTest() {
           // Given
           // When
           ExtractableResponse<Response> response =
@@ -62,7 +60,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임 전체 조회")
      @Test
-     void getMeetings() {
+     void getMeetingsTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -85,7 +83,7 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임명 검색")
      @Test
-     void getMeetingsBySearch() {
+     void getMeetingsBySearchTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -107,7 +105,7 @@ class MeetingControllerTest extends AcceptanceTest {
      }
      @DisplayName("모임 생성")
      @Test
-     void createMeeting() {
+     void createMeetingTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
           // Given
@@ -141,27 +139,122 @@ class MeetingControllerTest extends AcceptanceTest {
      
      @DisplayName("모임 수정")
      @Test
-     void updateAllMeeting() {
+     void updateAllMeetingTest() {
           // 로그인 토큰구하기
           String accessToken = getToken();
-          
-          
+          // Given
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .multiPart(new MultiPartSpecBuilder(new File("./src/main/resources/image/rian1.jpg")).controlName("image").fileName("rian1.jpg").with().charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("테스트다아아").controlName("title").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("2023-06-11").controlName("startDate").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("20:00:00").controlName("startTime").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("5").controlName("duration").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("피카피카2").controlName("content").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("ZOOM").controlName("platform").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("").controlName("link").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("false").controlName("secret").charset("utf-8").build())
+                    .multiPart(new MultiPartSpecBuilder("").controlName("password").charset("utf-8").build())
+                    .contentType("multipart/form-data")
+                    .when()
+                    .patch("/api/meetings/"+MEETINGID)
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+          assertThat(response.body().jsonPath().getString("statusMsg")).isEqualTo("모임 글 수정 성공");
      }
      
+     @DisplayName("모임 이미지 수정")
      @Test
-     void updateMeetingImage() {
+     void updateMeetingImageTest() {
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          // Given
+          File file = new File("./src/main/resources/image/rian1.jpg");
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .multiPart(new MultiPartSpecBuilder(file).controlName("image").fileName("rian1.jpg").with().charset("utf-8").build())
+                    .contentType("multipart/form-data")
+                    .when()
+                    .patch("/api/meetings/"+MEETINGID+"/image")
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+          assertThat(response.body().jsonPath().getString("statusMsg")).isEqualTo("모임 글 이미지 수정 성공");
      }
      
+     @DisplayName("GET 모임 수정 페이지")
      @Test
-     void getUpdatePage() {
+     void getUpdatePageTest() {
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          // Given
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .when()
+                    .get("/api/meetings/"+MEETINGID+"/update")
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+          assertThat(response.body().jsonPath().getString("statusMsg")).isEqualTo("모임 글 수정 페이지 불러오기 성공");
+          assertThat(response.body().jsonPath().getString("data.category")).isEqualTo("일단모여");
      }
      
+     @DisplayName("모임 링크 수정")
      @Test
-     void updateLink() {
+     void updateLinkTest() {
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          // Given
+          Map<String, String> params = new HashMap<>();
+          params.put("platform", "ZOOM");
+          params.put("link", "abcde");
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .body(params)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when()
+                    .patch("/api/meetings/"+MEETINGID+"/link")
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+          assertThat(response.body().jsonPath().getString("statusMsg")).isEqualTo("모임 링크 추가 성공");
      }
      
+     @DisplayName("모임 삭제")
      @Test
-     void deleteMeeting() {
+     void deleteMeetingTest() {
+          // 로그인 토큰구하기
+          String accessToken = getToken();
+          // Given
+          // When
+          ExtractableResponse<Response> response =
+               RestAssured
+                    .given().log().all()
+                    .header("Authorization", accessToken)
+                    .when()
+                    .delete("/api/meetings/10265")
+                    .then().log().all()
+                    .extract();
+          // Then
+          assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+          assertThat(response.body().jsonPath().getString("statusMsg")).isEqualTo("작성자만 삭제/수정할 수 있습니다.");
      }
      
      private static String getToken() {
@@ -178,6 +271,5 @@ class MeetingControllerTest extends AcceptanceTest {
           
           String accessToken = response1.header("Authorization");
           return accessToken;
-          
      }
 }

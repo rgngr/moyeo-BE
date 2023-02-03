@@ -55,6 +55,10 @@ public class User implements Supplier<User> {
      
      }
      
+     public User(Long userId) {
+          this.id = userId;
+     }
+     
      public User kakaoIdUpdate(Long kakaoId) {
           this.kakaoId = kakaoId;
           return this;
