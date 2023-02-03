@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,5 +15,5 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long>, Meeting
      
      Optional<Meeting> findByIdAndDeletedIsFalse(Long meetingId);
 
-    List<Meeting> findAllByStartDate(LocalDate today);
+    List<Meeting> findAllByStartDateAndStartTime(LocalDate today, LocalTime nowAfter30);
 }
