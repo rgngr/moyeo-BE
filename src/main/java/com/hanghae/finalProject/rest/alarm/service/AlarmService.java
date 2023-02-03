@@ -5,7 +5,7 @@ import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
 import com.hanghae.finalProject.rest.alarm.dto.AlarmListResponseDto;
-import com.hanghae.finalProject.rest.alarm.dto.AlarmListsResponseDto;
+import com.hanghae.finalProject.rest.alarm.dto.AlarmCountResponseDto;
 import com.hanghae.finalProject.rest.alarm.model.Alarm;
 import com.hanghae.finalProject.rest.alarm.model.AlarmList;
 import com.hanghae.finalProject.rest.alarm.repository.AlarmListRepository;
@@ -13,13 +13,14 @@ import com.hanghae.finalProject.rest.alarm.repository.AlarmRepository;
 import com.hanghae.finalProject.rest.alarm.repository.EmitterRepository;
 import com.hanghae.finalProject.rest.attendant.model.Attendant;
 import com.hanghae.finalProject.rest.attendant.repository.AttendantRepository;
+import com.hanghae.finalProject.rest.follow.dto.FollowResponseDto;
+import com.hanghae.finalProject.rest.follow.model.Follow;
+import com.hanghae.finalProject.rest.follow.repository.FollowRepository;
 import com.hanghae.finalProject.rest.meeting.model.Meeting;
 import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
-import com.hanghae.finalProject.rest.review.repository.ReviewRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -34,15 +35,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AlarmService {
     private final MeetingRepository meetingRepository;
-    private final ReviewRepository reviewRepository;
-
-    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
+    private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
     private final EmitterRepository emitterRepository;
     private final AttendantRepository attendantRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmListRepository alarmListRepository;
+    private final FollowRepository followRepository;
 
-    // 알람 연결
+    // 알림 구독 (연결)
     public SseEmitter subscribe(Long id) {
 //        // 유저 정보 들고오기
 //        User user = SecurityUtil.getCurrentUser();
@@ -86,12 +86,12 @@ public class AlarmService {
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
         sseEmitters.forEach(
                 (key, emitter) -> {
-                    // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
-//                    emitterRepository.saveEventCache(key, alarmList);
+                    // 이벤트 저 (유실 방지)
+                    emitterRepository.saveEventCache(key, alarmList);
                     // 데이터 전송
 //                  sendToClient(emitter, key, AlarmListResponseDto.from(alarmList));
-                    AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto(alarmList);
-                    sendToClient(emitter, key, alarmListResponseDto);
+                    AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+                    sendToClient(emitter, key, alarmData);
                 }
         );
     }
@@ -150,12 +150,36 @@ public class AlarmService {
 
         //알람 리스트 생성
         AlarmList alarmList = new AlarmList(meeting, receiver, content);
-        alarmListRepository.saveAndFlush(alarmList);
+        alarmListRepository.save(alarmList);
 
         alarmProcess(receiverId, alarmList);
     }
 
-    // 모임 참석자 : 참석하는 모임 글이 수정되었을 때 알람
+    // 팔로잉하는 사람이 모임 글 작성했을 때 알림
+    @Transactional
+    public void alarmFollowers(Meeting meeting, User user) {
+        List<Follow> followers = followRepository.findByFollow(user);
+        if (followers.isEmpty()) {
+            return;
+        }
+
+        String meetingMaster = user.getUsername();
+        String content = meetingMaster+" 님이 ["+meeting.getTitle()+"] 모임을 생성했습니다.";
+
+        for (Follow follower : followers) {
+            User receiver = follower.getUser();
+            String receiverId = String.valueOf(receiver.getId());
+
+            //알람 리스트 생성
+            AlarmList alarmList = new AlarmList(meeting, receiver, content);
+            alarmListRepository.saveAndFlush(alarmList);
+
+            alarmProcess(receiverId, alarmList);
+
+        }
+    }
+
+    // 모임 참석자 : 참석하는 모임 글이 수정되었을 때 알림
     @Transactional
     public void alarmUpdateMeeting(Meeting meeting) {
 
@@ -304,7 +328,24 @@ public class AlarmService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
+    public AlarmCountResponseDto alarmCount() {
+        // 유저 정보
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        // 알림 전부 가져오기
+        List<AlarmList> alarmCount = alarmListRepository.findAllByUser(user);
+
+        // 알림 개수
+        if (alarmCount.isEmpty()) {
+            return new AlarmCountResponseDto(0);
+        } else {
+            return new AlarmCountResponseDto(alarmCount.size());
+        }
+    }
+
+    @Transactional(readOnly = true)
     public ResponseDto isExistAlarms() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
@@ -317,28 +358,28 @@ public class AlarmService {
 
     // GET 알람 리스트
     @Transactional (readOnly = true)
-    public AlarmListsResponseDto getAlarms() {
+    public AlarmListResponseDto getAlarms() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         // 알람 리스트 생성
-        List<AlarmList> alarmLists = alarmListRepository.findAllByUserOrderByCreatedAtDesc(user);
+        List<AlarmList> alarms = alarmListRepository.findAllByUserOrderByCreatedAtDesc(user);
 
-        if (alarmLists.isEmpty()) {
+        if (alarms.isEmpty()) {
             return null;
         }
 
-        AlarmListsResponseDto alarmListsResponseDto = new AlarmListsResponseDto();
+        AlarmListResponseDto alarmListResponseDto = new AlarmListResponseDto();
 
-        for(AlarmList alarmList : alarmLists) {
-            alarmListsResponseDto.addAlarmList(new AlarmListResponseDto(alarmList));
+        for(AlarmList alarm : alarms) {
+            alarmListResponseDto.addAlarm(new AlarmListResponseDto.Alarm1(alarm));
         }
 
-        return alarmListsResponseDto;
+        return alarmListResponseDto;
     }
 
-    // 알람 삭제(읽음) 처리
+    // 알림 삭제(읽음) 처리
     @Transactional
     public void deleteAlarm(Long id) {
         // 유저 정보
@@ -347,8 +388,17 @@ public class AlarmService {
 
         // 알람 존재 여부 확인
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
-        // 알람 읽음 여부에 따른 처리
+        // 알람 삭제 (읽음)
         alarmListRepository.delete(alarmList);
     }
 
+    // 알림 전체 삭제
+    @Transactional
+    public void deleteAlarms() {
+        // 유저 정보
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+        alarmListRepository.deleteAllByUser(user);
+    }
 }

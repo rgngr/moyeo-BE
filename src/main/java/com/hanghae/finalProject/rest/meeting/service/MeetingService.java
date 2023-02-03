@@ -69,6 +69,7 @@ public class MeetingService {
      // 모임생성
      @Transactional
      public MeetingCreateResponseDto createMeeting(MeetingRequestDto requestDto) throws IOException {
+          // 유저 확인
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           //이미지 데이터 넣기
@@ -88,10 +89,13 @@ public class MeetingService {
           // 참석자리스트에 방장 추가
           Attendant attendant = new Attendant(meeting, user);
           attendantRepository.save(attendant);
+
+          //알림
+//          alarmService.alarmFollowers(meeting, user);
           
           return new MeetingCreateResponseDto(meeting);
      }
-     
+
      // 모임생성 temp
      @Transactional
      public MeetingCreateResponseDto createMeetingTemp(MeetingRequestDto requestDto, MultipartFile file) throws IOException {
@@ -121,6 +125,7 @@ public class MeetingService {
      // 모임수정
      @Transactional
      public void updateAllMeeting(Long id, MeetingUpdateRequestDto requestDto) throws IOException {
+          //유저 확인
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           // 비밀방일경우 비번4글자 확인
@@ -131,6 +136,7 @@ public class MeetingService {
           }
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
           LocalDate dateOrigin = meeting.getStartDate();
+          // 모임 글 삭제 여부 확인
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
@@ -140,6 +146,7 @@ public class MeetingService {
           if (!Objects.isNull(requestDto.getImage()) && !requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
                image = s3Uploader.upload(requestDto.getImage(), "image");
           }
+          // 글 작성자과 일치 여부 확인
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateAll(requestDto, image);
                List<Attendant> attendantList = attendantRepository.findAllByMeeting(meeting).stream()
@@ -147,7 +154,7 @@ public class MeetingService {
                     .peek(
                          a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
                     ).collect(Collectors.toList());
-               // 알림보내기
+               // 알림
 //               alarmService.alarmUpdateMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
@@ -157,6 +164,7 @@ public class MeetingService {
      // 모임이미지만 수정
      @Transactional
      public void updateMeetingImage(Long id, MeetingUpdateRequestDto.Image requestDto) throws IOException {
+          // 유저 확인
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
           
@@ -188,15 +196,19 @@ public class MeetingService {
      // GET 모임수정페이지
      @Transactional (readOnly = true)
      public MeetingUpdatePageResponseDto getUpdatePage(Long id) {
+          // 유저 확인
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          
+
+          // 모임 글 존재 여부 확인
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
-          
+
+          // 삭제 여부 확인
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
-          
+
+          // 글 작성자와 일치 여부 확인
           if (user.getId() == meeting.getUser().getId()) {
                return new MeetingUpdatePageResponseDto(meeting);
           } else {
@@ -207,17 +219,23 @@ public class MeetingService {
      // 링크 업데이트
      @Transactional
      public void updateLink(Long id, MeetingLinkRequestDto requestDto) {
+          // 유저 확인
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          
+
+          // 모임 글 존재 여부 확인
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
-          
+
+          // 모임 글 삭제 여부 확인
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
-          
+
+          // 글 작성자와 일치 여부 확인
           if (user.getId() == meeting.getUser().getId()) {
                meeting.updateLink(requestDto);
+
+               // 알림
 //               alarmService.alarmUpdateLink(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
@@ -227,17 +245,19 @@ public class MeetingService {
      // 모임 삭제
      @Transactional
      public void deleteMeeting(Long id) {
+          // 유저 확인
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-          
+          // 모임 존재 여부 확인
           Meeting meeting = meetingRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_MEETING));
-          
+          // 삭제 여부 확인
           if (meeting.isDeleted()) {
                throw new RestApiException(Code.NO_MEETING);
           }
-          
+          // 작성자 일치 여부 확인
           if (user.getId() == meeting.getUser().getId()) {
                meeting.deleteMeeting();
+               //알림
 //               alarmService.alarmDeleteMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);

@@ -54,8 +54,11 @@ public class CommentService {
           );
           
           Comment comment = commentRepository.save(new Comment(commentRequestDto, meeting, user));
-          
-          alarmService.alarmComment(meeting);
+
+          //알림 (모임 글 작성자 제외)
+          if (user.getId() != meeting.getUser().getId()) {
+               alarmService.alarmComment(meeting);
+          }
           
           return new CommentResponseDto(comment);
      }
