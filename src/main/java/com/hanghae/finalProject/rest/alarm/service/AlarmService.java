@@ -45,9 +45,12 @@ public class AlarmService {
 
 
     // 알림 구독
-    public SseEmitter subscribe(Long userId, String lastEventId) {
-
+    public SseEmitter subscribe(String lastEventId) {
+        // 유저 정보
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
         // userId + 현재시간 >> 마지막 받은 알림 이후의 새로운 알림을 전달하기 위해 필요
+        Long userId = user.getId();
         String eventId = userId + "_" + System.currentTimeMillis();
 
         // 유효시간 포함한 SseEmitter 객체 생성
