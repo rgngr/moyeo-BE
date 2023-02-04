@@ -90,8 +90,8 @@ public class MeetingService {
           Attendant attendant = new Attendant(meeting, user);
           attendantRepository.save(attendant);
 
-          //알림
-//          alarmService.alarmFollowers(meeting, user);
+          //글 작성자 팔로워에게 알림
+          alarmService.alarmFollowers(meeting, user);
           
           return new MeetingCreateResponseDto(meeting);
      }
@@ -155,7 +155,7 @@ public class MeetingService {
                          a -> getSpringProxy().deleteCache(a.getUser().getId(), dateOrigin.getYear(), dateOrigin.getMonthValue())
                     ).collect(Collectors.toList());
                // 알림
-//               alarmService.alarmUpdateMeeting(meeting);
+               alarmService.alarmUpdateMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -236,7 +236,7 @@ public class MeetingService {
                meeting.updateLink(requestDto);
 
                // 알림
-//               alarmService.alarmUpdateLink(meeting);
+               alarmService.alarmUpdateLink(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }
@@ -258,7 +258,7 @@ public class MeetingService {
           if (user.getId() == meeting.getUser().getId()) {
                meeting.deleteMeeting();
                //알림
-//               alarmService.alarmDeleteMeeting(meeting);
+               alarmService.alarmDeleteMeeting(meeting);
           } else {
                throw new RestApiException(Code.INVALID_USER);
           }

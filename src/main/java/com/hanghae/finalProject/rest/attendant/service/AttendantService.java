@@ -78,7 +78,7 @@ public class AttendantService {
                // 해당 월 캐시 삭제
                getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
                meetingRepository.saveAndFlush(meeting);
-               // 참석 알람
+               // 알림
                alarmService.alarmAttend(meeting, user);
 
                return new AttendantResponseDto(attendant);
@@ -95,7 +95,7 @@ public class AttendantService {
                // 해당 월 캐시 삭제
                getSpringProxy().deleteCache(user.getId(), meeting.getStartDate().getYear(), meeting.getStartDate().getMonthValue());
                meetingRepository.saveAndFlush(meeting);
-               // 참석 취소 알람
+               // 알림
                alarmService.alarmCancelAttend(meeting, user);
                
                return null;
