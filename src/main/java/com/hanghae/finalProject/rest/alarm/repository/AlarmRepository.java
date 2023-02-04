@@ -12,9 +12,6 @@ import java.util.Optional;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     Optional<Alarm> findByMeetingAndUser(Meeting meeting, User user);
-    boolean existsByMeetingIdAndUserId(Long id, Long attendantId);
-
-    List<Alarm> findAllByMeetingId(Long id);
 
     List<Alarm> findAllByMeeting(Meeting meeting);
 }
