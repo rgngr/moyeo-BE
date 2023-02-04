@@ -45,14 +45,14 @@ public class AlarmService {
 
 
     // 알림 구독
-    public SseEmitter subscribe(Long id, String lastEventId) {
-//        // 유저 정보 들고오기
-//        User user = SecurityUtil.getCurrentUser();
-//        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-//        Long userId = user.getId();
+    public SseEmitter subscribe(String lastEventId) {
+        // 유저 정보 들고오기
+        User user = SecurityUtil.getCurrentUser();
+        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
         // userId + 현재시간 >> 마지막 받은 알림 이후의 새로운 알림을 전달하기 위해 필요
-        String eventId = id + "_" + System.currentTimeMillis();
+        Long userId = user.getId();
+        String eventId = userId + "_" + System.currentTimeMillis();
 
         // 유효시간 포함한 SseEmitter 객체 생성
         // eventId를 key로, SseEmitter를 value로 저장
@@ -60,11 +60,11 @@ public class AlarmService {
 
         // sse 연결 뒤 데이터가 하나도 전송되지 않고 유효시간이 끝나면 503에러 발생
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        sendToClient(emitter, eventId, "Alarm Connected [receiverId=" + id + "]");
+        sendToClient(emitter, eventId, "Alarm Connected [receiverId=" + userId + "]");
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송
         if (!lastEventId.isEmpty()) {
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(userId));
             events.entrySet().stream()
                     .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
                     .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
@@ -428,8 +428,14 @@ public class AlarmService {
 
         // 알림 존재 여부 확인
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
-        // 알림 삭제 (읽음)
-        alarmListRepository.delete(alarmList);
+
+        // 본인 여부 확인
+        if (alarmList.getUser().getId() == user.getId()) {
+            // 알림 삭제 (읽음)
+            alarmListRepository.delete(alarmList);
+        } else {
+            throw new RestApiException(Code.BAD_REQUEST);
+        }
     }
 
     // 알림 전체 삭제
