@@ -36,4 +36,5 @@ public class AlarmList extends Timestamped {
         this.content = content;
         this.url = url;
     }
+
 }
