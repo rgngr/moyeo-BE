@@ -428,8 +428,14 @@ public class AlarmService {
 
         // 알림 존재 여부 확인
         AlarmList alarmList = alarmListRepository.findById(id).orElseThrow(() -> new RestApiException(Code.NO_ALARM));
-        // 알림 삭제 (읽음)
-        alarmListRepository.delete(alarmList);
+
+        // 본인 여부 확인
+        if (alarmList.getUser().getId() == user.getId()) {
+            // 알림 삭제 (읽음)
+            alarmListRepository.delete(alarmList);
+        } else {
+            throw new RestApiException(Code.BAD_REQUEST);
+        }
     }
 
     // 알림 전체 삭제
