@@ -24,13 +24,13 @@ public class AlarmController {
           return DataResponseDto.of(attendantService.getAlarm(meetingId));
      }
 
-     // userId로 구독 + Last-Event_Id
-     @ApiOperation(value = "알림 구독")
-     @GetMapping(value = "/alarm/subscribe/{id}", produces = "text/event-stream")
-     public SseEmitter subscribe(@PathVariable Long id,
-                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-          return alarmService.subscribe(id, lastEventId);
-     }
+//     // userId로 구독 + Last-Event_Id
+//     @ApiOperation(value = "알림 구독")
+//     @GetMapping(value = "/alarm/subscribe/{id}", produces = "text/event-stream")
+//     public SseEmitter subscribe(@PathVariable Long id,
+//                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+//          return alarmService.subscribe(id, lastEventId);
+//     }
      
 //     @ApiOperation(value = "test용")
 //     @GetMapping(value = "/alarm/subscribe/test")
@@ -38,19 +38,12 @@ public class AlarmController {
 //          alarmService.testRepo();
 //     }
 
-//     // userId로 구독
-//     @ApiOperation(value = "알림 구독")
-//     @GetMapping(value = "/alarm/subscribe/{id}", produces = "text/event-stream")
-//     public SseEmitter subscribe(@PathVariable Long id) {
-//          return alarmService.subscribe(id);
-//     }
-
-//     // 토큰으로 구독 + Last-Event_Id
-//     @ApiOperation(value = "알림 구독")
-//     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
-//     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-//          return alarmService.subscribe(lastEventId);
-//     }
+     // 토큰으로 구독 + Last-Event_Id
+     @ApiOperation(value = "알림 구독")
+     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
+     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+          return alarmService.subscribe(lastEventId);
+     }
 
      @ApiOperation(value = "알림 개수")
      @GetMapping(value = "/alarms/count")
