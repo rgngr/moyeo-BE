@@ -21,7 +21,7 @@ public class AlarmList extends Timestamped {
     private User user;
 
     @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name ="meeting_id", nullable = false)
+    @JoinColumn(name ="meeting_id")
     private Meeting meeting;
 
     @Column(nullable = false)

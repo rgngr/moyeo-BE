@@ -3,6 +3,7 @@ package com.hanghae.finalProject.rest.follow.service;
 import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.config.exception.RestApiException;
 import com.hanghae.finalProject.config.util.SecurityUtil;
+import com.hanghae.finalProject.rest.alarm.service.AlarmService;
 import com.hanghae.finalProject.rest.follow.dto.FollowListResponesDto;
 import com.hanghae.finalProject.rest.follow.dto.FollowResponseDto;
 import com.hanghae.finalProject.rest.follow.model.Follow;
@@ -21,6 +22,7 @@ public class FollowService {
 
      private final UserRepository userRepository;
      private final FollowRepository followRepository;
+     private final AlarmService alarmService;
      
      @Transactional
      public Code follow(Long followId) {
@@ -38,6 +40,8 @@ public class FollowService {
           if (isFollow == null) {
                // 기존 팔로우 x
                followRepository.save(new Follow(user, followUser));
+               // 알림
+              alarmService.alarmFollow(user, followUser);
                return Code.USER_FOLLOW_SUCCESS;
           } else {
                // 기존 팔로우 o >> 팔로우 취소

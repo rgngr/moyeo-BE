@@ -32,11 +32,11 @@ public class AlarmController {
           return alarmService.subscribe(id, lastEventId);
      }
      
-     @ApiOperation(value = "test용")
-     @GetMapping(value = "/alarm/subscribe/test")
-     public void repoTest() {
-          alarmService.testRepo();
-     }
+//     @ApiOperation(value = "test용")
+//     @GetMapping(value = "/alarm/subscribe/test")
+//     public void repoTest() {
+//          alarmService.testRepo();
+//     }
 
 //     // userId로 구독
 //     @ApiOperation(value = "알림 구독")

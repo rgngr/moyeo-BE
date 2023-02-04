@@ -167,6 +167,20 @@ public class AlarmService {
         alarmProcess(receiverId, alarmList);
     }
 
+    // 누군가 나를 팔로우했을 때 알림
+    @Transactional
+    public void alarmFollow(User user, User followingUser) {
+        User receiver = followingUser;
+        String receiverId = String.valueOf(receiver.getId());
+        String content = user.getUsername()+" 님이 회원님을 팔로우합니다.";
+
+        //알림 내용 생성
+        AlarmList alarmList = new AlarmList(null, receiver, content, null);
+        alarmListRepository.saveAndFlush(alarmList);
+
+        alarmProcess(receiverId, alarmList);
+    }
+
     // 팔로잉하는 사람이 모임 글 작성했을 때 알림
     @Transactional
     public void alarmFollowers(Meeting meeting, User user) {
@@ -275,29 +289,32 @@ public class AlarmService {
 
     }
     
-    public void testRepo(){
-        List<MeetingAlarmListDto> testDtos = meetingRepository.findMeetingAlarmListDto(LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute()+2));
-        for(MeetingAlarmListDto dto : testDtos){
-            log.info("dto : {}", dto);
-            log.info("dto.meetingId : {}", dto.getMeetingId());
-        }
-        for(MeetingAlarmListDto dto : testDtos){
-            if(dto.getAlarmUserIdList().size()!= 0){
-                String content2 = "["+dto.getTitle()+"] testteststestsetsetstestst";
-                String url = "https://moyeo.vercel.app/detail/"+dto.getMeetingId();
-                AlarmList alarmList2 = new AlarmList(new Meeting(dto.getMeetingId()), new User(dto.getAlarmUserIdList().get(0)), content2, url);
-                alarmListRepository.saveAndFlush(alarmList2);
-            }
-        }
-    }
+//    public void testRepo(){
+//        List<MeetingAlarmListDto> testDtos = meetingRepository.findMeetingAlarmListDto(LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute()+2));
+//        for(MeetingAlarmListDto dto : testDtos){
+//            log.info("dto : {}", dto);
+//            log.info("dto.meetingId : {}", dto.getMeetingId());
+//        }
+//        for(MeetingAlarmListDto dto : testDtos){
+//            if(dto.getAlarmUserIdList().size()!= 0){
+//                String content2 = "["+dto.getTitle()+"] testteststestsetsetstestst";
+//                String url = "https://moyeo.vercel.app/detail/"+dto.getMeetingId();
+//                AlarmList alarmList2 = new AlarmList(new Meeting(dto.getMeetingId()), new User(dto.getAlarmUserIdList().get(0)), content2, url);
+//                alarmListRepository.saveAndFlush(alarmList2);
+//            }
+//        }
+//    }
 
-//    @Scheduled(cron = "0 1/10 * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     public void searchMeetings() {
         LocalTime now = LocalTime.now(); // 지금 시간
+        log.info(String.valueOf(now));
 
         int min = (now.getMinute()/10)*10; // 10분 단위 맞추기 위해
+        log.info(String.valueOf(min));
         // 지금 시간에서 30분 뒤
         LocalTime nowAfter30 =  LocalTime.of(now.getHour(), min,0).plusMinutes(30);
+        log.info(String.valueOf(nowAfter30));
 
         // 30분 후 시작하는 모임 리스트
 //        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTime(today, nowAfter30);
