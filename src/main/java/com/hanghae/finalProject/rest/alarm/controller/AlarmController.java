@@ -24,12 +24,11 @@ public class AlarmController {
           return DataResponseDto.of(attendantService.getAlarm(meetingId));
      }
 
-     // userId로 구독 + Last-Event_Id
+     // 알림 구독 (연결)
      @ApiOperation(value = "알림 구독")
-     @GetMapping(value = "/alarm/subscribe/{usdrId}", produces = "text/event-stream")
-     public SseEmitter subscribe(@PathVariable Long usdrId,
-                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-          return alarmService.subscribe(usdrId, lastEventId);
+     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
+     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+          return alarmService.subscribe(lastEventId);
      }
      
 //     @ApiOperation(value = "test용")
