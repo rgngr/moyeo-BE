@@ -24,26 +24,19 @@ public class AlarmController {
           return DataResponseDto.of(attendantService.getAlarm(meetingId));
      }
 
-//     // userId로 구독 + Last-Event_Id
-//     @ApiOperation(value = "알림 구독")
-//     @GetMapping(value = "/alarm/subscribe/{id}", produces = "text/event-stream")
-//     public SseEmitter subscribe(@PathVariable Long id,
-//                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-//          return alarmService.subscribe(id, lastEventId);
-//     }
+     // userId로 구독 + Last-Event_Id
+     @ApiOperation(value = "알림 구독")
+     @GetMapping(value = "/alarm/subscribe/{usdrId}", produces = "text/event-stream")
+     public SseEmitter subscribe(@PathVariable Long usdrId,
+                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+          return alarmService.subscribe(usdrId, lastEventId);
+     }
      
 //     @ApiOperation(value = "test용")
 //     @GetMapping(value = "/alarm/subscribe/test")
 //     public void repoTest() {
 //          alarmService.testRepo();
 //     }
-
-     // 토큰으로 구독 + Last-Event_Id
-     @ApiOperation(value = "알림 구독")
-     @GetMapping(value = "/alarm/subscribe", produces = "text/event-stream")
-     public SseEmitter subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-          return alarmService.subscribe(lastEventId);
-     }
 
      @ApiOperation(value = "알림 개수")
      @GetMapping(value = "/alarms/count")
