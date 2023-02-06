@@ -40,6 +40,7 @@ public class WebSecurityConfig {
           http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
           http.authorizeRequests()
                // 토큰검증 필요없는 페이지 설정
+               .antMatchers( "/health").permitAll()
                .antMatchers(HttpMethod.POST, "/api/users/**").permitAll()
                .antMatchers(HttpMethod.GET, "/api/users/kakao/callback").permitAll()
                .antMatchers( "/api/users/mail-code/**").permitAll()
