@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -316,6 +317,7 @@ public class AlarmService {
     @Scheduled(cron = "1 0/10 * * * *")
     public void searchMeetings() {
 
+        LocalDate today = LocalDate.now(); // 오늘 날짜
         LocalTime now = LocalTime.now(); // 지금 시간
         log.info(String.valueOf(now));
         int min = (now.getMinute()/10)*10; // 10분 단위 맞추기 위해
@@ -326,52 +328,70 @@ public class AlarmService {
         log.info(String.valueOf(nowAfter30));
 
         // 30분 후 시작하는 모임 리스트
-//        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTime(today, nowAfter30);
-        List<MeetingAlarmListDto> meetingAlarmListDtos = meetingRepository.findMeetingAlarmListDto(nowAfter30);
-        if (meetingAlarmListDtos.isEmpty()) {
+        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTime(today, nowAfter30);
+        if (meetings.isEmpty()) {
             return;
         }
+//        List<MeetingAlarmListDto> meetingAlarmListDtos = meetingRepository.findMeetingAlarmListDto(nowAfter30);
+//        if (meetingAlarmListDtos.isEmpty()) {
+//            return;
+//        }
 
         // 각 모임 30분 전 알림으로
-        for (MeetingAlarmListDto meetingAlarmListDto : meetingAlarmListDtos) {
-            alarmBefore30(meetingAlarmListDto);
+        for (Meeting meeting : meetings) {
+            alarmBefore30(meeting);
         }
+//        for (MeetingAlarmListDto meetingAlarmListDto : meetingAlarmListDtos) {
+//            alarmBefore30(meetingAlarmListDto);
+//        }
 
     }
 
     // 30분 전 알림
     @Transactional
-    public void alarmBefore30(MeetingAlarmListDto meetingAlarmListDto) {
+    public void alarmBefore30(Meeting meeting) {
+//    public void alarmBefore30(MeetingAlarmListDto meetingAlarmListDto) {
 
-        String content1 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
-        String content2 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
-        String url = "/detail/"+meetingAlarmListDto.getMeetingId();
+        String content1 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
+        String content2 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
+        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
+//        String content1 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
+//        String content2 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
+//        String url = "/detail/"+meetingAlarmListDto.getMeetingId();
 
         // 모임 글 작성자
-        String receiver1Id = String.valueOf(meetingAlarmListDto.getMeetingUserId());
-        Meeting thisMeeting = new Meeting(meetingAlarmListDto.getMeetingId());
+        User receiver1 = meeting.getUser();
+        String receiver1Id = String.valueOf(receiver1.getId());
+//        String receiver1Id = String.valueOf(meetingAlarmListDto.getMeetingUserId());
+//        Meeting thisMeeting = new Meeting(meetingAlarmListDto.getMeetingId());
 
         // 알림 내용 생성
-        AlarmList alarmList1 = new AlarmList(thisMeeting, new User(meetingAlarmListDto.getMeetingUserId()), content1, url);
+        AlarmList alarmList1 = new AlarmList(meeting, receiver1, content1, url);
+//        AlarmList alarmList1 = new AlarmList(thisMeeting, new User(meetingAlarmListDto.getMeetingUserId()), content1, url);
         alarmListRepository.saveAndFlush(alarmList1);
 
         // 알림 보내기
         alarmProcess(receiver1Id, alarmList1);
 
         // 알림 수신 여부 확인
-//        List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
-//        if (alarmReceivers.isEmpty()) {
-//            return;
-//        }
+        List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
+        if (alarmReceivers.isEmpty()) {
+            return;
+        }
 
         // 각각의 참석자에게
-        for (Long alarmUserId : meetingAlarmListDto.getAlarmUserIdList()) {
+        for (Alarm alarmReceiver : alarmReceivers) {
+            User receiver2 = alarmReceiver.getUser();
+            String receiver2Id = String.valueOf(receiver2.getId());
+//        for (Long alarmUserId : meetingAlarmListDto.getAlarmUserIdList()) {
             // 알림 내용 생성
-            AlarmList alarmList2 = new AlarmList(thisMeeting, new User(alarmUserId), content2, url);
+            AlarmList alarmList2 = new AlarmList(meeting, receiver2, content2, url);
+//            AlarmList alarmList2 = new AlarmList(thisMeeting, new User(alarmUserId), content2, url);
             alarmListRepository.saveAndFlush(alarmList2);
 
             // 알림 보내기
-            alarmProcess(String.valueOf(alarmUserId), alarmList2);
+            alarmProcess(receiver2Id, alarmList2);
+//            alarmProcess(String.valueOf(alarmUserId), alarmList2);
         }
     }
 
