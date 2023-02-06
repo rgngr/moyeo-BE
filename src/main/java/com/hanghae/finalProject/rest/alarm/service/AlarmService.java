@@ -57,9 +57,21 @@ public class AlarmService {
         // eventId를 key로, SseEmitter를 value로 저장
         SseEmitter emitter = emitterRepository.save(eventId, new SseEmitter(DEFAULT_TIMEOUT));
 
+        // 비동기 요청이 정상 동작 되지 않는다면 저장한 SseEmitter를 삭제
+        emitter.onCompletion(() -> emitterRepository.deleteById(eventId));
+        emitter.onTimeout(() -> emitterRepository.deleteById(eventId));
+
         // sse 연결 뒤 데이터가 하나도 전송되지 않고 유효시간이 끝나면 503에러 발생
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        sendToClient(emitter, eventId, "Alarm Connected [receiverId=" + userId + "]");
+        try {
+            emitter.send(SseEmitter.event()
+                    .id(eventId)
+                    .name("sse") // event 이름
+                    .data("Alarm Connected [receiverId=" + userId + "]"));
+        } catch (IOException exception) {
+            emitterRepository.deleteById(eventId); // error 발생시 event 삭제
+            throw new RuntimeException("sse error!!");
+        }
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송
         if (!lastEventId.isEmpty()) {
@@ -69,10 +81,6 @@ public class AlarmService {
                     .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
         }
 
-        // 비동기 요청이 정상 동작 되지 않는다면 저장한 SseEmitter를 삭제
-        emitter.onCompletion(() -> emitterRepository.deleteById(eventId));
-        emitter.onTimeout(() -> emitterRepository.deleteById(eventId));
-
         return emitter;
     }
 
@@ -81,7 +89,7 @@ public class AlarmService {
         try {
             emitter.send(SseEmitter.event()
                     .id(eventId) // event id
-                    .name("sse") // event 이름
+                    .name("alarm") // event 이름
                     .data(data)); // event 객체, content 포함
         } catch (IOException exception) {
             emitterRepository.deleteById(eventId); // error 발생시 event 삭제
