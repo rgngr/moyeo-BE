@@ -45,13 +45,13 @@ public class AlarmService {
 
 
     // 알림 구독
-    public SseEmitter subscribe(String lastEventId) {
+    public SseEmitter subscribe(Long id, String lastEventId) {
         // 유저 정보
-        User user = SecurityUtil.getCurrentUser();
-        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+//        User user = SecurityUtil.getCurrentUser();
+//        if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
         // userId + 현재시간 >> 마지막 받은 알림 이후의 새로운 알림을 전달하기 위해 필요
-        Long userId = user.getId();
-        String eventId = userId + "_" + System.currentTimeMillis();
+//        Long userId = user.getId();
+        String eventId = id + "_" + System.currentTimeMillis();
 
         // 유효시간 포함한 SseEmitter 객체 생성
         // eventId를 key로, SseEmitter를 value로 저장
@@ -67,7 +67,7 @@ public class AlarmService {
             emitter.send(SseEmitter.event()
                     .id(eventId)
                     .name("sse") // event 이름
-                    .data("Alarm Connected [receiverId=" + userId + "]"));
+                    .data("Alarm Connected [receiverId=" + id + "]"));
         } catch (IOException exception) {
             emitterRepository.deleteById(eventId); // error 발생시 event 삭제
             throw new RuntimeException("sse error!!");
@@ -75,7 +75,7 @@ public class AlarmService {
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송
         if (!lastEventId.isEmpty()) {
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(userId));
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(id));
             events.entrySet().stream()
                     .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
                     .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
