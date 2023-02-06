@@ -33,7 +33,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                     ltCommentId(commentId)
                )
                .orderBy(comment1.id.desc())
-               .limit(10)
+               .limit(30)
                .fetch();
           
           return jpaQueryFactory
