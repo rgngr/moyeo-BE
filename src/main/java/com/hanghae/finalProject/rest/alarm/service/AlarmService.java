@@ -63,15 +63,7 @@ public class AlarmService {
 
         // sse 연결 뒤 데이터가 하나도 전송되지 않고 유효시간이 끝나면 503에러 발생
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        try {
-            emitter.send(SseEmitter.event()
-                    .id(eventId)
-                    .name("sse") // event 이름
-                    .data("Alarm Connected [receiverId=" + id + "]"));
-        } catch (IOException exception) {
-            emitterRepository.deleteById(eventId); // error 발생시 event 삭제
-            throw new RuntimeException("sse error!!");
-        }
+        sendToClient(emitter, eventId, "Alarm Connected [receiverId=" + id + "]");
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송
         if (!lastEventId.isEmpty()) {
@@ -89,7 +81,7 @@ public class AlarmService {
         try {
             emitter.send(SseEmitter.event()
                     .id(eventId) // event id
-                    .name("alarm") // event 이름
+                    .name("sse") // event 이름
                     .data(data)); // event 객체, content 포함
         } catch (IOException exception) {
             emitterRepository.deleteById(eventId); // error 발생시 event 삭제
