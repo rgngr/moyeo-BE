@@ -23,7 +23,7 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
      
      private final JwtUtil jwtUtil;
-     private final static List<String> TOKEN_IN_PARAM_URLS = List.of("/alarm/subscribe");
+     private final static List<String> TOKEN_IN_PARAM_URLS = List.of("/api/alarm/subscribe");
 
      @Override
      protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
