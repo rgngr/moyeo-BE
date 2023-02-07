@@ -21,6 +21,7 @@ import com.hanghae.finalProject.rest.meeting.repository.MeetingRepository;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +31,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
 
+    public final Map<Long, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
     private static final Long DEFAULT_TIMEOUT = 60L * 60 * 1000;
     private final EmitterRepository emitterRepository;
     private final MeetingRepository meetingRepository;
@@ -46,80 +49,83 @@ public class AlarmService {
 
 
     // 알림 구독
-    public SseEmitter subscribe(String lastEventId) {
+    public SseEmitter subscribe() {
         // 유저 정보
         User user = SecurityUtil.getCurrentUser();
         if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-        // userId + 현재시간 >> 마지막 받은 알림 이후의 새로운 알림을 전달하기 위해 필요
+        // userId
         Long userId = user.getId();
-        String eventId = userId + "_" + System.currentTimeMillis();
+//        String eventId = userId + "_" + System.currentTimeMillis();
 
-        // 유효시간 포함한 SseEmitter 객체 생성
-        // eventId를 key로, SseEmitter를 value로 저장
-        SseEmitter emitter = emitterRepository.save(eventId, new SseEmitter(DEFAULT_TIMEOUT));
-
-        // 비동기 요청이 정상 동작 되지 않는다면 저장한 SseEmitter를 삭제
-        emitter.onCompletion(() -> emitterRepository.deleteById(eventId));
-        emitter.onTimeout(() -> emitterRepository.deleteById(eventId));
+        // 유효시간 포함한 sseEmitter 객체 생성
+        SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
+//        SseEmitter emitter = emitterRepository.save(eventId, new SseEmitter(DEFAULT_TIMEOUT));
 
         // sse 연결 뒤 데이터가 하나도 전송되지 않고 유효시간이 끝나면 503에러 발생
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-//        sendToClient(emitter, eventId, "Alarm Connected [receiverId=" + userId + "]");
         try {
-            emitter.send(SseEmitter.event()
-                    .id(eventId) // event id
+            sseEmitter.send(SseEmitter.event()
                     .name("sse") // event 이름
-                    .data("Alarm Connected [receiverId=" + userId + "]")); // event 객체, content 포함
+                    .data("Alarm Connected")); // event 객체, content 포함
         } catch (IOException exception) {
-            emitterRepository.deleteById(eventId); // error 발생시 event 삭제
+            sseEmitters.remove(userId); // error 발생시 event 삭제
             throw new RuntimeException("sse error!!");
         }
 
-        // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송
-        if (!lastEventId.isEmpty()) {
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(userId));
-            events.entrySet().stream()
-                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
-                    .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
-        }
+        // userId를 key로, sseEmitter를 value로 저장
+        sseEmitters.put(userId, sseEmitter);
+        // 비동기 요청이 정상 동작 되지 않는다면 저장한 sseEmitter를 삭제
+        sseEmitter.onCompletion(() -> sseEmitters.remove(userId));
+        sseEmitter.onTimeout(() -> sseEmitters.remove(userId));
 
-        return emitter;
+        // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송
+//        if (!lastEventId.isEmpty()) {
+//            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithId(String.valueOf(userId));
+//            events.entrySet().stream()
+//                    .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
+//                    .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
+//        }
+
+        return sseEmitter;
     }
 
     // 클라리언트에게 이벤트 내용 전송
-    private void sendToClient(SseEmitter emitter, String eventId, Object data) {
-        try {
-            emitter.send(SseEmitter.event()
-                    .id(eventId) // event id
-                    .name("alarm") // event 이름
-                    .data(data)); // event 객체, content 포함
-        } catch (IOException exception) {
-            emitterRepository.deleteById(eventId); // error 발생시 event 삭제
-            throw new RuntimeException("sse error!!");
+    @Async
+    public void sendToClient(Long receiverId, Object data) {
+        if (sseEmitters.containsKey(receiverId)) {
+            SseEmitter sseEmitter = sseEmitters.get(receiverId);
+            try {
+                sseEmitter.send(SseEmitter.event()
+                        .name("alarm") // event 이름
+                        .data(data)); // event 객체, content 포함
+            } catch (IOException exception) {
+                sseEmitters.remove(receiverId); // error 발생시 event 삭제
+                throw new RuntimeException("sse error!!");
+            }
         }
     }
 
     // 공통된 이벤트 전송 과정
-    private void alarmProcess(String receiverId, AlarmList alarmList) {
-        // 로그인 한 유저의 SseEmitter 모두 가져오기
-        Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
-        sseEmitters.forEach(
-                (key, emitter) -> {
-                    // event 저장
-                    emitterRepository.saveEventCache(key, alarmList);
-                    // data 전송
-                    AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
-                    sendToClient(emitter, key, alarmData);
-                }
-        );
-    }
+//    private void alarmProcess(String receiverId, AlarmList alarmList) {
+//        // 로그인 한 유저의 SseEmitter 모두 가져오기
+//        Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(receiverId);
+//        sseEmitters.forEach(
+//                (key, emitter) -> {
+//                    // event 저장
+//                    emitterRepository.saveEventCache(key, alarmList);
+//                    // data 전송
+//                    AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+//                    sendToClient(emitter, key, alarmData);
+//                }
+//        );
+//    }
 
     // 댓글 달렸을 때 글 작성자에게 알림
     @Transactional
     public void alarmComment(Meeting meeting) {
 
         User receiver = meeting.getUser();
-        String receiverId = String.valueOf(receiver.getId());
+        Long receiverId = receiver.getId();
         String content = "["+meeting.getTitle()+"] 모임에 댓글이 달렸습니다.";
         String url = "/detail/"+meeting.getId();
 
@@ -127,7 +133,8 @@ public class AlarmService {
         AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
         alarmListRepository.save(alarmList);
         // 알림 보내기
-        alarmProcess(receiverId, alarmList);
+        AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+        sendToClient(receiverId, alarmData);
     }
 
     // 참석 버튼을 눌렀을 때 + 정원 다 찼을 때 글 작성자에게 알림
@@ -135,7 +142,7 @@ public class AlarmService {
     public void alarmAttend(Meeting meeting, User user) {
 
         User receiver = meeting.getUser();
-        String receiverId = String.valueOf(receiver.getId());
+        Long receiverId = receiver.getId();
         String attendant = user.getUsername();
         String content1 = attendant+" 님이 ["+meeting.getTitle()+"] 모임에 참석 예정입니다.";
         String content2 = "["+meeting.getTitle()+"] 모임의 정원이 다 찼습니다.";
@@ -145,7 +152,8 @@ public class AlarmService {
         AlarmList alarmList1 = new AlarmList(meeting, receiver, content1, url);
         alarmListRepository.saveAndFlush(alarmList1);
         // 알림 보내기
-        alarmProcess(receiverId, alarmList1);
+        AlarmListResponseDto.Alarm1 alarmData1 = new AlarmListResponseDto.Alarm1(alarmList1);
+        sendToClient(receiverId, alarmData1);
 
         // 정원 초과 시
         List<Attendant> attendants = attendantRepository.findAllByMeeting(meeting);
@@ -154,7 +162,8 @@ public class AlarmService {
             AlarmList alarmList2 = new AlarmList(meeting, receiver, content2, url);
             alarmListRepository.save(alarmList2);
             // 알림 보내기
-            alarmProcess(receiverId, alarmList2);
+            AlarmListResponseDto.Alarm1 alarmData2 = new AlarmListResponseDto.Alarm1(alarmList2);
+            sendToClient(receiverId, alarmData2);
         }
     }
 
@@ -163,7 +172,7 @@ public class AlarmService {
     public void alarmCancelAttend(Meeting meeting, User user) {
 
         User receiver = meeting.getUser();
-        String receiverId = String.valueOf(receiver.getId());
+        Long receiverId = receiver.getId();
         String attendant = user.getUsername();
         String content = attendant+" 님이 ["+meeting.getTitle()+"] 모임 참석을 취소했습니다.";
 
@@ -171,7 +180,8 @@ public class AlarmService {
         AlarmList alarmList = new AlarmList(meeting, receiver, content, null);
         alarmListRepository.save(alarmList);
         // 알림 보내기
-        alarmProcess(receiverId, alarmList);
+        AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+        sendToClient(receiverId, alarmData);
     }
 
     // 누군가 나를 팔로우했을 때 알림
@@ -179,14 +189,15 @@ public class AlarmService {
     public void alarmFollow(User user, User followingUser) {
 
         User receiver = followingUser;
-        String receiverId = String.valueOf(receiver.getId());
+        Long receiverId = receiver.getId();
         String content = user.getUsername()+" 님이 회원님을 팔로우합니다.";
 
         // 알림 내용 생성
         AlarmList alarmList = new AlarmList(null, receiver, content, null);
         alarmListRepository.saveAndFlush(alarmList);
         // 알림 보내기
-        alarmProcess(receiverId, alarmList);
+        AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+        sendToClient(receiverId, alarmData);
     }
 
     // 팔로잉하는 사람이 모임 글 작성했을 때 알림
@@ -205,14 +216,14 @@ public class AlarmService {
         // 팔로워에게 알림 보내기
         for (Follow follower : followers) {
             User receiver = follower.getUser();
-            String receiverId = String.valueOf(receiver.getId());
+            Long receiverId = receiver.getId();
 
             // 알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
             alarmListRepository.saveAndFlush(alarmList);
             // 알림 보내기
-            alarmProcess(receiverId, alarmList);
-
+            AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+            sendToClient(receiverId, alarmData);
         }
     }
 
@@ -232,13 +243,14 @@ public class AlarmService {
         // 각각의 리시버에게
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
-            String receiverId = String.valueOf(receiver.getId());
+            Long receiverId = receiver.getId();
 
             // 알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
             alarmListRepository.saveAndFlush(alarmList);
             // 알림 보내기
-            alarmProcess(receiverId, alarmList);
+            AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+            sendToClient(receiverId, alarmData);
 
         }
     }
@@ -259,13 +271,14 @@ public class AlarmService {
         // 각각의 리시버에게
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
-            String receiverId = String.valueOf(receiver.getId());
+            Long receiverId = receiver.getId();
 
             // 알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content, url);
             alarmListRepository.saveAndFlush(alarmList);
             // 알림 보내기
-            alarmProcess(receiverId, alarmList);
+            AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+            sendToClient(receiverId, alarmData);
 
         }
     }
@@ -285,13 +298,14 @@ public class AlarmService {
         // 각각으 리시버에게
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver = alarmReceiver.getUser();
-            String receiverId = String.valueOf(receiver.getId());
+            Long receiverId = receiver.getId();
 
             //알림 내용 생성
             AlarmList alarmList = new AlarmList(meeting, receiver, content, null);
             alarmListRepository.saveAndFlush(alarmList);
             // 알림 보내기
-            alarmProcess(receiverId, alarmList);
+            AlarmListResponseDto.Alarm1 alarmData = new AlarmListResponseDto.Alarm1(alarmList);
+            sendToClient(receiverId, alarmData);
 
         }
 
@@ -354,14 +368,14 @@ public class AlarmService {
 
         String content1 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
         String content2 = "["+meeting.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
-        String url = "https://moyeo.vercel.app/detail/"+meeting.getId();
+        String url = "/detail/"+meeting.getId();
 //        String content1 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 올려주세요.";
 //        String content2 = "["+meetingAlarmListDto.getTitle()+"] 모임 시작 30분 전입니다. 모임 링크를 확인해주세요.";
 //        String url = "/detail/"+meetingAlarmListDto.getMeetingId();
 
         // 모임 글 작성자
         User receiver1 = meeting.getUser();
-        String receiver1Id = String.valueOf(receiver1.getId());
+        Long receiver1Id = receiver1.getId();
 //        String receiver1Id = String.valueOf(meetingAlarmListDto.getMeetingUserId());
 //        Meeting thisMeeting = new Meeting(meetingAlarmListDto.getMeetingId());
 
@@ -371,7 +385,8 @@ public class AlarmService {
         alarmListRepository.saveAndFlush(alarmList1);
 
         // 알림 보내기
-        alarmProcess(receiver1Id, alarmList1);
+        AlarmListResponseDto.Alarm1 alarmData1 = new AlarmListResponseDto.Alarm1(alarmList1);
+        sendToClient(receiver1Id, alarmData1);
 
         // 알림 수신 여부 확인
         List<Alarm> alarmReceivers = alarmRepository.findAllByMeeting(meeting);
@@ -382,7 +397,7 @@ public class AlarmService {
         // 각각의 참석자에게
         for (Alarm alarmReceiver : alarmReceivers) {
             User receiver2 = alarmReceiver.getUser();
-            String receiver2Id = String.valueOf(receiver2.getId());
+            Long receiver2Id = receiver2.getId();
 //        for (Long alarmUserId : meetingAlarmListDto.getAlarmUserIdList()) {
             // 알림 내용 생성
             AlarmList alarmList2 = new AlarmList(meeting, receiver2, content2, url);
@@ -390,7 +405,8 @@ public class AlarmService {
             alarmListRepository.saveAndFlush(alarmList2);
 
             // 알림 보내기
-            alarmProcess(receiver2Id, alarmList2);
+            AlarmListResponseDto.Alarm1 alarmData2 = new AlarmListResponseDto.Alarm1(alarmList2);
+            sendToClient(receiver2Id, alarmData2);
 //            alarmProcess(String.valueOf(alarmUserId), alarmList2);
         }
     }
