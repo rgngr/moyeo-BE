@@ -314,7 +314,7 @@ public class AlarmService {
 //    }
 
     // 매시 10분 01초마다 실행 >> 30분 전 알림
-//    @Scheduled(cron = "1 0/10 * * * *")
+    @Scheduled(cron = "1 0/10 * * * *")
     public void searchMeetings() {
 
         LocalDate today = LocalDate.now(); // 오늘 날짜
