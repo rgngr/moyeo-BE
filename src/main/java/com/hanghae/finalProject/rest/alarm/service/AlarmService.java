@@ -90,7 +90,6 @@ public class AlarmService {
     }
 
     // 클라리언트에게 이벤트 내용 전송
-    @Async
     public void sendToClient(Long receiverId, Object data) {
         if (sseEmitters.containsKey(receiverId)) {
             SseEmitter sseEmitter = sseEmitters.get(receiverId);
@@ -121,6 +120,7 @@ public class AlarmService {
 //    }
 
     // 댓글 달렸을 때 글 작성자에게 알림
+    @Async
     @Transactional
     public void alarmComment(Meeting meeting) {
 
@@ -138,6 +138,7 @@ public class AlarmService {
     }
 
     // 참석 버튼을 눌렀을 때 + 정원 다 찼을 때 글 작성자에게 알림
+    @Async
     @Transactional
     public void alarmAttend(Meeting meeting, User user) {
 
@@ -168,6 +169,7 @@ public class AlarmService {
     }
 
     // 취소 버튼을 눌렀을 때 글 작성자에게 알림
+    @Async
     @Transactional
     public void alarmCancelAttend(Meeting meeting, User user) {
 
@@ -185,6 +187,7 @@ public class AlarmService {
     }
 
     // 누군가 나를 팔로우했을 때 알림
+    @Async
     @Transactional
     public void alarmFollow(User user, User followingUser) {
 
@@ -201,6 +204,7 @@ public class AlarmService {
     }
 
     // 팔로잉하는 사람이 모임 글 작성했을 때 알림
+    @Async
     @Transactional
     public void alarmFollowers(Meeting meeting, User user) {
         // 글 작성자의 팔로워 전체 가져오기
@@ -228,6 +232,7 @@ public class AlarmService {
     }
 
     // 모임 글이 수정되었을 때 참서자에게 알림
+    @Async
     @Transactional
     public void alarmUpdateMeeting(Meeting meeting) {
 
@@ -256,6 +261,7 @@ public class AlarmService {
     }
 
     // 링크가 생성 or 수정되었을 때 참석자에게 알림
+    @Async
     @Transactional
     public void alarmUpdateLink(Meeting meeting) {
 
@@ -284,6 +290,7 @@ public class AlarmService {
     }
 
     // 모임 글이 삭제되었을 때 참석자에게 알림
+    @Async
     @Transactional
     public void alarmDeleteMeeting(Meeting meeting) {
 
