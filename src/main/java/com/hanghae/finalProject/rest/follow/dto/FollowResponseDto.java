@@ -1,6 +1,5 @@
 package com.hanghae.finalProject.rest.follow.dto;
 
-import com.hanghae.finalProject.rest.follow.model.Follow;
 import com.hanghae.finalProject.rest.user.model.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,16 +7,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FollowResponseDto {
-    private Long id;
+    private Long userId;
 
     private String username;
 
-    private String profile;
+    private String profileUrl;
 
     public FollowResponseDto(User user){
-        this.id = user.getId();
+        this.userId = user.getId();
         this.username = user.getUsername();
-        this.profile = user.getProfileUrl();
+        this.profileUrl = user.getProfileUrl();
 
 
     }

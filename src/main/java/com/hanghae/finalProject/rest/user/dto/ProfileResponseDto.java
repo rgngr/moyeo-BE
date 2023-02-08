@@ -16,4 +16,14 @@ public class ProfileResponseDto {
         this.profileMsg = user.getProfileMsg();
     }
 
+    @Getter
+    public static class Url {
+
+        private String profileUrl;
+
+        public Url(User user) {
+            this.profileUrl = user.getProfileUrl();
+        }
+    }
+
 }

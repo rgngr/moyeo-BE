@@ -20,6 +20,4 @@ public class Email implements Serializable {
     private String email;
 
     private String ePw;
-
-
 }

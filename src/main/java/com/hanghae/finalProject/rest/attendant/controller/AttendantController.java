@@ -2,10 +2,8 @@ package com.hanghae.finalProject.rest.attendant.controller;
 
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
-import com.hanghae.finalProject.config.errorcode.Code;
 import com.hanghae.finalProject.rest.attendant.service.AttendantService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/meetings/{meetingId}")
 public class AttendantController {
     private final AttendantService attendantService;
+//    private final SqsMessageSender sqsMessageSender;
 
     @Operation(summary = "모임 참석/취소")
     @PatchMapping("/attendance")
     public ResponseDto addAttendant(@PathVariable Long meetingId) {
+//        sqsMessageSender.send(meetingId + " 모임 참석/취소");
         return DataResponseDto.of(attendantService.syncAddAttendant(meetingId));
     }
 

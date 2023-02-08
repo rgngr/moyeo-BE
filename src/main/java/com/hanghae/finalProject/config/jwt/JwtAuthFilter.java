@@ -16,19 +16,30 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
      
      private final JwtUtil jwtUtil;
-     
+     private final static List<String> TOKEN_IN_PARAM_URLS = List.of("/api/alarm/subscribe");
+
      @Override
      protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-     
-          // request header에서 토큰을 가져오기
-          String token = jwtUtil.resolveToken(request);
-          
+
+          final String token;
+
+          // 쿼리스트링에 토큰 여부 확인
+          if (TOKEN_IN_PARAM_URLS.contains(request.getRequestURI())) {
+               log.info("Request with {} check the query param", request.getRequestURI());
+               token = request.getQueryString().split("=")[1].trim();
+               log.info(token);
+          } else {
+               // request header에서 토큰을 가져오기
+               token = jwtUtil.resolveToken(request);
+          }
+
           if(token != null) {
                // 토큰 검증
                if(!jwtUtil.validateToken(token)){

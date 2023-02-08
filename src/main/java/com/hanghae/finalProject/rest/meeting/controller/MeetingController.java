@@ -9,10 +9,14 @@ import com.hanghae.finalProject.rest.meeting.dto.MeetingUpdateRequestDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
 import com.hanghae.finalProject.rest.meeting.service.MeetingService;
 import io.swagger.annotations.ApiOperation;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.Valid;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +34,12 @@ public class MeetingController {
     @GetMapping("/{id}")
     public ResponseDto getMeeting(@PathVariable Long id) {
         return DataResponseDto.of(meetingService.getMeeting(id));
+    }
+    
+    @ApiOperation(value = "GET 배너이미지")
+    @GetMapping("/banner")
+    public ResponseDto getBanners(){
+        return DataResponseDto.of(meetingService.getBanner());
     }
     
     @ApiOperation (value = "모임 전체 조회")
@@ -54,15 +64,29 @@ public class MeetingController {
     
     @ApiOperation (value = "모임 생성")
     @PostMapping("")
-    public ResponseDto createMeeting(@RequestBody @Valid MeetingRequestDto requestDto) {
+    public ResponseDto createMeeting(@ModelAttribute @Valid MeetingRequestDto requestDto) throws IOException {
         return DataResponseDto.of(meetingService.createMeeting(requestDto), Code.CREATE_MEETING.getStatusMsg());
+    }
+    
+    @ApiOperation (value = "모임 생성temp")
+    @PostMapping("/temp")
+    public ResponseDto createMeetingTemp(@RequestPart @Valid MeetingRequestDto requestDto,
+                                         @RequestPart(required = false) MultipartFile image) throws IOException {
+        return DataResponseDto.of(meetingService.createMeetingTemp(requestDto, image), Code.CREATE_MEETING.getStatusMsg());
     }
     
     @ApiOperation (value = "모임 수정")
     @PatchMapping("/{id}")
-    public ResponseDto updateAllMeeting(@PathVariable Long id, @RequestBody @Valid MeetingUpdateRequestDto requestDto) {
+    public ResponseDto updateAllMeeting(@PathVariable Long id, @ModelAttribute @Valid MeetingUpdateRequestDto requestDto) throws IOException{
         meetingService.updateAllMeeting(id,requestDto);
         return ResponseDto.of(true, Code.UPDATE_MEETING);
+    }
+    
+    @ApiOperation (value = "모임 이미지 수정")
+    @PatchMapping("/{id}/image")
+    public ResponseDto updateMeetingImage(@PathVariable Long id, @ModelAttribute @Valid MeetingUpdateRequestDto.Image requestDto) throws IOException{
+        meetingService.updateMeetingImage(id,requestDto);
+        return ResponseDto.of(true, Code.UPDATE_MEETING_IMAGE);
     }
 
     @ApiOperation (value = "모임 수정 페이지")

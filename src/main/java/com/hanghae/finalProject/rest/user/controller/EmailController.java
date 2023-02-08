@@ -3,6 +3,7 @@ package com.hanghae.finalProject.rest.user.controller;
 import com.hanghae.finalProject.config.dto.DataResponseDto;
 import com.hanghae.finalProject.config.dto.ResponseDto;
 import com.hanghae.finalProject.config.errorcode.Code;
+import com.hanghae.finalProject.rest.user.dto.PasswordChangeRequestDto;
 import com.hanghae.finalProject.rest.user.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,11 @@ public class EmailController {
         return ResponseDto.of(true, Code.EMAIL_CODE);
     }
     @Operation(summary = "인증 코드 확인", description = "사용자가 입력한 이메일에 인증코드 발송및 redis에 이메일 저장")
-    @GetMapping("/confirm")
-    public ResponseDto emailConfirm(@RequestParam String email,
-                                    @RequestParam String ePw){
-        emailService.emailConfirm(email,ePw);
+    @PostMapping("/confirm")
+    public ResponseDto emailConfirm(@RequestBody PasswordChangeRequestDto.emailConfirmRequestDto requestDto
+//         ,@RequestParam String email,@RequestParam String ePw
+    ){
+        emailService.emailConfirm(requestDto.getEmail(),requestDto.getEPw());
         return ResponseDto.of(true, Code.EMAIL_CONFIRM_SUCCESS);
     }
 }

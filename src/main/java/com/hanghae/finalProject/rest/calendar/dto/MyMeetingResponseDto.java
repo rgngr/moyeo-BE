@@ -53,5 +53,6 @@ public class MyMeetingResponseDto implements Serializable {
           private String password;
           private boolean attend; // 실제 입장 여부
           private boolean review; // 리뷰 달았는지 여부
+          private String image;
      }
 }

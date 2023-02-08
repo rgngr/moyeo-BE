@@ -17,7 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MeetingListResponseDto {
      List<ResponseDto> meetingList = new ArrayList<>();
-     public MeetingListResponseDto addMeetingList(List<ResponseDto> meetingList){
+     
+     public MeetingListResponseDto addMeetingList(List<ResponseDto> meetingList) {
           this.meetingList = meetingList;
           return this;
      }
@@ -27,23 +28,24 @@ public class MeetingListResponseDto {
      @RequiredArgsConstructor
      @AllArgsConstructor
      public static class ResponseDto {
-         private Long id;
-         private Long masterId;
-         private boolean master;
-         private String title;
-         private CategoryCode category;
-         private LocalDate startDate;
-         private LocalTime startTime;
-         private int duration;
-         private PlatformCode platform;
-         private String content;
-         private int maxNum;
-         private boolean secret;
-         private String password;
-         private boolean attend;
+          private Long id;
+          private Long masterId;
+          private boolean master;
+          private String title;
+          private CategoryCode category;
+          private LocalDate startDate;
+          private LocalTime startTime;
+          private int duration;
+          private PlatformCode platform;
+          private String content;
+          private int maxNum;
+          private boolean secret;
+          private String password;
+          private boolean attend;
           private int attendantsNum;
+          private String image;
           private List<AttendantResponseDto.simpleResponseDto> attendantsList;
      }
      
-
+     
 }

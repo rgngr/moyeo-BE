@@ -17,7 +17,9 @@ import java.time.LocalTime;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(indexes = @Index(name = "idx__meeting_start_date", columnList = "startDate"))
+@Table(indexes = {
+     @Index(name = "idx__meeting_start_date_and_deleted", columnList = "startDate, deleted")
+})
 public class Meeting extends Timestamped {
 
      @Id
@@ -63,8 +65,25 @@ public class Meeting extends Timestamped {
 
      @Column
      private boolean deleted;
+     
+     @Column
+     private int attendantsNum;
+     
+     @Column
+     private String image;
+     
+     public Meeting(Long meetingId) {
+          this.id = meetingId;
+     }
+     
+     public void addAttend(){
+          attendantsNum++;
+     }
 
-     public Meeting(MeetingRequestDto requestDto, User user) {
+     public void cancelAttend(){
+          attendantsNum--;
+     }
+     public Meeting(MeetingRequestDto requestDto, User user,String imgUrl) {
           this.title = requestDto.getTitle();
           this.category = requestDto.getCategory();
           this.startDate = requestDto.getStartDate();
@@ -77,9 +96,11 @@ public class Meeting extends Timestamped {
           this.secret = requestDto.isSecret();
           this.password = requestDto.getPassword();
           this.user = user;
+          this.attendantsNum = 1;
+          this.image = imgUrl;
      }
 
-     public void updateAll(MeetingUpdateRequestDto requestDto) {
+     public void updateAll(MeetingUpdateRequestDto requestDto,String image) {
           this.title = requestDto.getTitle();
           this.startDate = requestDto.getStartDate();
           this.startTime =  requestDto.getStartTime();
@@ -89,6 +110,11 @@ public class Meeting extends Timestamped {
           this.link = requestDto.getLink();
           this.secret = requestDto.isSecret();
           this.password = requestDto.getPassword();
+          this.image = image;
+     }
+     
+     public void updateImage(String image){
+          this.image = image;
      }
 
      public void updateLink(MeetingLinkRequestDto requestDto) {

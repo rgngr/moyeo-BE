@@ -40,6 +40,9 @@ dependencies {
     //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    // restAssured
+    testImplementation 'io.rest-assured:rest-assured:4.4.0'
+
     // mysql
     implementation 'mysql:mysql-connector-java'
     // lombok
@@ -70,10 +73,11 @@ dependencies {
 	implementation 'org.springframework.data:spring-data-redis:2.3.4.RELEASE'
 	implementation 'redis.clients:jedis:3.3.0'
 
-//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // SQS
+//    implementation 'org.springframework.cloud:spring-cloud-aws-messaging:2.2.3.RELEASE'
+//    implementation 'org.springframework.cloud:spring-cloud-aws-autoconfigure:2.2.3.RELEASE'
 
-    //LocalDateTime 직렬화 역직렬화 오류 해결용
-//    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
+//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 //빌드 시 plain jar 파일은 만들어지지 않도록
 jar {

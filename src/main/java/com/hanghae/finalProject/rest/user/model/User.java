@@ -55,6 +55,10 @@ public class User implements Supplier<User> {
      
      }
      
+     public User(Long userId) {
+          this.id = userId;
+     }
+     
      public User kakaoIdUpdate(Long kakaoId) {
           this.kakaoId = kakaoId;
           return this;
@@ -64,16 +68,16 @@ public class User implements Supplier<User> {
           return null;
      }
 
-     public void updateUsername(String username) {
-          this.username = username;
-     }
-
      public void updateProfileUrl(String profileUrl) {
           this.profileUrl = profileUrl;
      }
 
-     public void updateProfileMsg(String profileMsg) {
+     public void updateProfileContent(String username, String profileMsg) {
+          this.username = username;
           this.profileMsg = profileMsg;
+     }
+     public void updatePassword(String password){
+          this.password = password;
      }
 
      public void deleteProfileUrl() {

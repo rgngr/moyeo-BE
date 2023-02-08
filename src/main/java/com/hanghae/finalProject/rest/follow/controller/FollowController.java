@@ -21,13 +21,13 @@ public class FollowController {
           return ResponseDto.of(true, followService.follow(followId));
      }
      @Operation (summary = "내 팔로잉 리스트 불러오기")
-     @GetMapping ("followsingList")
+     @GetMapping ("followingList")
      public ResponseDto followingList() {
-          return DataResponseDto.of(followService.followingList(),Code.USER_LOGIN_SUCCESS.getStatusMsg());
+          return DataResponseDto.of(followService.followingList(),Code.FOLLOWING_LIST_LOED.getStatusMsg());
      }
      @Operation (summary = "내 팔로워 리스트 불러오기")
-     @GetMapping ("followersList")
+     @GetMapping ("followerList")
      public ResponseDto followerList() {
-          return DataResponseDto.of(followService.followerList(),Code.USER_LOGIN_SUCCESS.getStatusMsg());
+          return DataResponseDto.of(followService.followerList(),Code.FOLLOWERS_LIST_LOED.getStatusMsg());
      }
 }

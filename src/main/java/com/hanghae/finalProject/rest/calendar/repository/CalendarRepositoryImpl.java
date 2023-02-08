@@ -26,7 +26,8 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
      @Override
      public List<MyMeetingResponseDto.ResponseDto> findAllByUserIdAndMonth(Long loggedId, int year, int month) {
           LocalDate startDate = LocalDate.of(year, month, 1);
-          LocalDate endDate = LocalDate.of(year, month+1, 1).minusDays(1L);
+          LocalDate endDate = (month!=12)? LocalDate.of(year, month+1, 1).minusDays(1L)
+                                        : LocalDate.of(year, month, 31);
           log.info("startDate : {} , endDate : {} ",startDate, endDate);
           
           return jpaQueryFactory
@@ -42,13 +43,15 @@ public class CalendarRepositoryImpl implements CalendarCustomRepository{
                     meeting.content,
                     meeting.secret,
                     meeting.password,
+                    meeting.image,
                     attendant.entrance.as("attend"),
                     attendant.review.as("review")
                ))
                .from(meeting)
                .join(attendant)
                .on(meeting.id.eq(attendant.meeting.id), attendant.user.id.eq(loggedId))
-               .where(meeting.startDate.between(startDate, endDate))
+               .where(meeting.startDate.between(startDate, endDate),
+                    meeting.deleted.isFalse())
                .orderBy(meeting.startTime.asc())
                .fetch();
      }

@@ -1,22 +1,29 @@
 package com.hanghae.finalProject.rest.meeting.repository;
 
+import com.hanghae.finalProject.rest.alarm.dto.MeetingAlarmListDto;
 import com.hanghae.finalProject.rest.attendant.dto.AttendantResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingDetailResponseDto;
 import com.hanghae.finalProject.rest.meeting.dto.MeetingListResponseDto;
 import com.hanghae.finalProject.rest.meeting.model.CategoryCode;
+import com.hanghae.finalProject.rest.user.model.QUser;
 import com.hanghae.finalProject.rest.user.model.User;
 import com.querydsl.core.ResultTransformer;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.jsonwebtoken.lang.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +49,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           return jpaQueryFactory
                .select(Projections.fields(
                     MeetingDetailResponseDto.class,
-                    meeting.id.as("id"),
+                    Expressions.asNumber(meetingId).as("id"),
+//                    meeting.id.as("id"),
                     meeting.user.id.as("masterId"),
                     meeting.title,
                     meeting.category,
@@ -55,12 +63,24 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.maxNum,
                     meeting.secret,
                     meeting.password,
+                    meeting.image,
                     // 로그인 유저의 해당 모임 참석유무
-                    
                     ExpressionUtils.as(
                          select(attendant.user.id.isNotNull())
                               .from(attendant)
                               .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "attend"),
+                    // 모임 입장여부
+                    ExpressionUtils.as(
+                         select(
+                              attendant.entrance)
+                              .from(attendant)
+                              .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "entrance"),
+                    // 모임 리뷰 여부
+                    ExpressionUtils.as(
+                         select(
+                              attendant.review)
+                              .from(attendant)
+                              .where(attendant.meeting.id.eq(meetingId), eqAttendantUser(loggedId)), "review"),
                     // 로그인 유저의 해당모임 알림활성화 유무
                     ExpressionUtils.as(
                          select(alarm.user.id.isNotNull())
@@ -77,7 +97,8 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                          select(
                               review1.review.count())
                               .from(review1)
-                              .where(review1.meeting.id.eq(meetingId), review1.review.eq(false)), "hateNum"))
+                              .where(review1.meeting.id.eq(meetingId), review1.review.eq(false)), "hateNum")
+                    )
                )
                .from(meeting)
                .where(meeting.id.eq(meetingId), meeting.deleted.isFalse())
@@ -93,11 +114,12 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .from(meeting)
                .where(eqCategory(category), // 카테고리 필터링
                     meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
-                    meeting.title.contains(search), // 검색어 필터링
+//                    meeting.title.contains(search), // 검색어 필터링
+                    match(search), // full text search
                     meeting.deleted.eq(false),
                     ltMeetingId(meetingIdx))// 무한스크롤용
                .orderBy(meeting.id.desc())
-               .limit(5L)
+               .limit(5)
                .fetch();
           // 1-1) 대상이 없을 경우 추가 쿼리 수행 할 필요 없이 바로 반환
           if (CollectionUtils.isEmpty(ids)) {
@@ -110,8 +132,10 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
                .orderBy(meeting.id.desc())
-               .transform(getList());
+               .transform(getList(category));
      }
+     
+     
      
      @Override
      public List<MeetingListResponseDto.ResponseDto> findAllSortByPopularAndCategory(CategoryCode category, Long pageNum) {
@@ -119,14 +143,11 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
           List<Long> ids = jpaQueryFactory
                .select(meeting.id) // 참석자명단의 미팅id
                .from(meeting)
-               .leftJoin(attendant)
-               .on(meeting.id.eq(attendant.meeting.id))
-               .groupBy(meeting.id)
                .where(eqCategory(category),
                     meeting.startDate.goe(LocalDateTime.now().toLocalDate()),
                     meeting.deleted.eq(false)
                )
-               .orderBy(attendant.id.count().desc(), meeting.id.desc())
+               .orderBy(meeting.attendantsNum.desc(), meeting.id.desc())
                .offset((pageNum == null) ? 0 : pageNum * 5)
                .limit(5)
                .fetch();
@@ -141,7 +162,7 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                .leftJoin(attendant).on(meeting.id.eq(attendant.meeting.id))
                .leftJoin(user).on(attendant.user.id.eq(user.id))
                .where(meeting.id.in(ids))
-               .transform(getList());
+               .transform(getList(category));
      }
      
      @Override
@@ -172,10 +193,32 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.id.in(ids)
                )
                .orderBy(meeting.id.desc())
-               .transform(getList());
+               .transform(getList(category));
      }
      
-     private static ResultTransformer<List<MeetingListResponseDto.ResponseDto>> getList() {
+     @Override
+     public List<MeetingAlarmListDto> findMeetingAlarmListDto(LocalTime nowAfter30) {
+          return jpaQueryFactory
+               .from(meeting)
+               .leftJoin(alarm).on(meeting.id.eq(alarm.meeting.id))
+               .leftJoin(user).on(alarm.user.id.eq(user.id))
+               .where(meeting.startDate.eq(LocalDate.now()),
+                    meeting.startTime.eq(nowAfter30))
+               .transform(
+                    groupBy(meeting.id).list(
+                         Projections.fields(
+                              MeetingAlarmListDto.class,
+                              meeting.id.as("meetingId"),
+                              meeting.startDate,
+                              meeting.title,
+                              meeting.user.id.as("meetingUserId"),
+                              list(alarm.user.id).as("alarmUserIdList")
+                              )
+                         )
+               );
+     }
+     
+     private static ResultTransformer<List<MeetingListResponseDto.ResponseDto>> getList(CategoryCode category) {
           return groupBy(meeting.id).list(
                Projections.fields(
                     MeetingListResponseDto.ResponseDto.class,
@@ -187,10 +230,12 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                     meeting.startTime,
                     meeting.duration,
                     meeting.platform,
+                    ObjectUtils.isEmpty(category)? meeting.category : Expressions.asEnum(category).as("category"),
                     meeting.content,
                     meeting.maxNum,
                     meeting.secret,
                     meeting.password,
+                    meeting.image,
                     list(
                          Projections.fields(
                               AttendantResponseDto.simpleResponseDto.class,
@@ -199,6 +244,13 @@ public class MeetingCustomRepositoryImpl implements MeetingCustomRepository {
                          )
                     ).as("attendantsList")
                ));
+     }
+     // full text search용
+     private BooleanExpression match(String search) {
+          if( search == null){
+               return null;
+          }
+          return Expressions.numberTemplate(Double.class, "function('match',{0},{1})", meeting.title, search).gt(0);
      }
      
      // 무한스크롤용. 해당 idx 보다 작은것들 불러오기 (sortBy new 일때만 이거)

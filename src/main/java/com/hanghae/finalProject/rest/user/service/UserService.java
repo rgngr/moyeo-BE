@@ -73,53 +73,11 @@ public class UserService {
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
      
           //참여모임수, 팔로워(나를 팔로우 추가한사람) 수 , 팔로잉(내가 팔로우) 수
-          return userRepository.findByUserAndAttendantAndFollow(user);
-
-     }
-
-     // 프로필 수정
-     @Transactional
-     public ProfileResponseDto updateProfile(ProfileRequestDto requestDto, MultipartFile file,
-                                             HttpServletResponse response) throws IOException {
-          // 로그인 확인 및 현재 유저 정보 들고 오기
-          User user = SecurityUtil.getCurrentUser();
-          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
-
-          // 현재 username
-          String currentUsername = user.getUsername();
-          //username update >> username은 NOT_NULL
-          user.updateUsername(requestDto.getUsername());
-          //토큰 재발급
-          if (!requestDto.getUsername().equals(currentUsername)) {
-               response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
-          }
-
-          //profileMsg update
-          if (requestDto.getProfileMsg() == null) {
-               user.updateProfileMsg("");
-          } else {
-               user.updateProfileMsg(requestDto.getProfileMsg());
-          }
-
-          // 현재 profileUrl
-          String currentProfileUrl = user.getProfileUrl();
-          //profileUrl update
-          if(file.isEmpty()) {
-               user.updateProfileUrl(currentProfileUrl);
-          } else {
-               String profileUrl = s3Uploader.upload(file,"file");
-               user.updateProfileUrl(profileUrl);
-          }
-
-          userRepository.saveAndFlush(user);
-
-          return new ProfileResponseDto(user);
-
+          return userRepository.findByUserAndAttendantAndFollow(user).addUser(user);
      }
 
      // 프로필 수정 페이지 불러오기
-     @Transactional
-     public ProfileResponseDto updateProfilePage() {
+     public ProfileResponseDto getProfileUpdatePage() {
           // 로그인 확인 및 현재 유저 정보 들고 오기
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
@@ -128,6 +86,25 @@ public class UserService {
           return new ProfileResponseDto(user);
      }
 
+     //프로필 이미지 변경
+     @Transactional
+     public ProfileResponseDto.Url updateProfileUrl(MultipartFile file) throws IOException {
+          // 로그인 확인 및 현재 유저 정보 들고 오기
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
+
+          // 파일 없으면 변경하기 못누르게 프론트에서 할 수 있을 거 같음
+          //profileUrl update
+          if(file.isEmpty()) {
+               throw new RestApiException(Code.NO_IMAGE);
+          } else {
+               String profileUrl = s3Uploader.upload(file,"file");
+               user.updateProfileUrl(profileUrl);
+               userRepository.save(user);
+          }
+
+          return new ProfileResponseDto.Url(user);
+     }
 
      // 프로필 이미지 삭제
      @Transactional
@@ -136,13 +113,52 @@ public class UserService {
           User user = SecurityUtil.getCurrentUser();
           if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
+          // 현재 profileUrl
+//          String currentProfileUrl = user.getProfileUrl();
+          //s3에서 파일 삭제 >> 이 부분 s3에 문제있는듯, 그래서 주석 처리
+//          s3Uploader.deleteFile(currentProfileUrl.split(".com/")[1]);
+
           //prufileUrl = null
           user.deleteProfileUrl();
+          userRepository.save(user);
      }
 
-    
+     // 프로필 username/자기소개 수정
+     @Transactional
+     public ProfileResponseDto updateProfile(ProfileRequestDto requestDto, HttpServletResponse response){
+          // 로그인 확인 및 현재 유저 정보 들고 오기
+          User user = SecurityUtil.getCurrentUser();
+          if (user == null) throw new RestApiException(Code.NOT_FOUND_AUTHORIZATION_IN_SECURITY_CONTEXT);
 
+          // 현재 username
+          String currentUsername = user.getUsername();
+          // username 중복 확인
+          boolean isExistUsername = userRepository.existsByUsername(requestDto.getUsername());
+          if (!requestDto.getUsername().equals(currentUsername) && isExistUsername) {
+               throw new RestApiException(Code.OVERLAPPED_USERNAME);
+          }
+          //username/자기소개 update
+          user.updateProfileContent(requestDto.getUsername(), requestDto.getProfileMsg());
+          userRepository.saveAndFlush(user);
 
+          //토큰 재발급
+          if (!requestDto.getUsername().equals(currentUsername)) {
+               response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
+          }
+
+          return new ProfileResponseDto(user);
+
+     }
+
+     //비밀번호 찾기 대신 비밀번호변경
+     @Transactional
+     public void updatePassword(PasswordChangeRequestDto requestDto) {
+          User user = userRepository.findByEmail(requestDto.getEmail());
+          if(user == null) throw new RestApiException(Code.NO_USER);
+          String password = passwordEncoder.encode(requestDto.getPassword());
+          user.updatePassword(password);
+          userRepository.save(user);
+     }
 }
      
      // jwt token 에서 user정보뽑기 set
