@@ -360,7 +360,9 @@ public class AlarmService {
 
         // 각 모임 30분 전 알림으로
         for (Meeting meeting : meetings) {
-            alarmBefore30(meeting);
+            if (!meeting.isDeleted()) {
+                alarmBefore30(meeting);
+            }
         }
 //        for (MeetingAlarmListDto meetingAlarmListDto : meetingAlarmListDtos) {
 //            alarmBefore30(meetingAlarmListDto);
