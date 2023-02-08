@@ -17,4 +17,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long>, Meeting
      
      Optional<Meeting> findByIdAndDeletedIsFalse(Long meetingId);
     List<Meeting> findAllByStartDateAndStartTime(LocalDate today, LocalTime nowAfter30);
+
+    List<Meeting> findAllByStartDateAndStartTimeAndDeletedIsFalse(LocalDate today, LocalTime nowAfter30);
 }

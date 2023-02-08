@@ -349,7 +349,7 @@ public class AlarmService {
         log.info(String.valueOf(nowAfter30));
 
         // 30분 후 시작하는 모임 리스트
-        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTime(today, nowAfter30);
+        List<Meeting> meetings = meetingRepository.findAllByStartDateAndStartTimeAndDeletedIsFalse(today, nowAfter30);
         if (meetings.isEmpty()) {
             return;
         }
