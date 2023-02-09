@@ -39,16 +39,29 @@ https://moyeo.vercel.app
 
 ### ⭐ 트러블 슈팅
  
-#### 1. 
+#### 1. 인기순조회 트러블슈팅
 1) 문제 상황
-- 
+- 인기모임 조회 속도향상을 위해 커버링인덱스를 적용하였음에도, 실행계획 확인결과 Total Cost 가 매우 높게 발생
 
 2) 문제 원인
-- 
+- 참여자수 비교를 위해 attendant테이블과 left join, group by가 필요하여 meeting table의 full index scan을 통해 
+  전체 컬럼에 대해 join이 실행되어 total cost가 높게 나타는 것
 
 3) 해결 방법
-- 
+- meeting 테이블에 참여자수 컬럼을 새로 추가하여 join없이 바로 인기순 정렬이 가능하도록 변경하고, 참석자수 + id 인덱스테이블을 생성하여
+  최초 actual rows 9126 > 5 로 감소, jmeter 로 테스트해본 결과 평균응답시간은 60% 감소, 초당 처리건수의 경우 260%가 증가
 
+#### 2. 검색조회 트러블슈팅
+1) 문제 상황
+- 모임검색의 경우 like 쿼리를 이용하여 검색을 진행하였는데, 
+  5개의 limit와, 커버링인덱싱을 적용하여 속도를 높였으나,  최초 Actual Rows가 모임 전체수만큼 나오는것을 확인
+
+2) 문제 원인
+-  like 쿼리의 경우 검색할 단어의 인덱싱적용이 되지않아 전체 모임을 조회
+
+3) 해결 방법
+- like보다 인덱스를 효율적으로 사용할 수 있는 Full Text Search engine을 적용하였으며 그결과 최초 Actual Rows 1/100 으로 감소, total cost : 1/3로 감소
+- jmeter 테스트 결과 평균응답시간은 60% 감소, 초당 처리건수의 경우 244%가 증가한것을 확인
 
 ### 🧩swagger [LINK](https://sparta-hippo.shop/swagger-ui/index.html)
 
