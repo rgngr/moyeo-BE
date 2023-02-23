@@ -1,5 +1,3 @@
- <img width="380" alt="짤방" src="https://blog.kakaocdn.net/dn/dxFiGb/btrYJZBsIJF/TmFIqb6I8u6hKqRR2gupN1/img.gif"> 
-
 # 모여 | Moyeo
 
 이불 밖은 위험해! <br />
